@@ -1,0 +1,100 @@
+---
+title: "Lesson 1.3: Setting up Environments to run Ansible Playbooks"
+description:
+parent: "Chapter 1: Introducing Ansible"
+grand_parent : "Redhat Enterprise Linux 9 - EX294K RHCE"
+order: 1
+completed: true
+---
+
+## Configuring System (Control Nodes / Manages Hosts)
+
+### My Configuration
+    * **Control Node / Admin System**
+        * Hostname = serverA
+            * IPV4.address = 192.168.208.101
+            * Netmask = 255.255.255.0
+            * IPV4.gateway = 192.168.208.2
+            * IPV4.dns = 192.168.208.2
+    * **Managed Hosts / Clients**
+        * Hostname = serverB # Developer Machine 1 
+            * IPV4.address = 192.168.208.102
+            * Netmask = 255.255.255.0
+            * IPV4.gateway = 192.168.208.2
+            * IPV4.dns = 192.168.208.2
+        * Hostname = serverC # Developer Machine 2
+            * IPV4.address = 192.168.208.103
+            * Netmask = 255.255.255.0
+            * IPV4.gateway = 192.168.208.2
+            * IPV4.dns = 192.168.208.2
+        * Hostname = serverD # Web Server 1 
+            * IPV4.address = 192.168.208.104
+            * Netmask = 255.255.255.0
+            * IPV4.gateway = 192.168.208.2
+            * IPV4.dns = 192.168.208.2
+
+### Network Configuration
+Configure Network accordingly for all the Nodes. 
+```bash 
+[root@serverA ~]# nmcli conn add con-name ansible-conn ifname ens160 type ethernet ipv4.addresses 192.168.208.101/24 ipv4.gateway 192.168.208.2 ipv4.dns 192.168.208.2 
+Connection 'ansible-conn' (3a5da5c6-ef91-45db-acd4-34faf7a9e3cc) successfully added.
+
+[root@serverA ~]# nmcli conn up ansible-conn 
+Connection successfully activated (D-Bus active path: /org/freedesktop/NetworkManager/ActiveConnection/4)
+
+[root@serverA ~]# cat /etc/NetworkManager/system-connections/ansible-conn.nmconnection 
+[connection]
+id=ansible-conn
+uuid=3a5da5c6-ef91-45db-acd4-34faf7a9e3cc
+type=ethernet
+interface-name=ens160
+
+[ethernet]
+
+[ipv4]
+address1=192.168.208.101/24,192.168.208.2
+dns=192.168.208.2;
+method=auto
+
+[ipv6]
+addr-gen-mode=default
+method=auto
+
+[proxy]
+```
+
+### User Creation (Devops)
+* **Standard Practise** - Create **devops** user in control node and managed hosts and grant full admin rights to the devops user.
+```bash 
+# Perform the same operation in serverA, serverB, serverC
+[root@serverA ~]# useradd devops
+[root@serverA ~]# echo "redhat" | passwd --stdin devops
+Changing password for user devops.
+passwd: all authentication tokens updated successfully.
+[root@serverA ~]# visudo
+devops  ALL=(ALL)       NOPASSWD: ALL
+```
+
+### SSH Configuration 
+- On the control node, login as devops user, generate private/public ssh key pair, and transfer the copy of the public key to the devops user in the managed hosts hence allowing login into the client machines from the control node to the managed hosts without credentials. 
+```bash 
+[devops@serverA ~]$ ssh-keygen
+[devops@serverA ~]$ ls /home/devops/.ssh/
+id_rsa  id_rsa.pub
+
+# ServerB
+[devops@serverA ~]$ ssh-copy-id devops@192.168.208.102 
+# ServerC
+[devops@serverA ~]$ ssh-copy-id devops@192.168.208.103
+
+# Check SSH in ServerB
+[devops@serverA ~]$ ssh devops@192.168.208.102
+[devops@serverB ~]$
+# Check SSH in ServerC
+[devops@serverA ~]$ ssh devops@192.168.208.103
+[devops@serverC ~]$
+# Check SSH in ServerD
+[devops@serverA ~]$ ssh devops@192.168.208.104
+[devops@serverD ~]$
+```
+

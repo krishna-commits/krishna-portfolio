@@ -1,0 +1,132 @@
+---
+title: "Lesson 9.1: Configure firewall settings using firewall-cmd/firewalld"
+description:
+date: "2024-04-04"
+parent: "Chapter 9: Manage security"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 1
+completed: true
+---
+#### Installation of firewall service 
+```bash
+[root@server ~]# rpm -q firewalld 
+firewalld-1.2.5-1.el9.noarch
+# If not present then install
+[root@server ~]# yum -y install firewalld
+```
+
+#### Starting and Enabling firewalld service 
+```bash 
+[root@server ~]# systemctl start firewalld 
+[root@server ~]# systemctl enable firewalld
+[root@server ~]# systemctl status firewalld
+```
+
+#### Listing the firewall zones 
+```bash 
+[root@server ~]# firewall-cmd --list-all-zones 
+```
+#### To get the default zones
+```bash 
+[root@server ~]# firewall-cmd --get-default-zone 
+public
+```
+#### List all
+```bash 
+[root@server ~]# firewall-cmd --list-all
+public (active)
+  target: default
+  icmp-block-inversion: no
+  interfaces: ens160
+  sources: 
+  services: cockpit dhcpv6-client http mountd nfs rpc-bind ssh
+  ports: 8098/tcp
+  protocols: 
+  forward: yes
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: 
+```
+
+#### Changing default zone 
+```bash 
+[root@server ~]# firewall-cmd --set-default-zone=home 
+success
+[root@server ~]# firewall-cmd --get-default-zone 
+home
+[root@server ~]# firewall-cmd --list-all 
+home (active)
+  target: default
+  icmp-block-inversion: no
+  interfaces: ens160
+  sources: 
+  services: cockpit dhcpv6-client mdns samba-client ssh
+  ports: 
+  protocols: 
+  forward: yes
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: 
+```
+
+### Add a service in firewall
+```bash 
+[root@server ~]# firewall-cmd --permanent --add-service=smtp
+success
+[root@server ~]# firewall-cmd --reload 
+success
+
+# To add for a specific zone 
+[root@server ~]# firewall-cmd --permanent --add-service=smtp --zone=work
+success
+[root@server ~]# firewall-cmd --reload 
+success
+[root@server ~]# firewall-cmd --list-all --zone=work
+
+# To add multiple service at the same command 
+[root@server ~]# firewall-cmd --permanent --add-service={ftp,dns,nfs} --zone=work 
+```
+### To allow a port in firewall 
+```bash 
+[root@server ~]# firewall-cmd --permanent --add-port=4455/tcp
+success
+[root@server ~]# firewall-cmd --reload 
+success
+[root@server ~]# firewall-cmd --list-all 
+public (active)
+  target: default
+  icmp-block-inversion: no
+  interfaces: ens160
+  sources: 
+  services: cockpit dhcpv6-client http mountd nfs rpc-bind smtp ssh
+  ports: 8098/tcp 4455/tcp
+  protocols: 
+  forward: yes
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: 
+
+# To add multiple ports at the same command use {} 
+```
+
+### Removing port and service from a firewall 
+```bash 
+[root@server ~]# firewall-cmd --permanent --remove-service={nfs,smtp} 
+success
+[root@server ~]# firewall-cmd --permanent --remove-port=4455/tcp
+success
+```
+
+### Rich Rule
+```bash 
+# Rich rule command are lengthy to remember , so you can see EXAMPLES from man page
+[root@server ~]# firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address="192.168.203.225/21" service name="http" accept'
+success
+
+```

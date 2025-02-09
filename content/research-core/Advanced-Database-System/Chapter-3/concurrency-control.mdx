@@ -1,0 +1,182 @@
+---
+title: Concurrency Control in Distributed Database 
+description:
+parent: Distributed Database System
+grand_parent : Advanced Database System
+order: 5
+completed: true
+---
+
+Concurrency control mechanisms provide us with various concepts & implementations to ensure the execution of any transaction across any node doesn’t violate ACID or BASE (depending on database) properties causing inconsistency & mixup of data in the distributed systems. Transactions in the distributed system are executed in “sets“, every set consists of various sub-transactions. These sub-transactions across every node must be executed serially to maintain data integrity & the concurrency control mechanisms do this serial execution.
+
+## Single-Lock-Manager Approach
+
+1 **Central Lock Manager:** The system has a dedicated site, 𝑆𝑖​, that acts as the lock manager.
+    * All lock requests are routed to this central lock manager site.
+    * The lock manager decides whether to grant or delay lock requests based on availability and transaction requirements.
+2. **Lock Request Process:**
+    * When a transaction needs to lock a data item, it sends a lock request to the lock manager.
+    * If the lock is available, the lock manager grants the lock immediately and notifies the requesting site.
+    * If the lock is not available, the request is queued until the lock can be granted.
+3. Read and Write Operations:
+    * **Read Operations:** The transaction can read the data item from any site that holds a replica, increasing flexibility and potentially reducing latency.
+    * **Write Operations:** Writes must be performed on all replicas of the data item, ensuring consistency across the distributed system.
+
+### Example of Single-Lock-Manager Approach
+Let’s break down the Single-Lock-Manager Approach with a concrete example to clarify how it functions in a distributed system.
+**Scenario**
+Imagine a distributed banking system where multiple sites (servers) handle customer account transactions, but all data locking is managed by a single central lock manager at Site 𝑆𝐿 . The bank's system replicates account balances across different sites to improve accessibility and fault tolerance.
+
+Let’s say two transactions, T1 and T2, are initiated by different clients at different branches (sites) to transfer money from Account A.
+
+1. **Initial Setup**
+* Account A has replicas stored at multiple sites: Site 1 and Site 2.
+* The lock manager, located at Site 𝑆𝐿, controls access to all account records.
+2. **Transactions Initiated**
+* T1 starts at Site 1 and requests to transfer $100 from Account A.
+* T2 starts at Site 2 and also requests to transfer $200 from Account A.
+3. **Lock Request Process**
+* T1 sends a request to lock Account A to the lock manager at Site 𝑆𝐿 .
+    * The lock manager checks if Account A is currently locked by any other transaction. Since it is not, the lock manager grants the lock to T1.
+    * The lock manager sends a confirmation message back to Site 1, allowing T1 to proceed with the transfer.
+* T2 also sends a request to lock Account A to the lock manager at Site 𝑆𝐿 .
+    Since T1 currently holds the lock on Account A, the lock manager delays T2's request, putting it in a queue.
+4. **Transaction Execution**
+* T1 performs the transfer operation, deducting $100 from Account A’s balance.
+* Once T1 completes the transaction, it releases the lock on Account A.
+    * The lock manager updates its record, allowing other pending requests to be considered.
+
+5. **Lock Granted to T2**
+* With T1 complete, the lock manager now grants T2's request for a lock on Account A.
+* T2 performs its transfer operation, deducting $200 from Account A’s balance.
+
+6. **Replication Update**
+Both transactions ensure that updates are reflected across all replicas of Account A, maintaining consistency.
+
+### Advantages in This Scenario
+* **Simplicity**: All lock requests are routed through Site 𝑆𝐿, simplifying the lock management process.
+* **Deadlock Avoidance:** Since a single site manages all locks, it can track and prevent deadlocks by controlling the sequence of lock grants.
+
+### Disadvantages in This Scenario
+* **Bottleneck**: Site 𝑆𝐿 , as the single lock manager, could become overwhelmed with requests if many transactions are initiated simultaneously.
+* **Vulnerability**: If Site 𝑆𝐿 fails, the entire system’s locking mechanism would be compromised, potentially halting all transactions requiring locks.
+
+---
+
+## Distributed Lock Manager
+In a distributed lock manager system, locking is decentralized and each site manages locks for its local data. This approach is robust, as no single site manages all locks, reducing bottlenecks and vulnerability from a single point of failure. However, it can lead to deadlock issues since no central authority is tracking locks across sites.
+
+### Primary Copy Protocol
+In the primary copy protocol, each data item has one replica designated as the primary copy. This replica is the main point for locking and updates, though other replicas can still exist on different sites.
+#### Example:
+* Data item A has replicas on Site 1, Site 2, and Site 3.
+* Site 1 is designated as the primary site for item A.
+* Any transaction needing a lock on A must request it from Site 1, and if granted, this effectively locks all replicas of A.
+* **Benefit:** Simplified concurrency control, as only one site manages the lock.
+* **Drawback:** If the primary site fails, the data item A becomes inaccessible, even if other replicas are available.
+
+### Majority Protocol
+In the majority protocol, a lock request for a data item that has multiple replicas must reach a majority of the replicas.
+#### Example:
+* Assume data item B is replicated across five sites (Site 1, Site 2, Site 3, Site 4, Site 5).
+* For a transaction to lock B, it needs approval from at least three of these sites (5/2 + 1).
+* If the transaction gets the majority of approvals, it can proceed; otherwise, it waits.
+* **Benefit:** Can proceed even if some sites are unavailable, allowing more resilience.
+* **Drawback:** High communication cost since a majority of replicas must agree. Also, this can lead to deadlocks when transactions lock different subsets of replicas.
+
+### Biased Protocol
+In the biased protocol, the priority is given to shared locks over exclusive locks, which is beneficial in scenarios with frequent read operations.
+#### Example:
+* For a read operation on data item C, a transaction only needs to acquire a lock on one replica of C.
+* For a write operation on C, the transaction must lock all replicas to prevent concurrent access from other transactions.
+* **Advantage:** Reduces overhead on read operations, allowing faster data access.
+* **Disadvantage:** Write operations have more overhead since they require locking all replicas.
+
+---
+
+## Ensuring consistency 
+
+### Quorum Consensus Protocol
+This protocol is more flexible and generalizes majority and biased protocols by introducing quorum values for reading and writing.
+#### Example:
+* Data item D has replicas at four sites (Site 1, Site 2, Site 3, Site 4).
+* The protocol assigns weights to each site’s replica, e.g., Site 1 = 1, Site 2 = 2, Site 3 = 1, Site 4 = 2.
+* Total weight S=1+2+1+2=6.
+* Choose read quorum 𝑄𝑟 = 3 and write quorum 𝑄𝑤 = 4. (𝑄𝑟+𝑄𝑤>S or 𝑄𝑤>S/2)
+* A read operation requires locking replicas with weights totaling at least 3.
+* A write operation requires locking replicas with weights totaling at least 4.
+* **Advantage:** Fine-grained control over read and write costs, allowing flexibility for different data access patterns.
+* **Disadvantage:** Setting optimal quorum values can be complex, and mismatched quorum settings can lead to inefficiency.
+
+### Timestamping Protocol
+This protocol assigns each transaction a unique timestamp to establish the sequence in which transactions should execute across sites. Timestamps are usually created with a logical clock or by combining a local timestamp with a unique site identifier.
+#### Example:
+* Suppose Site 1 and Site 2 need to execute transactions T1 and T2 respectively.
+* T1 at Site 1 has a timestamp 10, while T2 at Site 2 has a timestamp 20.
+* Based on these timestamps, T1 will execute before T2.
+* If Site 2 receives T1’s data later, it will compare timestamps and roll back any conflicting operations from T2 to preserve the timestamp order.
+* **Advantage:** Provides a clear, consistent order for transaction execution.
+* **Drawback:** If clocks are unsynchronized across sites, incorrect ordering or data inconsistencies could occur.
+
+### What is Deadlock?
+In distributed systems, a deadlock occurs when transactions are waiting on each other in such a way that none of them can proceed. For instance, if Transaction T1 is waiting for a resource held by Transaction T2, and T2 is waiting for a resource held by T1, neither can move forward, creating a deadlock.
+
+## Deadlock Handling Example
+Consider two transactions, T1 and T2, operating at different sites and trying to lock resources held by each other:
+### Example:
+* T1 at Site 1 wants to write to X.
+* T2 at Site 2 wants to write to Y.
+* If T1 then tries to lock Y (held by T2) and T2 tries to lock X (held by T1), a deadlock occurs.
+Distributed systems can detect deadlocks by tracking dependencies across sites, though this adds overhead.
+
+---
+
+## Centralized Deadlock Detection Approach
+In a centralized approach to deadlock detection in distributed systems, a global wait-for graph is maintained by a central site, known as the **deadlock-detection coordinator**. This coordinator monitors and analyzes transaction dependencies to detect deadlocks and resolve them by selecting a transaction to roll back.
+
+**Two Approaches to Constructing the Graph**
+* **Real Graph:** Represents the actual transaction dependencies but may be hard to keep up-to-date accurately across distributed sites.
+* **Constructed Graph:** An approximation based on recent updates from local wait-for graphs (which track dependencies at each site).
+
+Each local site sends updates to the coordinator whenever a transaction requests or releases a resource. The coordinator then modifies the global wait-for graph by:
+* **Adding an edge** if a transaction requests a resource held by another.
+* **Removing an edge** when a resource is released.
+
+#### Example:
+Imagine we have three sites (S1, S2, and S3) and three transactions (T1, T2, and T3).
+1. At Site S1, T1 needs a resource that T2 is currently holding.
+    * Local wait-for graph at S1: T1 -> T2
+2. At Site S2, T2 needs a resource that T3 is holding.
+    * Local wait-for graph at S2: T2 -> T3
+3. At Site S3, T3 needs a resource that T1 is holding.
+    * Local wait-for graph at S3: T3 -> T1
+Each local wait-for graph only shows dependencies within each site. However, when the deadlock-detection coordinator combines the information from all sites, it constructs a global wait-for graph showing the full cycle:
+**Global wait-for graph: T1 -> T2 -> T3 -> T1**
+
+Once the coordinator updates the graph, it performs **cycle detection**. A cycle in the graph implies that transactions are waiting on each other in a circular manner, creating a deadlock. 
+Here, the cycle **T1 -> T2 -> T3 -> T1** indicates a deadlock. To resolve it, the coordinator needs to:
+When a cycle is detected, the coordinator:
+1. Selects a victim transaction to roll back. 
+    * Let’s say T1 is chosen as the victim.
+2. Notifies all involved sites, prompting them to release the victim transaction’s resources.
+    * Notify all sites to roll back T1. This breaks the cycle, allowing T2 and T3 to proceed.
+
+### Local and Global Wait-For Graphs
+Each site maintains a local wait-for graph, and the coordinator aggregates these into a global wait-for graph. However, inconsistencies can arise due to network delays. For example:
+1. T2 releases the resource at S1, so T1 is no longer waiting for T2.
+    * S1 sends a message to the coordinator to remove the edge T1 -> T2.
+2. T2 requests a resource from T3 at S2, so now T2 is waiting for T3.
+    * S2 sends a message to the coordinator to add the edge T2 -> T3.
+If the message adding T2 -> T3 arrives before the message removing T1 -> T2, the coordinator may see the graph as T1 -> T2 -> T3 -> T1, a **false cycle** indicating a deadlock that doesn’t actually exist.
+
+### Handling False Cycles
+To handle false cycles:
+* The coordinator might unnecessarily select a victim transaction and notify sites to roll back, which can reduce efficiency but will not lead to inconsistency.
+In practice, a two-phase commit protocol can help reduce these false cycles by ensuring certain operations are grouped and processed in phases, reducing the risk of delayed messages causing incorrect cycle detection.
+
+
+
+---
+
+#### References : 
+1. https://www.geeksforgeeks.org/concurrency-control-in-distributed-transactions/

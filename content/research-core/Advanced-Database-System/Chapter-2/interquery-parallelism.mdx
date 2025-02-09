@@ -1,0 +1,109 @@
+---
+title: Interquery Parallelism
+description:
+parent: Parallel Databases
+grand_parent : Advanced Database System
+order: 7
+completed: true
+---
+
+Interquery Parallelism is a form of parallelism in database systems where **multiple queries or transactions are processed concurrently**. This approach is typically used to increase transaction throughput by handling more queries per second, thus enhancing the performance of a transaction processing system.
+
+### Key Characteristics of Interquery Parallelism
+
+#### Parallel Execution of Queries:
+* In interquery parallelism, each query or transaction runs in parallel with others. This means that the system can execute multiple queries simultaneously, leading to improved response times and higher transaction throughput.
+* This form of parallelism is beneficial in environments where numerous independent queries need to be processed, such as in large-scale OLTP (Online Transaction Processing) systems.
+
+#### Scalability and Throughput:
+* Since each query is handled by separate processors, interquery parallelism can scale up a database system’s capabilities. It can handle larger numbers of transactions per second, which is essential for high-traffic systems.
+* Particularly beneficial for shacyan-memory parallel databases, which have a common memory accessible by all processors, making it easy to coordinate resources.
+
+#### Easiest Form of Parallelism:
+* Among different types of parallelism (such as intraquery parallelism, which splits a single query into multiple parts), interquery parallelism is considered the simplest to implement, especially in shacyan-memory environments where memory coordination is straightforward.
+However, when implemented in shacyan-disk or shacyan-nothing systems, interquery parallelism requires careful coordination to manage data consistency and avoid data conflicts.
+
+### Challenges in Shacyan-Disk and Shacyan-Nothing Architectures
+In shacyan-disk or shacyan-nothing systems, implementing interquery parallelism is more complex due to the following reasons:
+* **Locking and Logging:**
+    * Locking ensures that only one transaction can modify a particular piece of data at a time, preventing issues like dirty reads, lost updates, or non-repeatable reads.
+    * Logging keeps a record of changes made during transactions so that, if a system failure occurs, the database can recover to a consistent state.
+    * In a shacyan-disk system, all processors can access the same data on disk, but each processor has its own local cache. If two processors work on the same data, conflicts can arise. Hence, locking mechanisms (for data consistency) and logging mechanisms (for crash recovery) must be carefully coordinated.
+    * Messages must be passed between processors to coordinate locks, ensuring that each processor knows which data is currently being accessed or modified by others.
+* **Data Consistency and Cache Coherency:**
+    * In shacyan-disk systems, each processor has its own buffer cache. When data is modified by one processor, it must inform others, or inconsistencies may occur. For instance, Processor A may be reading data that Processor B has recently changed.
+    * Maintaining cache coherency ensures that every processor sees the most up-to-date version of data.
+* **Cache Coherency Protocol:**
+    * To address these challenges, a cache coherency protocol ensures that processors read and write the most recent data. Before any processor reads or writes data, it must obtain the necessary locks (shared or exclusive) and check if the data is up-to-date.
+
+---
+
+### Cache Coherency Protocol
+The cache coherency protocol ensures data integrity across processors that may be reading or writing data simultaneously. Here’s how a simple protocol works:
+* **Locking:**
+    * Before accessing a data page, a processor must acquire a lock in either shared mode (for reading) or exclusive mode (for writing). This ensures that no other processor modifies the data while it is in use.
+* **Reading:**
+    * After obtaining the lock, the processor reads the latest version of the page from disk if it is not already in its cache. This step ensures that any recent changes by other processors are incorporated.
+* **Writing and Releasing Lock:**
+    * If the processor modifies the data, it writes back the updated page to the disk before releasing the lock. This ensures that any future reads by other processors get the latest version.
+    * Once the write is complete, the lock is released, allowing other processors to access the data.
+* **Complex Protocols:**
+    * In practice, more sophisticated protocols, such as MESI (Modified, Exclusive, Shared, Invalid) and MOESI (Modified, Owner, Exclusive, Shared, Invalid), may be used to handle complex scenarios. These protocols define additional states for cache entries and allow processors to better coordinate their data access patterns in multi-processor systems.
+
+---
+
+### Example of Interquery Parallelism:
+
+Imagine an e-commerce database that needs to handle thousands of customer requests every second. Some customers may be checking product availability, others might be submitting orders, and yet others could be viewing order histories. With interquery parallelism, each of these queries can be processed simultaneously by different processors or threads.
+
+Let’s say the database has four processors, and four queries arrive at the same time:
+
+* Query 1: Check the availability of a product (Product Availability Query).
+* Query 2: Fetch the order history of a specific customer (Order History Query).
+* Query 3: Retrieve recent transactions for analysis (Transaction Analysis Query).
+* Query 4: Get a list of recommended products for a customer (Recommendation Query).
+Each processor can pick up one of these queries and process it in parallel, independently of the others. This parallelism allows the system to handle more requests per second than it would if it had to process them sequentially.
+
+---
+
+### Locking and Logging in Databases
+
+Locking and logging are critical techniques in database management, especially in parallel and distributed database systems, to maintain data integrity and consistency.
+* **Locking** ensures that only one transaction can modify a particular piece of data at a time, preventing issues like dirty reads, lost updates, or non-repeatable reads.
+* **Logging** keeps a record of changes made during transactions so that, if a system failure occurs, the database can recover to a consistent state.
+
+#### Example Scenario: Bank Account Transfers
+Consider a banking database that handles transfers between accounts. Let’s say there’s a table Accounts with AccountID, Balance, and LastUpdated columns. Now, two transactions try to update the same account balance simultaneously:
+* **Transaction A:** Withdraws $500 from Account 101.
+* **Transaction B:** Deposits $200 into Account 101.
+Without locking, these transactions might interfere, leading to incorrect balance calculations.
+In SQL Server, the system applies locks automatically, but here’s how it might work conceptually for a withdrawal operation:
+```sql
+BEGIN TRANSACTION;
+
+-- Apply an exclusive lock to prevent other transactions from accessing Account 101
+UPDATE Accounts
+SET Balance = Balance - 500
+WHERE AccountID = 101;
+
+COMMIT TRANSACTION;
+```
+While Transaction A holds the lock on Account 101, Transaction B will have to wait until Transaction A completes. This ensures the balance is updated sequentially, preventing inconsistent or incorrect values.
+
+Types of locks in database systems include:
+* **Shared Locks:** Allow multiple transactions to read data but prevent any from writing.
+* **Exclusive Locks:** Allow only one transaction to read and write data, blocking other operations.
+
+**Logging Example**
+In addition to locking, the database uses write-ahead logging (WAL). Before making changes, the database logs the intent to modify data to a transaction log. This is crucial for recovery in case of system failures.
+
+For instance, before Transaction A withdraws $500, it would log:
+
+* BEGIN TRANSACTION A
+* UPDATE Accounts SET Balance = Balance - 500 WHERE AccountID = 101
+* COMMIT TRANSACTION A
+
+If there’s a failure after step 2 but before COMMIT, the database system will detect an incomplete transaction on recovery. Using the log, it can either roll back to restore the previous balance or complete the update, ensuring data consistency.
+
+#### Why Locking and Logging Are Important
+In distributed or parallel databases, multiple transactions might try to update the same data, requiring effective locking to prevent data corruption. Logging provides the safety net to revert any incomplete changes during unexpected failures, ensuring the system can always recover to a reliable state. Together, locking and logging maintain data integrity, consistency, and isolation across transactions, which are critical components of the ACID properties (Atomicity, Consistency, Isolation, Durability) in databases.

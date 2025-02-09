@@ -1,0 +1,132 @@
+---
+title: "Lesson 3.4: Identify CPU/memory intensive processes and kill processes"
+description:
+date: "2024-04-04"
+parent: "Chapter 3: Operate running systems"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 4
+completed: true
+---
+
+## Process Monitoring tools
+### PS Command
+Command: `ps -ef`
+- It displays the detail of both foreground and background processes. 
+```bash {3,9}
+[sanjeeb@assignmentserver class]$ ps -ef
+UID          PID    PPID  C STIME TTY          TIME CMD
+root           1       0  0 Sep19 ?        00:00:02 /usr/lib/systemd/systemd rhgb --switched-root --system
+root           2       0  0 Sep19 ?        00:00:00 [kthreadd]
+root           3       2  0 Sep19 ?        00:00:00 [rcu_gp]
+root           4       2  0 Sep19 ?        00:00:00 [rcu_par_gp]
+root           5       2  0 Sep19 ?        00:00:00 [slub_flushwq]
+root           6       2  0 Sep19 ?        00:00:00 [netns]
+sanjeeb     2988    2970  0 Sep19 pts/0    00:00:00 bash
+```
+- If `TTY` column has `?`, then it is a background process.
+- If pts/1 , pts/2 , tty/1 ,tty/2 etc, then is a foreground process.
+- UID is the owner name of the process. 
+- PID is the process ID, and PPID is the parent's ID. If no PPID then it shows 0.
+- SystemD PID is always 1.
+- TIME is the time consumed.
+
+### TOP Command
+Command: `top`
+- It shows info of resource intensive processes. 
+```bash
+top - 07:49:49 up 11:50,  2 users,  load average: 0.19, 0.08, 0.03
+Tasks: 317 total,   1 running, 316 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  4.0 us,  1.0 sy,  0.0 ni, 94.5 id,  0.0 wa,  0.0 hi,  0.5 si,  0.0 st
+MiB Mem :   3584.9 total,    610.0 free,   1154.9 used,   2003.9 buff/cache
+MiB Swap:   2048.0 total,   2044.7 free,      3.2 used.   2430.0 avail Mem 
+
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND                            
+   2308 sanjeeb   20   0 4084432 353312 122308 S   8.9   9.6  14:55.15 gnome-shell                        
+   2970 sanjeeb   20   0  781936  57628  40140 S   1.0   1.6   1:34.78 gnome-terminal-                    
+   2614 sanjeeb   20   0  394044  38988  31948 S   0.3   1.1   1:43.31 vmtoolsd                           
+   2615 sanjeeb   20   0  924432  45364  32004 S   0.3   1.2   0:00.33 evolution-alarm                    
+   7783 root      20   0       0      0      0 I   0.3   0.0   0:01.00 kworker/u4:3-events_unbound        
+   8232 root      20   0       0      0      0 I   0.3   0.0   0:00.74 kworker/0:2-events                 
+   8276 sanjeeb   20   0  226180   3968   3072 R   0.3   0.1   0:03.93 top                                
+      1 root      20   0  173804  15544   9472 S   0.0   0.4   0:02.06 systemd                            
+      2 root      20   0       0      0      0 S   0.0   0.0   0:00.04 kthreadd
+```
+### Commands of top
+- S : To change snapshot delay time.
+- M : Sort processes based on memory usage. 
+- P : Sort processes based on processor usage. 
+- T : Sort based on total run time. 
+- k : To kill (terminate) a process. 
+- r : To change priority of a process. 
+- q : To quit (exit). 
+
+## Terminate/Kill a process
+- `kill [signal] < pid >` : To Kill a particular process.
+- `killall [signal] < process >` : To Kill all the instance of the given process. 
+
+### Signal 
+- `-15 or -TERM` : Soft Signal (Default)
+- `-9 or -KILL` : Strong signal
+
+### Example 1: Using the soft Signal to kill a file that's lagged. 
+```bash /vim/2 /8431/
+# Creating a file and editing it in terminal 2. 
+[sanjeeb@assignmentserver class]$ vim lagged_file
+
+# Viewing the process in terminal 1. 
+[sanjeeb@assignmentserver class]$ ps -ef
+...         ....     ...    ...            ...
+root        8385       2  0 10:40 ?        00:00:00 [kworker/0:1-events]
+sanjeeb     8431    8337  0 10:41 pts/1    00:00:00 vim lagged_file
+sanjeeb     8460    7691  0 10:42 pts/0    00:00:00 ps -ef
+
+# Kill the process with PID 8431
+[sanjeeb@assignmentserver class]$ kill -15 8431
+# OR
+[sanjeeb@assignmentserver class]$ kill -TERM 8431
+
+# Check the terminal 2
+Vim: Caught deadly signal TERM
+Vim: preserving files...
+Vim: Finished.
+
+
+Terminated
+```
+
+### Example 2: Using the strong Signal to kill a file that's lagged.
+```bash /8544/ /Killed/
+# View the process and PID
+[sanjeeb@assignmentserver class]$ ps -ef | grep vim 
+sanjeeb     8544    8337  0 10:47 pts/1    00:00:00 vim lagged_file
+sanjeeb     8547    7691  0 10:48 pts/0    00:00:00 grep --color=auto vim
+
+# Kill with strong signal -KILL or -9
+[sanjeeb@assignmentserver class]$ kill -KILL 8544
+# OR
+[sanjeeb@assignmentserver class]$ kill -9 8544
+
+# Check terminal 2, you can see killed at the cursor point (strong)
+This is a lagged file strong. Killed
+[sanjeeb@assignmentserver class]$ 
+``` 
+
+### Example 3: Kill multiple instances using different PID 
+```bash
+# Creating three file f1, f2, f3 in different terminal with vim 
+
+# View the processes 
+[sanjeeb@assignmentserver class]$ ps -ef | grep vim 
+sanjeeb     8575    8337  0 10:52 pts/1    00:00:00 vim f1
+sanjeeb     8603    8576  0 10:52 pts/2    00:00:00 vim f2
+sanjeeb     8630    8604  0 10:53 pts/3    00:00:00 vim f3
+sanjeeb     8633    7691  0 10:53 pts/0    00:00:00 grep --color=auto vim
+
+# Kill using strong signal or soft signal.
+[sanjeeb@assignmentserver class]$ killall -15 vim 
+
+# Check if process exists 
+[sanjeeb@assignmentserver class]$ ps -ef | grep vim 
+sanjeeb     8650    7691  0 10:54 pts/0    00:00:00 grep --color=auto vim
+
+```

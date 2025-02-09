@@ -1,0 +1,75 @@
+---
+title: "Lesson 2.3: Process script inputs ($1, $2, etc.)"
+description:
+date: "2024-04-04"
+parent: "Chapter 2: Create simple shell scripts"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 3
+completed: true
+---
+Shell scripts have access to some "magic" variables from the environment:
+
+- $0 - The name of the script
+- $1 - The first argument sent to the script
+- $2 - The second argument sent to the script
+- $3 - The third argument... and so forth
+- $# - The number of arguments provided
+- $@ - A list of all arguments provided
+
+```bash 
+[sanjeeb@server Script]$ cat inputs.sh 
+echo $1
+echo $2
+echo $3 
+echo $#
+echo $@
+
+[sanjeeb@server Script]$ inputs.sh a b c 
+a
+b
+c
+3
+a b c
+```
+
+> If number of positional argument is greater than nine, curly braces must be used.
+
+#### Example 1: Create a file named newstudents.txt and write name of some students: student1, student2, student3, student4 (one username in one line). Then create a shell script called addstudents.sh such that when the script executes, it should create the users specified in the newstudents.txt file. Also, make sure that the password should be same as the username and the the users much renew their password on first logon.  
+```bash 
+[root@server Script]# ls
+ddstudents.sh  folder  inputs.sh        script1.sh  script3.sh  student.sh  while.sh
+delusers.sh    for.sh  newstudents.txt  script2.sh  script4.sh  useradd
+[root@server Script]# 
+[root@server Script]# cat newstudents.txt 
+user1
+user2
+user3
+
+[root@server Script]# cat ddstudents.sh 
+#!/bin/bash
+for i in `cat newstudents.txt`
+do
+       useradd $i
+       echo $i | passwd --stdin $i
+       chage -d 0 $i
+       echo "$i"
+done
+
+[root@server Script]# ./ddstudents.sh 
+Changing password for user user1.
+passwd: all authentication tokens updated successfully.
+user1
+Changing password for user user2.
+passwd: all authentication tokens updated successfully.
+user2
+Changing password for user user3.
+passwd: all authentication tokens updated successfully.
+user3
+
+[root@server Script]# tail -3 /etc/passwd
+user1:x:1003:1004::/home/user1:/bin/bash
+user2:x:1004:1005::/home/user2:/bin/bash
+user3:x:1005:1006::/home/user3:/bin/bash
+
+```
+

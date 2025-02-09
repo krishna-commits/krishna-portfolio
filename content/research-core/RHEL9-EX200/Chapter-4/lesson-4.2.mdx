@@ -1,0 +1,109 @@
+---
+title: "Lesson 4.2: Create and remove physical volumes"
+description:
+date: "2024-04-04"
+parent: "Chapter 4: Configure local storage"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 2
+completed: true
+---
+
+Flat partitions cannot be extended
+LVM (Logical Volume Manager)  allows you to create logically grouped, dynamically expandable file systems on top of physical devices or partitions
+
+## PHYSICAL DISK --> PHYSICAL VOLUME --> VOLUME GROUP 
+
+<table>
+<thead>
+  <tr>
+    <th></th>
+    <th>PV</th>
+    <th>VG</th>
+    <th>LV</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td><strong>Create</strong></td>
+    <td>pvcreate</td>
+    <td>vgcreate</td>
+    <td>lvcreate</td>
+  </tr>
+  <tr>
+    <td><strong>View Status</strong></td>
+    <td>pvdisplay</td>
+    <td>vgdisplay</td>
+    <td>lvdisplay</td>
+  </tr>
+    <tr>
+    <td><strong>Extend</strong></td>
+    <td>N/A</td>
+    <td>vgextend</td>
+    <td>lvextend</td>
+  </tr>
+    <tr>
+    <td><strong>Delete</strong></td>
+    <td>N/A</td>
+    <td>vgremove</td>
+    <td>lvremove</td>
+  </tr>
+  </tbody>
+</table>
+## Creating a PV using the entire disk or a partition
+```bash
+[root@sanjeeb ~]# lsblk 
+NAME        MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+sr0          11:0    1    8G  0 rom  /run/media/root/CentOS-Stream-9-BaseOS-aarch64
+nvme0n1     259:0    0   20G  0 disk 
+├─nvme0n1p1 259:1    0  600M  0 part /boot/efi
+├─nvme0n1p2 259:2    0    1G  0 part /boot
+└─nvme0n1p3 259:3    0 18.4G  0 part 
+  ├─cs-root 253:0    0 16.4G  0 lvm  /
+  └─cs-swap 253:1    0    2G  0 lvm  [SWAP]
+nvme0n2     259:4    0    5G  0 disk 
+├─nvme0n2p1 259:5    0    1G  0 part /root/data1
+└─nvme0n2p2 259:6    0    4G  0 part 
+
+# Creating a PV for partition /dev/nvme0n2p2 
+[root@sanjeeb ~]# pvcreate /dev/nvme0n2p2 
+  Physical volume "/dev/nvme0n2p2" successfully created.
+
+# Display the created PV 
+[root@sanjeeb ~]# pvdisplay /dev/nvme0n2p2 
+  "/dev/nvme0n2p2" is a new physical volume of "<4.00 GiB"
+  --- NEW Physical volume ---
+  PV Name               /dev/nvme0n2p2
+  VG Name               
+  PV Size               <4.00 GiB
+  Allocatable           NO
+  PE Size               0   
+  Total PE              0
+  Free PE               0
+  Allocated PE          0
+  PV UUID               bEEVbN-bRRO-YQiI-D4IL-vPv0-8ldF-50qQCe
+```
+
+## Removing a Physical Volume 
+```bash 
+# REMOVING A PV IF IT DOES'NT HAVE VG
+[root@sanjeeb ~]# pvremove /dev/nvme0n2p2 
+  Labels on physical volume "/dev/nvme0n2p2" successfully wiped.
+
+# REMOVING A PV IF IT HAS VG
+[root@sanjeeb ~]# pvremove /dev/nvme0n2p2 
+  PV /dev/nvme0n2p2 is used by VG loanvg so please use vgreduce first.
+  (If you are certain you need pvremove, then confirm by using --force twice.)
+  /dev/nvme0n2p2: physical volume label not removed.
+
+# Forcefully removing a PV
+[root@sanjeeb ~]# pvremove -ff /dev/nvme0n2p2 
+  WARNING: PV /dev/nvme0n2p2 is used by VG loanvg.
+Really WIPE LABELS from physical volume "/dev/nvme0n2p2" of volume group "loanvg" [y/n]? y
+  WARNING: Wiping physical volume label from /dev/nvme0n2p2 of volume group "loanvg".
+  Labels on physical volume "/dev/nvme0n2p2" successfully wiped.
+
+# Checking the removed VG
+[root@sanjeeb ~]# vgs
+  VG #PV #LV #SN Attr   VSize  VFree
+  cs   1   2   0 wz--n- 18.41g    0 
+```

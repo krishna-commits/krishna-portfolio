@@ -1,0 +1,62 @@
+---
+title: Disk, Page
+description:
+parent: Data Storage & Indexing
+grand_parent : Advanced Database System
+order: 1
+completed: true
+---
+
+# Disk
+
+A Hard Disk Drive (HDD) is a storage device that uses a spinning disk to read and write data. The working mechanism of an HDD involves several key components and concepts, which work together to store and retrieve data effectively.
+
+### Platter
+    The platter is a circular disk made of a hard material, usually coated with a magnetic material. Each HDD contains one or more platters stacked together. Data is stored on the platters in binary form (magnetic polarities) on tiny spots on their surfaces.
+### Track
+    Each platter is divided into concentric circles called tracks. These tracks form the basic paths where data is written on the magnetic surface. Each platter surface has thousands of tracks, allowing data to be organized and located quickly.
+### Cylinder
+    A cylinder is a set of tracks that are vertically aligned across all platters. Imagine all the tracks at the same distance from the center on every platter stacked above each other—together, they form a cylinder. The cylinder concept helps in efficiently reading data across multiple platters, as the read-write heads can access the same relative position on each platter without needing to move extensively.
+### Sector
+    Tracks are further divided into smaller sections called sectors, each containing a fixed amount of data, typically 512 bytes or 4,096 bytes. Sectors are the smallest addressable storage units on a hard disk. The combination of track and sector numbers allows the HDD to locate and read/write specific pieces of data on the disk.
+### Cluster
+    A cluster is a group of sectors that the operating system uses as the smallest unit of disk allocation. Clusters are typically made up of two or more sectors to increase the speed of data access. Larger files are stored across multiple clusters, and each cluster has a unique address, which helps the system manage data storage more efficiently.
+### Read-Write Head
+    The read-write head is responsible for reading data from and writing data to the platter surface. Each platter surface has its own dedicated read-write head, which hovers slightly above the platter’s surface without touching it. When data is read or written, an actuator arm positions the read-write head over the correct track on the platter.
+### Spindle
+    The spindle holds the platters in place and spins them at high speeds, typically measured in revolutions per minute (RPM). Common RPM values include 5,400, 7,200, or 10,000 RPM. This high-speed spinning allows data to be read or written quickly as the platters pass beneath the read-write heads.
+### Working Mechanism
+    When a read or write command is issued, the actuator moves the read-write head to the required track. As the spindle spins the platters, the read-write head is positioned over the correct sector within the specified track. The head then magnetizes small spots on the platter surface to represent binary data (1s and 0s), writing the data to the platter. For reading, the head detects the magnetization pattern on the platter surface and converts it back into binary data for the system to use.
+
+---
+
+# Page
+
+In the context of a Database Management System (DBMS), a page is a fixed-size block of memory used for storing data. Pages are fundamental units of data storage and retrieval within a database. Here’s a detailed explanation of what a page is and its role in a DBMS:
+
+**Definition and Characteristics of a Page**
+* **Fixed Size:** Pages have a predetermined size, commonly ranging from 4KB to 8KB (though sizes can vary based on the DBMS configuration). This fixed size allows the database to manage memory and storage efficiently.
+
+* **Data Structure:** Each page can contain multiple rows of data, depending on the size of the rows and the page size. The DBMS organizes data within pages to facilitate efficient access and modification.
+
+* **Storage Units:** Pages are the smallest unit of data that can be read from or written to disk. When a database query requests data, the DBMS retrieves the relevant pages from disk into memory (RAM) for processing.
+
+**How it actually works ?** *In a DBMS, data is stored in fixed-size blocks called pages. When fetching a row or column, the DBMS identifies and loads the required page from disk into memory. It then calculates the row’s location within the page using a row offset and accesses the specific column data based on its position within the row. For fixed-length columns, positions are predetermined, while variable-length columns have offsets within the row. This process allows the DBMS to efficiently retrieve specific data by navigating through structured pages in memory.*
+
+![Figure 1.1: Structure of data page](https://learn.microsoft.com/en-us/sql/relational-databases/media/pages-and-extents-architecture-guide/page-architecture.svg?view=sql-server-ver16)
+
+### Structure of a Database Page
+1. **Header:** The header is located at the beginning of the page and contains important metadata about the page itself. This includes:
+    * The page type (e.g., data page, index page).
+    * The number of rows stored on the page.
+    * Pointers for navigation and management purposes.
+
+2. **Data Rows:** Immediately following the header, data rows are stored serially. Each data row represents a single record, and they are arranged in a contiguous manner. This layout allows for efficient access and retrieval during data operations.
+
+3. **Row Offset Table** At the end of the page, the row offset table contains one entry for each row stored on the page. The features of the row offset table include:
+    * Each entry indicates how far the first byte of its corresponding data row is from the start of the page.
+    * This table helps the DBMS quickly locate rows without scanning the entire page.
+
+4. **Order of Entries** The entries in the row offset table are stored in reverse order compared to the sequence of the data rows. This means that although the rows are arranged sequentially, the offset table is designed to optimize access by providing direct references to each row's location, enhancing retrieval efficiency.
+
+---

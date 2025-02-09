@@ -1,0 +1,42 @@
+---
+title: "Lesson 10.1: Find and retrieve container images from a remote registry"
+description:
+date: "2024-04-04"
+parent: "Chapter 10: Manage containers"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 1
+completed: true
+---
+
+### Search images from registry
+```bash
+[sanjeeb@server ~]$ podman search httpd 
+NAME                                                                DESCRIPTION
+registry.redhat.io/rhscl/httpd-24-rhel7                             Apache HTTP 2.4 Server
+registry.redhat.io/ubi9/httpd-24                                    rhcc_registry.access.redhat.com_ubi9/httpd-2...
+registry.redhat.io/rhel8/httpd-24                                   Apache HTTP Server 2.4 available as containe...
+registry.redhat.io/ubi8/httpd-24                                    Platform for running Apache httpd 2.4 or bui...
+registry.redhat.io/rhel9/httpd-24                                   rhcc_registry.access.redhat.com_rhel9/httpd-...
+```
+
+### Pull images from registry
+```bash
+[sanjeeb@server ~]$ podman pull registry.redhat.io/rhel9/httpd-24 
+Trying to pull registry.redhat.io/rhel9/httpd-24:latest...
+Getting image source signatures
+Checking if image destination supports signatures
+Copying blob 7f6eb9aaea61 done   | 
+Copying blob 7aea7a46f56a done   | 
+Copying blob 3dff3dff05e7 done   | 
+Copying config e984ac2f8e done   | 
+Writing manifest to image destination
+Storing signatures
+e984ac2f8edcd6706f0b077ebb43f7f2592546e6aa9e1dfb5e7ab67bff723f71
+```
+
+### List the pulled images
+```bash 
+[sanjeeb@server ~]$ podman images 
+REPOSITORY                         TAG         IMAGE ID      CREATED      SIZE
+registry.redhat.io/rhel9/httpd-24  latest      e984ac2f8edc  12 days ago  410 MB
+```

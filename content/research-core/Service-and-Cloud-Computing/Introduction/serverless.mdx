@@ -1,0 +1,99 @@
+---
+title: "Serverless"
+description: ""
+parent: Introduction
+grand_parent: Service and Cloud Computing
+order: 13
+completed: true
+---
+
+
+## Serverless Computing
+
+## AWS Lambda
+* AWS Lambda is a serverless offering from Amazon Web Services (AWS). Lambda is a compute service that lets you run code without provisioning or managing servers. 
+* Using Lambda, you can deploy your code as Lambda functions which are executed only when needed. 
+* Lambda handles the provisioning and scaling of the compute infrastructure required to execute the functions.
+* The execution of Lambda functions is triggered in response to events.
+
+![](https://sufqavlxovkf8wxj.public.blob.vercel-storage.com/Screenshot%202025-01-03%20at%2007.31.29-Lqvrok3JA0ynhEhsRoK0cuo7dB1aOV.png)
+
+## Serverless Design Patterns
+
+* The serverless design patterns provide solutions to common challenges when building serverless applications. 
+* Each pattern is designed to address specific concerns, such as decoupling, scalability, and maintainability, and can be combined to create robust and flexible serverless architectures.
+    * Asynchronous Processing with Messaging Queues
+    * Load Balancing with Multiple Consumers
+    * Priority Queues
+    * Command Pattern
+    * Fan-Out Pattern
+    * Pipes and Filters
+
+### Asynchronous Processing with Messaging Queues
+![](https://sufqavlxovkf8wxj.public.blob.vercel-storage.com/Screenshot%202025-01-03%20at%2007.37.11-HU24ADQ4qikEaKTktqDH1HUHR9kJdf.png)
+* Objective: Decouple components by allowing them to communicate asynchronously through a messaging queue.
+* Implementation: Functions publish messages to a queue, and other functions subscribe to that queue for processing. This ensures that the producer and consumer functions are independent of each other's execution timelines.
+* Messaging queues can be used between the data producers and data consumers for asynchronous processing or load leveling. 
+* Queues are useful for push-pull messaging where the producers push data to the queues, and the consumers pull the data from the queues.
+
+
+### Load Balancing with Multiple Consumers
+![](https://sufqavlxovkf8wxj.public.blob.vercel-storage.com/Screenshot%202025-01-03%20at%2007.37.47-USau0U0RnYAbkWS6mEMep1MjqGoPC4.png)
+* Objective: Distribute incoming workload among multiple function instances to improve performance and responsiveness.
+* Implementation: Use a load balancer to distribute events or requests to multiple instances of the same function. This pattern is especially useful for scenarios where a single function instance might struggle to handle the incoming workload efficiently.
+* While messaging queues can be used between data producer and consumer for load leveling, having multiple consumers can help in load balancing and making the system more scalable, reliable, and available. 
+* Data producers push messages to the queue, and the consumers retrieve and process the messages. 
+* Multiple consumers can make the system more robust as there is no single point of failure.
+* More consumers can be added on-demand if the workload is high. 
+* Load balancing between consumers improves the system performance as multiple consumers can process messages in parallel.
+
+### Priority Queues
+![](https://sufqavlxovkf8wxj.public.blob.vercel-storage.com/Screenshot%202025-01-03%20at%2007.38.01-mURk573Gyikm5UnleNqu7So8W72JJV.png)
+* Objective: Prioritize the processing of certain tasks over others based on their importance or urgency.
+* Implementation: Utilize a priority messaging queue where messages are assigned a priority level. Functions consuming from this queue can process higher-priority messages first, ensuring that critical tasks are handled promptly.
+* Priority Queue pattern is useful when you want to process messages with different priorities to be processed differently.
+* In a priority queue system, different queues are used for messages with different priorities, and each queue has different consumers. 
+* Multiple consumers may be used for queues designated for high priority messages.
+
+### Command Pattern
+![](https://sufqavlxovkf8wxj.public.blob.vercel-storage.com/Screenshot%202025-01-03%20at%2007.38.47-5tkvkr6xpRtfhWEN5Kc8TW58TkUDnj.png)
+* Objective: Encapsulate a request as an object, allowing for parameterization, queuing, and the ability to support undo operations.
+* Implementation: Define commands as serverless functions and use a messaging or event-driven approach to invoke these commands. This pattern is useful for maintaining an audit trail, handling retries, and supporting undo or redo operations.
+* Command Pattern is useful when you want to decouple a sender or client who invokes a certain operation from a receiver or worker who performs the operation.
+
+### Fan-Out Pattern
+![](https://sufqavlxovkf8wxj.public.blob.vercel-storage.com/Screenshot%202025-01-03%20at%2007.39.21-MI0w5BMVPFPRqZwuoCAKbaiac6I3SM.png)
+* Objective: Broadcast an event to multiple functions or services for parallel processing.
+* Implementation: When an event occurs, publish it to a topic or exchange, and multiple functions subscribe to that topic. Each subscribing function processes the event independently, enabling parallel and distributed processing.
+* The Fan-Out pattern is useful when you want to perform multiple actions or invoke multiple services or functions, while the event source supports only a single target.
+* In such a case, you can use a publish-subscribe messaging or a push notification system as the entry point, where the event source pushes a message to the entry point which invokes all the subscribed services or functions.
+
+### Pipes & Filters
+![](https://sufqavlxovkf8wxj.public.blob.vercel-storage.com/Screenshot%202025-01-03%20at%2007.39.49-ObWGfu3MsPNODKhcgec8Rj3gg4cnXy.png)
+* Objective: Break down a complex task into a series of smaller, independent processing steps.
+* Implementation: Chain together multiple functions, each responsible for a specific processing step. The output of one function serves as the input to the next function in the pipeline. This pattern is useful for modularizing and reusing components.
+* In many big data applications, a complex data processing task can be split into a series of distinct tasks to improve the system performance, scalability, and reliability. 
+* This pattern of splitting a complex task into a series of distinct tasks is called the Pipes and Filters pattern, where pipes are the connections between the ﬁlters (processing components).
+
+## Push and Pull Models of Invocation
+![](https://sufqavlxovkf8wxj.public.blob.vercel-storage.com/Screenshot%202025-01-03%20at%2007.42.14-xXTejgycxKcjScCHi3N5cdNybmyFLe.png)
+* Lambda functions are invoked by event sources which can be an AWS service or a custom application that publishes events. The event-based invocation has two modes: push and pull.
+* In the push model, an AWS service (such as S3) publishes events which invoke the lambda functions. 
+* The pull model works for poll-based sources (Kinesis, DynamoDB streams, and SQS queues). In the pull model AWS Lambda polls the source and then invokes the Lambda function when records are detected on that source. 
+
+## Cold and Warm Functions
+* When a function has not been executed for a long time or is being executed for the first time, a new container has to be created, and the execution environment has to be initialized. This is called a cold start. 
+* Cold start can result in a higher latency as a new container has to be initialized. 
+* The cloud provider may reuse the container for subsequent invocations of the same functions within a short period. 
+* In this case, the function is said to be warm and takes much less time to execute than a cold start. 
+* To reduce the execution time of functions and avoid cold starts, you can keep the functions warm by invoking them periodically.
+
+### Case Study: Serverless Photo Gallery Application
+* The application has a static front end implemented in HTML, Javascript, and CSS. 
+* The static files of the application are served through an S3 bucket enabled for static website hosting. 
+* The application backend has a REST API implemented using Amazon API Gateway and Lambda functions. 
+* Amazon Cognito is used for user authentication. 
+* Photos uploaded to the application are stored in an Amazon S3 bucket. 
+* The records of photos are maintained in a DynamoDB table.
+
+![](https://sufqavlxovkf8wxj.public.blob.vercel-storage.com/Screenshot%202025-01-03%20at%2007.44.05-SGTpxx3aT3gEwb4Nn7Z4P6KdRDzxfk.png)

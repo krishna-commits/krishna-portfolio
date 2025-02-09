@@ -1,0 +1,55 @@
+---
+title: "Lesson 1.8: Create, delete, copy, and move files and directories"
+description: 
+date: "2024-04-04"
+parent: "Chapter 1: Understand and use essential tools"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 8
+completed: true
+---
+
+## Create folder & files
+```bash
+[sanjeeb@server folder]$ mkdir folder1
+[sanjeeb@server folder]$ ls
+folder1
+[sanjeeb@server folder]$ touch file1
+[sanjeeb@server folder]$ ls
+file1  folder1
+```
+
+## Delete files & folders   
+```bash
+[sanjeeb@server folder]$ ls
+file1  file2  file3  file4  file5  folder1
+
+[sanjeeb@server folder]$ rm -rf file*
+[sanjeeb@server folder]$ ls
+folder1
+
+[sanjeeb@server folder]$ rm -rf folder*
+[sanjeeb@server folder]$ ls
+```
+
+## Copy files 
+```bash /image.png/
+[sanjeeb@server ~]$ ls
+Desktop  Documents  Downloads  folder  image.png  Marketing  Music  Pictures  Public  Scripts  Templates  test  Videos
+
+[sanjeeb@server ~]$ cp /home/sanjeeb/image.png /home/sanjeeb/folder/
+[sanjeeb@server ~]$ ls /home/sanjeeb/folder/
+file1  folder1  image.png
+```
+
+## Move files
+```bash /file2/
+[sanjeeb@server ~]$ touch file2
+[sanjeeb@server ~]$ ls
+Desktop    Downloads  folder     Marketing  Pictures  Scripts    test
+Documents  file2      image.png  Music      Public    Templates  Videos
+[sanjeeb@server ~]$ mv /home/sanjeeb/file2 /home/sanjeeb/folder/
+[sanjeeb@server ~]$ ls /home/sanjeeb/folder/
+file1  file2  folder1  image.png
+[sanjeeb@server ~]$ ls /home/sanjeeb/
+Desktop  Documents  Downloads  folder  image.png  Marketing  Music  Pictures  Public  Scripts  Templates  test  Videos
+```

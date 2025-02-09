@@ -1,0 +1,32 @@
+---
+title: "Lesson 9.8: Use boolean settings to modify system SELinux settings" 
+description:
+date: "2024-04-04"
+parent: "Chapter 9: Manage security"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 8
+completed: true
+---
+
+## Not Important for examination
+
+### Viewing SELinux Boolean Status 
+```bash 
+[root@server ~]# getsebool -a 
+abrt_anon_write --> off
+abrt_handle_event --> off
+abrt_upload_watch_anon_write --> on
+...
+```
+
+### Enable or disable SELinux Boolean parameter
+```bash 
+[root@server ~]# setsebool -P ftpd_full_access=1 
+[root@server ~]# getsebool -a | grep ftpd_full_access 
+ftpd_full_access --> on
+
+[root@server ~]# setsebool -P ftpd_full_access=0
+[root@server ~]# getsebool -a | grep ftpd_full_access 
+ftpd_full_access --> off
+
+```

@@ -1,0 +1,260 @@
+---
+title: "Exercise 2: Disk Management - Managing Logical Volume"
+description: Here are some key issues pertaining to managing logical volumes that have been addressed and are crucial for exam preparation.
+date: "2024-04-02"
+parent: "Chapter 4: Configure local storage"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 7
+completed: true
+---
+
+## Managing Logical Volume
+
+### Q1. Create a volume group named pisvg of 1GB into the disk /dev/sdc. Make sure that the extent size is of 8MB while creating the volume group.
+
+```bash /pisvg/
+
+# First check the details of the the disk, we can see that no file system is present.
+[root@server ~]# blkid /dev/nvme0n3 
+[root@server ~]# lsblk | grep nvme0n3
+nvme0n3     259:7    0    6G  0 disk 
+
+
+[root@server ~]# pvcreate /dev/nvme0n3p1 
+[root@server ~]# blkid /dev/nvme0n3p1
+/dev/nvme0n3: UUID="mRBaPO-mXau-vjS3-cbwe-Uk39-ArGJ-xwoir5" TYPE="LVM2_member"
+[root@server ~]# pvs 
+  PV             VG    Fmt  Attr PSize    PFree   
+  /dev/nvme0n1p3 cs    lvm2 a--    18.41g       0 
+  /dev/nvme0n3p1 pisvg lvm2 a--  1016.00m 1016.00m
+
+
+[root@server ~]# vgcreate -s 8M pisvg /dev/nvme0n3p1 
+[root@server ~]# vgdisplay 
+  --- Volume group ---
+  VG Name               pisvg
+  System ID             
+  Format                lvm2
+  Metadata Areas        1
+  Metadata Sequence No  1
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                0
+  Open LV               0
+  Max PV                0
+  Cur PV                1
+  Act PV                1
+  VG Size               1016.00 MiB
+  PE Size               8.00 MiB
+  Total PE              127
+  Alloc PE / Size       0 / 0   
+  Free  PE / Size       127 / 1016.00 MiB
+  VG UUID               XxSDbc-ErV1-U1YL-MMds-a04i-jXOA-LiaO38
+
+```
+
+### Q2. Create a logical volume named pislv1 of 200MB, format it with XFS filesystem and mount it permanently on /pisdata2 directory.
+
+```bash 
+# Creating LV from VG with size 200M and name pislv1 
+[root@server ~]# lvcreate -n pislv1 -L 200M pisvg 
+  Logical volume "pislv1" created.
+
+[root@server ~]# lvs 
+  LV     VG    Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  root   cs    -wi-ao----  16.41g                                                    
+  swap   cs    -wi-ao----   2.00g                                                    
+  pislv1 pisvg -wi-a----- 200.00m  
+
+[root@server ~]# lsblk 
+NAME             MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+sr0               11:0    1 1024M  0 rom  
+nvme0n1          259:0    0   20G  0 disk 
+├─nvme0n1p1      259:1    0  600M  0 part /boot/efi
+├─nvme0n1p2      259:2    0    1G  0 part /boot
+└─nvme0n1p3      259:3    0 18.4G  0 part 
+  ├─cs-root      253:0    0 16.4G  0 lvm  /
+  └─cs-swap      253:1    0    2G  0 lvm  [SWAP]
+nvme0n2          259:4    0    5G  0 disk 
+├─nvme0n2p1      259:5    0    1G  0 part /pisdata1
+└─nvme0n2p2      259:6    0  512M  0 part [SWAP]
+nvme0n3          259:7    0    6G  0 disk 
+└─nvme0n3p1      259:9    0    1G  0 part 
+  └─pisvg-pislv1 253:2    0  200M  0 lvm  
+
+[root@server ~]# blkid /dev/pisvg/pislv1 
+
+# Making XFS File system
+[root@server ~]# mkfs.xfs /dev/pisvg/pislv1 
+Filesystem should be larger than 300MB.
+Log size should be at least 64MB.
+Support for filesystems like this one is deprecated and they will not be supported in future releases.
+meta-data=/dev/pisvg/pislv1      isize=512    agcount=4, agsize=12800 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=1, sparse=1, rmapbt=0
+         =                       reflink=1    bigtime=1 inobtcount=1 nrext64=0
+data     =                       bsize=4096   blocks=51200, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0, ftype=1
+log      =internal log           bsize=4096   blocks=1368, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+
+# Cheking the file system 
+[root@server ~]# blkid /dev/pisvg/pislv1 
+/dev/pisvg/pislv1: UUID="211824be-d4db-47b4-9ee1-c69f7d60677d" TYPE="xfs"
+
+# Mounting Permanently 
+# Add the following line in the /etc/fstab 
+[root@server ~]# vim /etc/fstab
+/dev/pisvg/pislv1                               /pisdata3       xfs     defaults        0       0
+
+[root@server ~]# mount -a 
+mount: (hint) your fstab has been modified, but systemd still uses
+       the old version; use 'systemctl daemon-reload' to reload.
+[root@server ~]# systemctl daemon-reload 
+
+[root@server ~]# lsblk 
+NAME             MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+sr0               11:0    1 1024M  0 rom  
+nvme0n1          259:0    0   20G  0 disk 
+├─nvme0n1p1      259:1    0  600M  0 part /boot/efi
+├─nvme0n1p2      259:2    0    1G  0 part /boot
+└─nvme0n1p3      259:3    0 18.4G  0 part 
+  ├─cs-root      253:0    0 16.4G  0 lvm  /
+  └─cs-swap      253:1    0    2G  0 lvm  [SWAP]
+nvme0n2          259:4    0    5G  0 disk 
+├─nvme0n2p1      259:5    0    1G  0 part /pisdata1
+└─nvme0n2p2      259:6    0  512M  0 part [SWAP]
+nvme0n3          259:7    0    6G  0 disk 
+└─nvme0n3p1      259:9    0    1G  0 part 
+  └─pisvg-pislv1 253:2    0  200M  0 lvm  /pisdata3
+
+```
+
+### Q3. Create another logical volume named pislv2 of 40 extents, format it with EXT3 filesystem and mount it on /pisdata3 directory permanently.
+
+```bash 
+# Creating a logical volume (LV) named pislv2 of 40 extents
+[root@server ~]# lvcreate -n pislv2 -L 40M pisvg 
+  Logical volume "pislv2" created.
+
+[root@server ~]# lvs 
+  LV     VG    Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  root   cs    -wi-ao----  16.41g                                                    
+  swap   cs    -wi-ao----   2.00g                                                    
+  pislv1 pisvg -wi-ao---- 200.00m                                                    
+  pislv2 pisvg -wi-a-----  40.00m    
+
+# Format the logical volume (LV) with EXT3 filesystem
+[root@server ~]# mkfs.ext3 /dev/pisvg/pislv2 
+mke2fs 1.46.5 (30-Dec-2021)
+Creating filesystem with 40960 1k blocks and 10240 inodes
+Filesystem UUID: 5bf2dac6-966e-4595-9c65-894b4e7956e7
+Superblock backups stored on blocks: 
+	8193, 24577
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Creating journal (4096 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+[root@server ~]# blkid /dev/pisvg/pislv2 
+/dev/pisvg/pislv2: UUID="5bf2dac6-966e-4595-9c65-894b4e7956e7" SEC_TYPE="ext2" TYPE="ext3"
+
+# Mount the logical volume (LV) on /pisdata3 directory permanently
+# Add the following line below 
+[root@server ~]# vim /etc/fstab 
+/dev/pisvg/pislv2				/pisdata3 	ext4	defaults	0	0
+
+[root@server ~]# mount -a 
+mount: (hint) your fstab has been modified, but systemd still uses
+       the old version; use 'systemctl daemon-reload' to reload.
+[root@server ~]# systemctl daemon-reload 
+
+[root@server ~]# lsblk
+NAME             MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+sr0               11:0    1 1024M  0 rom  
+nvme0n1          259:0    0   20G  0 disk 
+├─nvme0n1p1      259:1    0  600M  0 part /boot/efi
+├─nvme0n1p2      259:2    0    1G  0 part /boot
+└─nvme0n1p3      259:3    0 18.4G  0 part 
+  ├─cs-root      253:0    0 16.4G  0 lvm  /
+  └─cs-swap      253:1    0    2G  0 lvm  [SWAP]
+nvme0n2          259:4    0    5G  0 disk 
+├─nvme0n2p1      259:5    0    1G  0 part /pisdata1
+└─nvme0n2p2      259:6    0  512M  0 part [SWAP]
+nvme0n3          259:7    0    6G  0 disk 
+└─nvme0n3p1      259:9    0    1G  0 part 
+  ├─pisvg-pislv1 253:2    0  200M  0 lvm  /pisdata3
+  └─pisvg-pislv2 253:3    0   40M  0 lvm  /pisdata3
+
+```
+
+### Q4. Resize of the logical volume pislv1 to 400MB.
+
+```bash {5,16} /lvextend/
+[root@server ~]# lvs
+  LV     VG    Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  root   cs    -wi-ao----  16.41g                                                    
+  swap   cs    -wi-ao----   2.00g                                                    
+  pislv1 pisvg -wi-ao---- 200.00m                                                    
+  pislv2 pisvg -wi-ao---- 400.00m        
+
+[root@server ~]# lvextend -L +200M /dev/pisvg/pislv1
+  Size of logical volume pisvg/pislv1 changed from 200.00 MiB (25 extents) to 400.00 MiB (50 extents).
+  Logical volume pisvg/pislv1 successfully resized.
+
+[root@server ~]# lvs 
+  LV     VG    Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  root   cs    -wi-ao----  16.41g                                                    
+  swap   cs    -wi-ao----   2.00g                                                    
+  pislv1 pisvg -wi-ao---- 400.00m                                                    
+  pislv2 pisvg -wi-ao---- 400.00m   
+```
+
+### Q5. Resize the logical volume pislv2 to 1200MB. If there is no sufficient free space in the VG to extend the logical volume, then use the disk /dev/sdd to extend size of the VG.
+
+```bash {11,18,28,39}
+# Creating a Physical Volume 
+[root@server ~]# pvcreate /dev/nvme0n4 
+  Physical volume "/dev/nvme0n4" successfully created.
+[root@server ~]# blkid /dev/nvme0n4 
+/dev/nvme0n4: UUID="roiwO7-OG8m-Ft7e-5Edn-Ygg5-Ehep-Qmsx5q" TYPE="LVM2_member"
+# Viewing the created PV
+[root@server ~]# pvs 
+  PV             VG    Fmt  Attr PSize    PFree  
+  /dev/nvme0n1p3 cs    lvm2 a--    18.41g      0 
+  /dev/nvme0n3p1 pisvg lvm2 a--  1016.00m 216.00m
+  /dev/nvme0n4         lvm2 ---     5.00g   5.00g
+
+# Extending the VG to the Created PV
+# Viewing the previous VG
+[root@server ~]# vgs 
+  VG    #PV #LV #SN Attr   VSize    VFree  
+  cs      1   2   0 wz--n-   18.41g      0 
+  pisvg   1   2   0 wz--n- 1016.00m 216.00m         # Previously 1GiB
+
+# Extending the VG 
+[root@server ~]# vgextend pisvg /dev/nvme0n4 
+  Volume group "pisvg" successfully extended
+
+# Viewing the extended VG
+[root@server ~]# vgs
+  VG    #PV #LV #SN Attr   VSize  VFree
+  cs      1   2   0 wz--n- 18.41g    0 
+  pisvg   2   2   0 wz--n-  5.98g 5.20g             # Extended to 5.98GiB, by adding 5GiB of nvme0n4
+
+# Now resizing the pisvg2 to the required capacity 1200M
+[root@server ~]# lvextend -L +1000M /dev/pisvg/pislv2 
+  Size of logical volume pisvg/pislv2 changed from 200.00 MiB (25 extents) to 1.17 GiB (150 extents).
+  Logical volume pisvg/pislv2 successfully resized.
+[root@server ~]# lvs 
+  LV     VG    Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  root   cs    -wi-ao----  16.41g                                                    
+  swap   cs    -wi-ao----   2.00g                                                    
+  pislv1 pisvg -wi-ao---- 200.00m                                                    
+  pislv2 pisvg -wi-a-----   1.17g                   # Resized to 1200M 
+```
+

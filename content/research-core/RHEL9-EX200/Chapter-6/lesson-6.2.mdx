@@ -1,0 +1,25 @@
+---
+title: "Lesson 6.2: Start and stop services and configure services to start automatically at boot"
+description:
+date: "2024-04-04"
+parent: "Chapter 6: Deploy, configure, and maintain systems"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 2
+completed: true
+---
+
+### Start a Service 
+Syntax: systemctl start < service_name >
+```bash 
+[root@serverC ~]# systemctl start httpd
+```
+### Stop a Service
+Syntax: systemctl stop < service_name >
+```bash 
+[root@serverC ~]# systemctl stop httpd
+```
+### Enable a Service to Start Automatically at Boot
+Syntax: systemctl enable < service_name >
+```bash 
+[root@serverC ~]# systemctl enable httpd
+```

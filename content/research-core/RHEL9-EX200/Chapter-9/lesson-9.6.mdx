@@ -1,0 +1,31 @@
+---
+title: "Lesson 9.6: Restore default file contexts"
+description:
+date: "2024-04-04"
+parent: "Chapter 9: Manage security"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 6
+---
+
+## Changing SELinux Security Context of a File/dir
+Syntax : `chcon -t <new context> <file/dir>`
+```bash
+# METHOD 1 : 
+[root@server html]# ls -Z index.html 
+unconfined_u:object_r:admin_home_t:s0 index.html
+
+[root@server html]# chcon -t httpd_sys_content_t /var/www/html/index.html 
+
+[root@server html]# ls -Z index.html 
+unconfined_u:object_r:httpd_sys_content_t:s0 index.html
+
+# METHOD 2 :
+[root@server html]# ls -Z index.html 
+system_u:object_r:root_t:s0 index.html
+
+[root@server html]# chcon --reference=/var/www/html /var/www/html/index.html 
+
+[root@server html]# ls -Z index.html 
+system_u:object_r:httpd_sys_content_t:s0 index.html
+
+```

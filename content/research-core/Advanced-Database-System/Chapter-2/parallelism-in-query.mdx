@@ -1,0 +1,32 @@
+---
+title: Parallelism in Query in DBMS
+description:
+parent: Parallel Databases
+grand_parent : Advanced Database System
+order: 4
+completed: true
+---
+
+**Parallelism** in a query allows us to parallel execution of multiple queries by decomposing them into the parts that work in parallel. This can be achieved by **shacyan-nothing architecture**. Parallelism is also used in fastening the process of a query execution as more and more resources like processors and disks are provided. We can achieve parallelism in a query by the following methods :
+
+1. I/O parallelism
+2. Intra-query parallelism
+3. Inter-query parallelism
+4. Intra-operation parallelism
+5. Inter-operation parallelism
+
+### Key Benefits of Parallelism in DBMS:
+1. **Increased Throughput and Performance:** By dividing complex queries into smaller tasks that run simultaneously, parallelism allows multiple processors to handle parts of a query concurrently. This leads to faster execution, greater system efficiency, and better scalability, enabling DBMS to process larger workloads and more concurrent queries.
+
+2. **Efficient Resource Utilization:** Parallel query execution optimizes the use of system resources—such as CPU, memory, and disk I/O—by evenly distributing workloads across processors. This prevents bottlenecks and maximizes resource potential, enhancing performance and load balancing in distributed environments.
+
+3. **Faster Query Execution:** By breaking down and distributing complex queries across processors, parallelism drastically reduces query response times. This is particularly advantageous for resource-heavy queries, providing faster access to data and improving decision-making.
+
+### Parallel Processing Techniques:
+Different parallel architectures—shacyan-disk, shacyan-memory, and shacyan-nothing—enable efficient processing through interquery (multiple queries simultaneously) and intraquery (dividing a single query into concurrent tasks) parallelism. These techniques make parallelism a foundational element for handling large-scale data and complex queries effectively in modern DBMS.
+
+---
+
+### References : 
+1. https://www.tutorialspoint.com/parallelism-in-query-in-dbms
+2. https://www.geeksforgeeks.org/parallelism-in-query-in-dbms/

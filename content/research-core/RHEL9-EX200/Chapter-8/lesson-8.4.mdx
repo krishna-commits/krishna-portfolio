@@ -1,0 +1,52 @@
+---
+title: "Lesson 8.4: Configure superuser access"
+description:
+date: "2024-04-04"
+parent: "Chapter 8: Manage users and groups"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 4
+completed: true
+---
+
+Their are various ways to provide superuser access .
+
+## Method I : Modify visudo
+```bash
+[boss@sanjeeb etc]$ sudo visudo 
+sanjeeb         ALL=(ALL)       NOPASSWD: ALL
+boss            ALL=(ALL)       NOPASSWD: ALL
+
+User_Alias      JUNIORADMINS=bharat,salesman1
+Cmnd_Alias      LIMITEDCMD=/usr/sbin/useradd,/usr/bin/passwd
+
+# To allow only LIMITEDCMD to the users
+JUNIORADMINS    ALL=LIMITEDCMD
+
+# To allow all commands except the LIMITEDCMD
+JUNIORADMINS    ALL=ALL,!JUNIORADMINS
+
+
+[bharat@sanjeeb ~]$ sudo useradd ram 
+[bharat@sanjeeb ~]$ sudo passwd ram 
+Changing password for user ram.
+passwd: all authentication tokens updated successfully.
+
+```
+
+## Method II: Adding a user to the 'wheel' group `usermod -a -G wheel user` will effectively give him superuser access
+```bash 
+[root@sanjeeb ~]# usermod -aG wheel manager 
+
+[manager@sanjeeb ~]$ sudo useradd man1 
+```
+
+## Method III: 
+```bash
+# Create a file of the user's name in /etc/sudoers.d
+[root@sanjeeb sudoers.d]# pwd
+/etc/sudoers.d
+[root@sanjeeb sudoers.d]# cat manager 
+manager		ALL=(ALL)	NOPASSWD: ALL
+
+[manager@sanjeeb ~]$ sudo useradd man3 
+```

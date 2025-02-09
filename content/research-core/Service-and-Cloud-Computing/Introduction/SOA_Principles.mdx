@@ -1,0 +1,80 @@
+---
+title: "SOA Principles"
+description: ""
+parent: Introduction
+grand_parent: Service and Cloud Computing
+order: 4
+completed: true
+---
+
+![Figure 1: SOA Principles](https://images.spiceworks.com/wp-content/uploads/2023/04/28084201/service-oriented-architecture-principles.png)
+
+* **Standardized Service Contracts**
+    * Services share a formal contract
+    * Services adhere to a communications agreement as defined collectively by one or more service description documents 
+    * For services to interact, they need not share anything but a formal contract that describes each service and defines the **terms of information exchange.**
+    * **Example :** A payment service might define a contract specifying the API endpoint, required input fields like credit card details, and expected responses such as success or error messages. Consumers of this service only need to conform to the API specification to use it, regardless of how the payment logic is implemented.
+* **Loose Coupling**
+    * Services know only what is necessary about each other, such as the interface or contract. They do not rely on the internal implementations or states of other services.
+    * Services maintain a relationship that minimizes dependencies and only maintain an awareness of each other
+    * Services must be designed to interact without the need for tight, **cross-service dependencies**
+    * A service is defined solely by an implementation-independent interface
+    * Services should be able to change their implementation **without impacting service consumers**
+    * **Example:** A user authentication service can validate user credentials without being tightly linked to a profile management service. If the authentication logic changes, it won't affect the profile service, as long as the service contract remains unchanged.
+* **Abstraction**
+    * Abstraction ensures that a service hides its internal implementation details from the outside world. The only information visible to consumers is what the service contract specifies.
+    * The only part of a service that is visible to the outside world is what is exposed via the service contract. Underlying logic, beyond what is expressed in the descriptions that comprise the contract, is invisible and irrelevant to service requestors.
+    * **Example:** A weather forecasting service might expose an API that provides temperature data for a given location. Consumers don't need to know how the service collects or processes meteorological data; they only need the API to retrieve results.
+* **Reusability**
+    * SOA emphasizes designing services with the intent of reuse. A well-designed service can be used across multiple applications or systems.
+    * Regardless of whether immediate reuse opportunities exist; services are designed to support potential reuse
+    * Consequences
+        * Well factored service interfaces: Anticipate usage scenarios and consequently facilitate reuse
+        * Poorly factored service interfaces: Hinder reuse and encourage functional duplication, which can result in architectural decay (loss of architectural integrity over time)
+    * **Example:** A service for generating PDF documents can be reused by various systems, such as invoicing, reporting, or certificate generation, without requiring duplicate implementations.
+* **Autonomy**
+    * Services in SOA are self-contained and govern the logic they encapsulate. They operate independently within their defined boundaries.
+    * A service has full control over its internal logic and data. It doesn’t rely on external services to perform its core functions. This independence ensures reliability and predictability.
+    * The logic governed by a service resides within an explicit boundary. The service has control within this boundary and is not dependent on other services for it to execute its governance.
+    * **Example:** A shopping cart service in an e-commerce system manages its own logic for adding, removing, or modifying items. It doesn’t depend on other services like inventory or pricing for these operations, though it might communicate with them for additional data.
+* **Statelessness**
+    * Statelessness means that services do not retain state information across multiple requests. Each request is treated as independent, with all necessary data provided during the interaction.
+    * Services should be designed to maximize statelessness even if that means deferring state management elsewhere.
+    * Service implementations should not hold conversational state across multiple requests.
+    * Communicate complete information at each request.
+    * Each operation should be functionally isolated (separate, independent).
+    * **Example:** A search service that processes queries does not store information about the user’s previous searches. Each query is self-contained, including all the parameters required for execution.
+* **Discoverability**
+    * Services are designed to be easily located and understood by potential consumers. They provide descriptive metadata to facilitate their discovery and usage.
+    * Discovery mechanisms (such as service registries or directories) help consumers identify available services, understand their functionality, and determine how to integrate with them.
+    * **Example**: A service registry in a microservices architecture lists all available services, such as user authentication, product catalog, or order management, along with their respective APIs and documentation.
+* **Composability**
+    * SOA allows individual services to be combined or orchestrated to create more complex functionalities.
+    * Collections of services can be coordinated and assembled to form **composite services**
+    * Services may compose other services. This allows logic to be represented at different levels of granularity and promotes reusability and the creation of abstraction layers.
+    * **Example:** In an online travel booking system, individual services like flight booking, hotel reservation, and payment processing can be orchestrated to form a composite service that provides end-to-end booking functionality.
+
+### Relationship between service reusability and other SOA principles:
+* **Reusability and Loose Coupling**
+    * Relationship: Reusability and loose coupling are closely linked because services must minimize dependencies to remain reusable.
+    * Example: A payment service designed for reusability should expose its functionality through standardized APIs. This prevents the service from relying on the internal structure of any specific application, ensuring loose coupling.
+
+* **Reusability and Autonomy**
+    * Relationship: Autonomy supports reusability by ensuring that services control their internal logic and dependencies.
+    * Example: An inventory service that autonomously manages product stock levels is more reusable across e-commerce platforms. However, it must maintain its boundaries without becoming overly complex.
+
+* **Reusability and Abstraction**
+    * Relationship: Abstraction complements reusability by hiding implementation details behind a service interface. This allows services to be reused without exposing their inner workings.
+    * Example: A data analytics service exposes a high-level API to generate reports but hides the logic for data aggregation and visualization. This abstraction makes it reusable across multiple applications.
+* **Reusability and Statelessness**
+    * Relationship: Statelessness enhances reusability by ensuring that services do not carry contextual information between requests. This makes them more adaptable to various scenarios.
+    * Example: An authentication service generates tokens without maintaining state about user sessions, making it reusable across web, mobile, and desktop applications.
+* **Reusability and Standardized Service Contracts**
+    * Relationship: Reusability relies on standardized contracts to define how services interact with consumers. These contracts ensure that services are predictable and interoperable.
+    * Example: A weather data service exposes a standardized REST API contract. Any client, regardless of its platform, can consume the service as long as it adheres to the contract.
+* **Reusability and Composability**
+    * Relationship: Reusable services are building blocks for composable architectures, where multiple services can be combined to deliver complex functionality.
+    * Example: A reusable payment service and a reusable shipping service can be composed to build an e-commerce checkout workflow.
+* **Reusability and Discoverability**
+    * Relationship: Discoverability enhances reusability by making services easier to locate and understand for potential reuse.
+    * Example: A reusable API for image processing is cataloged in a service registry with clear descriptions, enabling developers to quickly find and integrate it.

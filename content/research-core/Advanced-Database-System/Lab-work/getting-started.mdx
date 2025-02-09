@@ -1,0 +1,91 @@
+---
+title: SQL Environment Commands
+description: Commands for navigating, displaying information, and managing the SQL environment in Oracle SQL.
+parent: Lab Work
+grand_parent: Advanced Database System
+order: 2
+completed: true
+---
+
+### Getting the Previous Command
+
+Use the following command to retrieve the current system date from the Oracle database:
+
+```bash
+SQL> select sysdate from dual;
+
+SYSDATE
+---------
+03-NOV-24
+
+SQL> /
+
+SYSDATE
+---------
+03-NOV-24
+```
+
+### Clearning the Screen
+To clear the screen, use the following command:
+```bash 
+SQL> clear screen;
+```
+
+### View database name
+```bash 
+
+SQL> SELECT name FROM v$database;
+
+NAME
+---------
+FREE
+```
+* The output you received (FREE) is the name of the current database you're connected to. It means that the database you’re working with is named FREE.
+* In Oracle, the v$database view provides the name and other metadata for the current database instance. The name FREE was likely assigned to this database during its creation, but it doesn't have any special significance in Oracle beyond being its identifier.
+
+
+### Create Table 
+```bash 
+SQL> CREATE TABLE TOYS (
+  2  TOY_NAME VARCHAR2(100),
+  3  WEIGHT NUMBER
+  4  );
+
+Table created.
+```
+* The above command creates a new table named TOYS with two columns: TOY_NAME and WEIGHT
+
+### Insert Command 
+```bash
+SQL> INSERT INTO TOYS VALUES ('Dog',1234);
+
+1 row created.
+```
+
+### Select Syntax
+```bash
+SQL> SELECT * FROM TOYS ;
+
+TOY_NAME
+--------------------------------------------------------------------------------
+    WEIGHT
+----------
+Dog
+      1234
+
+SQL> SELECT TOY_NAME FROM TOYS ;
+
+TOY_NAME
+--------------------------------------------------------------------------------
+Dog
+
+
+SQL> SELECT TOY_NAME,WEIGHT FROM TOYS ;
+
+TOY_NAME
+--------------------------------------------------------------------------------
+    WEIGHT
+----------
+Dog
+      1234
+``` 

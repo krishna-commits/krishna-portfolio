@@ -1,0 +1,44 @@
+---
+title: Setting up MSSQL using docker in macos
+description:
+parent: Lab Work
+grand_parent : Advanced Database System
+order: 2
+completed: true
+---
+
+```bash 
+term@mac ~ $ docker pull mcr.microsoft.com/azure-sql-edge:latest
+```
+
+```bash 
+term@mac ~ $ docker pull mcr.microsoft.com/azure-sql-edge:latest
+latest: Pulling from azure-sql-edge
+c58359f0ed07: Pull complete
+f9c126982b5c: Pull complete
+589ba23f4d73: Pull complete
+0c037bc6ac64: Pull complete
+ce1f004ff642: Pull complete
+4e0b1d630a9d: Pull complete
+cf712679c0f8: Pull complete
+7f5ed2ab3c5b: Pull complete
+56e4c7793de3: Pull complete
+89f8b7dcee44: Pull complete
+82fa393cf611: Pull complete
+Digest: sha256:902628a8be89e35dfb7895ca31d602974c7bafde4d583a0d0873844feb1c42cf
+Status: Downloaded newer image for mcr.microsoft.com/azure-sql-edge:latest
+mcr.microsoft.com/azure-sql-edge:latest
+
+What's Next?
+  View summary of image vulnerabilities and recommendations → docker scout quickview mcr.microsoft.com/azure-sql-edge:latest
+
+```
+
+```bash 
+term@mac ~ $ docker run -e "ACCEPT_EULA=1" -e "MSSQL_SA_PASSWORD=Password123" -e "MSSQL_PID=Developer" -e "MSSQL_USER=SA" -p 1433:1433 -d --name=sql mcr.microsoft.com/azure-sql-edge
+1f1e8dcf2177d35caed2db6d2f4b6bee0799f2b2a66eced52d76305ae0181c67
+term@mac ~ $
+term@mac ~ $ docker ps
+CONTAINER ID   IMAGE                              COMMAND                  CREATED         STATUS         PORTS                              NAMES
+1f1e8dcf2177   mcr.microsoft.com/azure-sql-edge   "/opt/mssql/bin/perm…"   5 seconds ago   Up 4 seconds   1401/tcp, 0.0.0.0:1433->1433/tcp   sql
+```

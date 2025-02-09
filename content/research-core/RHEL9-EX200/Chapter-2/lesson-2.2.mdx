@@ -1,0 +1,65 @@
+---
+title: "Lesson 2.2: Use Looping constructs (for, etc.) to process file, command line input"
+description: 
+date: "2024-04-04"
+parent: "Chapter 2: Create simple shell scripts"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 2
+completed: true
+---
+### Example 1: Create users and set the password to same as the username, but expire the password in first logon.The user list should be stored in a txt file.  
+```bash
+[root@client scripts]# cat developers
+developer1
+developer2
+developer3
+developer4
+developer5
+developer6
+developer7
+developer8
+developer9
+developer10
+
+[root@client scripts]# cat developeradd.sh 
+for i in $(cat /home/sanjeeb/scripts/developers)
+do
+	useradd $i
+	echo $i | passwd --stdin $i
+	chage -d 0 $i
+done
+echo "Developers account created" 
+
+[root@client scripts]# cat /etc/passwd
+developer1:x:1003:1003::/home/developer1:/bin/bash
+developer2:x:1004:1004::/home/developer2:/bin/bash
+developer3:x:1005:1005::/home/developer3:/bin/bash
+developer4:x:1006:1006::/home/developer4:/bin/bash
+developer5:x:1007:1007::/home/developer5:/bin/bash
+developer6:x:1008:1008::/home/developer6:/bin/bash
+developer7:x:1009:1009::/home/developer7:/bin/bash
+developer8:x:1010:1010::/home/developer8:/bin/bash
+developer9:x:1011:1011::/home/developer9:/bin/bash
+```
+
+### Example 2: Deleting the recently added users 
+```bash
+[root@client scripts]# cat deleteusers.sh 
+for i in $( cut -f 1 -d: /home/sanjeeb/scripts/userslist.txt )
+do
+	userdel $i
+	echo "User $i deleted !" 
+done
+
+[root@client scripts]# deleteusers.sh 
+User developer1 deleted !
+User developer2 deleted !
+User developer3 deleted !
+User developer4 deleted !
+User developer5 deleted !
+User developer6 deleted !
+User developer7 deleted !
+User developer8 deleted !
+User developer9 deleted !
+User developer10 deleted !
+```

@@ -1,0 +1,126 @@
+---
+title: "Microservices"
+description: ""
+parent: Introduction
+grand_parent: Service and Cloud Computing
+order: 8
+completed: true
+---
+
+### Design Patterns for Microservices 
+* API Gateway Pattern 
+* Circuit Breaker Pattern 
+* Service Discovery Pattern 
+* Strangler Fig Pattern
+
+---
+
+### API Gateway Pattern
+The API Gateway Pattern is a design approach where an API Gateway acts as a single entry point for client requests in a microservices architecture. It simplifies interactions by managing and routing requests to the appropriate microservices, handling common tasks, and ensuring efficient communication.
+
+#### Key Features
+* **Single Entry Point:** Centralized access for clients to interact with multiple microservices.
+* **Routing:** Directs requests to the right service based on predefined rules.
+* **Aggregation:** Combines responses from multiple services into one.
+* **Cross-Cutting Concerns:** Handles tasks like authentication, logging, and rate limiting.
+* **Protocol Translation:** Converts client requests to the formats required by microservices.
+
+---
+
+### Circuit Breaker Pattern 
+The Circuit Breaker Pattern is a **fault-tolerance mechanism** in microservices that prevents **non-transient failures** (persistent issues like a service being down) from causing cascading failures across the system. **Cascading failure** happens when a single service failure propagates, overwhelming other services and causing the entire system to degrade.
+
+The Circuit Breaker acts as a monitor for service interactions. If the number of errors in a service exceeds a threshold, the breaker "trips," stopping further requests and isolating the failing service. This prevents overloading the service while allowing it time to recover.
+
+#### States of a Circuit Breaker
+1. **Closed State:**
+    * Normal operation; all requests are passed to the service.
+    * Failures are counted; if they remain below the threshold, the circuit stays closed.
+2. **Open State:**
+    * Triggered when failures exceed the threshold.
+    * Requests are blocked, and fallback mechanisms (e.g., default responses) are used.
+    * The service gets time to recover without additional load.
+3. **Half-Open State:**
+    * After a cooldown period, the breaker allows limited requests to test if the service is healthy.
+    * If the service handles these requests successfully, the circuit switches back to Closed.
+    * If failures persist, it reverts to Open.
+
+#### Example: E-commerce Application Payment Service:
+If the Payment Service starts failing due to database issues (non-transient failure), the Circuit Breaker moves to Open State, redirecting users to a fallback message: “Payment service is temporarily unavailable.”
+After a cooldown, in Half-Open State, a few test requests are sent to the Payment Service.
+If successful, the Circuit Breaker moves to Closed State, resuming normal traffic. If failures persist, it returns to Open State.
+
+---
+
+## Service Discovery Pattern
+In distributed systems like microservices, services need to find and communicate with each other. The Service Discovery Pattern enables services to locate the network address of other services dynamically, avoiding hardcoding addresses.
+
+It relies on a **Service Registry**—a centralized database that maintains a list of available services and their network locations.
+
+#### Service Discovery Problem : 
+* Each instance of a service exposes a remote API such as HTTP/REST, or Thrift etc. at a particular location (host and port)
+* The number of services instances and their locations changes dynamically.
+* Virtual machines and containers are usually assigned dynamic IP addresses.
+* The number of services instances might vary dynamically. 
+    * For example, an EC2 Autoscaling Group adjusts the number of instances based on load.
+
+In a microservices architecture, services need to dynamically discover and communicate with each other. 
+The Service Discovery pattern provides mechanisms for registering services and resolving their locations at runtime, enabling dynamic service resolution and decoupling service interactions from specific network locations
+1. Client-side discovery
+    * In client-side discovery, the client is responsible for discovering and routing requests to a service instance.
+    * The client queries the service registry directly to get the list of available instances.
+    * It selects an instance (e.g., using a load-balancing algorithm like round-robin) and sends the request.
+2. Server-side discovery
+    * The client sends a request to a load balancer or API Gateway instead of directly querying the service registry.
+    * The load balancer queries the service registry, selects an appropriate service instance, and forwards the request.
+
+
+### Strangler Fig Pattern
+The Strangler Fig Pattern is a strategy for modernizing legacy applications by incrementally replacing the old system with newer, modular components. Inspired by how a strangler fig tree grows around and eventually replaces its host tree, this pattern allows for gradual transformation, minimizing risk and disruption.
+
+#### Key Principles
+* Gradual migration avoids the need for a complete system rewrite.
+* New components coexist with legacy ones during the transition.
+* Enables modernization while maintaining system functionality.
+
+## Stages of the Strangler Fig Pattern
+1. **Boundary**
+    * Objective: Define the scope for modernization.
+    * Steps:
+        * Identify specific functionalities or modules in the monolith that can be extracted.
+        * Analyze dependencies and prioritize components for migration.
+        * Outcome: A clear boundary for the initial modernization effort.
+2. **Facade**
+    * Objective: Isolate clients from underlying changes.
+    * Steps:
+        * Implement a facade that serves as an interface between clients and the monolith.
+        * The facade initially forwards all requests and responses to and from the monolith without modification.
+        * Over time, as components are migrated, the facade adapts requests and responses to support both old and new systems.
+        * Outcome: Clients are unaffected by changes, ensuring backward compatibility.
+3. Re-Architect
+    * Objective: Replace monolithic components with microservices.
+    * Steps:
+        * Design and implement new microservices for the selected functionality.
+        * Connect the new microservices to the facade.
+        * Test both legacy and new implementations simultaneously:
+        * Client requests: Sent to both the monolith and new service.
+        * Responses: Legacy responses are returned to the client; new responses are monitored to validate the new service.
+        * Outcome: Validates the new implementation without disrupting production.
+4. Cutover
+    * Objective: Transition production traffic to the new service.
+    * Steps:
+        * Once the new service is tested and meets requirements, reroute all requests to it.
+        * Retain the legacy system as a fallback for rollback scenarios.
+        * Outcome: The new service becomes the primary system, reducing reliance on the monolith.
+5. Legacy Code Deletion
+    * Objective: Remove unused legacy code.
+    * Steps:
+        * Identify components in the monolith that are fully replaced by the new system.
+        * Safely remove these legacy components.
+        * Outcome: A cleaner codebase with reduced technical debt.
+6. Remove Strangler Facade
+    * Objective: Finalize the modernization by removing transitional infrastructure.
+    * Steps:
+        * Update clients to use the new API provided by the microservices directly.
+        * Decommission the facade once all clients have migrated.
+        * Outcome: A fully modernized, microservices-based architecture.

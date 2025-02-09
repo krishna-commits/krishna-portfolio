@@ -1,0 +1,117 @@
+---
+title: Interoperation Parallelism
+description:
+parent: Parallel Databases
+grand_parent : Advanced Database System
+order: 10
+completed: true
+---
+
+
+Interoperation Parallelism in database systems refers to parallelizing multiple operations of a query simultaneously, often by dividing them across processors. It primarily includes two types: Pipelined Parallelism and Independent Parallelism.
+
+## Pipelined Parallelism
+In pipelined parallelism, operations are executed in a chain-like manner, where the output of one operation feeds directly into the next. This allows each stage in the "pipeline" to process data concurrently without waiting for the previous stage to finish processing the entire dataset. For example, in a query with multiple joins, each join operation can start processing as soon as it has enough data from the preceding join, optimizing throughput and reducing total query time.
+
+#### Example: Pipelining in a Four-Relation Join
+Let’s say we have four relations, r1, r2, r3, and r4, which need to be joined sequentially. Instead of joining all four in one long operation, pipelined parallelism allows us to break down the join into smaller operations assigned to different processors.
+
+Here's how it works:
+
+* **Stage 1:** Processor P1 performs the join of the first two relations, r1 and r2, and creates a temporary relation temp1:
+    * `temp1=r1⋈r2`
+    * As soon as temp1 has some output rows ready, it passes them directly to the next stage.
+
+* **Stage 2:** Processor P2 takes temp1 and joins it with the next relation, r3, producing temp2:
+    * `temp2=temp1⋈r3`
+    * P2 begins its computation as soon as it receives the first few rows of temp1, without waiting for the complete result of temp1.
+
+* **Stage 3:** Processor P3 then takes temp2 and joins it with the final relation, r4, producing temp3:
+    * `temp3=temp2⋈r4`
+    * Like the previous stages, P3 starts its computation as soon as it receives rows from temp2.
+
+Each processor executes independently on its portion of the pipeline, but the operations are interlinked. As soon as a processor has partial results, it passes them along to the next processor, allowing the entire set of join operations **(r1 ⋈ r2, temp1 ⋈ r3, temp2 ⋈ r4)** to progress in parallel.
+
+#### Advantages of Pipelined Parallelism
+* **Reduced Waiting Time:** Each processor can start its task as soon as it has some input, which reduces idle time.
+* **Improved Resource Utilization:** Processors remain active, processing smaller chunks of data rather than waiting for a complete result from the previous stage.
+* **Decreased Total Execution Time:** Since different parts of the join process are handled simultaneously, the overall query time is shorter.
+This pipelining method is especially beneficial for operations that can be broken down into stages where each stage produces partial results that are immediately useful to the next, such as joins in a sequence of relations.
+
+### Factors Limiting Utility of Pipeline Parallelism
+
+* **Limited Scalability with Increasing Processors**
+    * **Short Pipeline Chains:** Pipeline parallelism works best when there are multiple stages that can be executed in sequence. However, most queries have a limited number of operations that can be pipelined together, so pipeline chains often have a fixed length. This limits the number of processors that can be effectively utilized.
+    * **Diminishing Returns:** When only a few stages are available, adding more processors does not increase the speed. This is in contrast to other types of parallelism, where tasks can be split across many processors independently. Pipeline parallelism’s sequential nature means that adding processors beyond the number of stages yields no additional benefit.
+
+* **Operators That Block Pipelining**
+    * Some operations require the full set of input data before producing any output, blocking the pipeline and creating bottlenecks. Examples include:
+        * **Aggregate Functions:** Operations like sum, count, or average require access to all relevant data to compute results.
+        * **Sorting:** Sorting requires reading and organizing all tuples before outputting the sorted list.
+    * These operators disrupt the flow of the pipeline, forcing other stages to wait until they are complete, which breaks the continuous data streaming required for pipeline efficiency.
+
+* **Execution Cost Imbalance Between Operations**
+    * For pipeline parallelism to be effective, operations in the chain should ideally have similar processing times. If one operation is significantly slower, it slows down the entire pipeline, as subsequent stages must wait for data.
+    * **Bottlenecked Stages:** When one stage takes much longer than others, processors in downstream stages remain idle, reducing the overall efficiency and speedup from pipeline parallelism. This imbalance effectively limits the potential speedup that pipeline parallelism can achieve.
+
+* **High Coordination and Communication Overhead**
+    * As data is passed directly between operations in a pipeline, coordinating these transfers can introduce communication overhead. This can become a limiting factor, especially when the pipeline spans multiple processors across a distributed system.
+    * **Synchronization Costs:** Keeping operations in sync as they produce and consume data requires constant communication and synchronization, which can diminish performance gains from parallelism.
+
+## Independent Parallelism
+Independent Parallelism allows certain operations in a query to be processed independently by different processors before their results are combined in later steps. Here’s a detailed breakdown of how this form of parallelism works and its limitations:
+
+#### Example: Independent Parallelism in a Join Operation
+Consider a query that involves joining four relations:
+
+**Relations:** r1, r2, r3, r4
+**Objective:** Perform a multi-relation join, where we join r1 with r2 and r3 with r4, and then combine the results of these two joins.
+
+#### Steps in Independent Parallelism
+* **Divide the Work Across Processors:**
+    * **Processor P1 :** Assigned to compute `temp1 = r1 join r2`
+    * **Processor P2 :** Assigned to compute `temp2 = r3 join r4`
+    At this point, P1 and P2 can work independently, each focusing on their respective joins without waiting for the other.
+* **Combine Results:**
+    * **Processor P3 :** Once P1 and P2 finish their computation, P3 takes over to perform the final join between temp1 and temp2, ie, temp1 join temp2. Here, P3 must wait until both P1 and P2 complete their tasks, but this final step can be optimized by using pipelined parallelism, where P3 starts processing data from P1 and P2 as it becomes available. ie.,
+        * (When P1 and P2 complete parts of their respective joins (e.g., temp1=r1 join r2 and temp2=r3 join r4 ), they can start sending partial results to P3 as soon as they become available—even if the complete output isn’t ready yet.)
+
+---
+
+## Query Optimization 
+
+In parallel databases, query optimization is more intricate than in traditional databases due to the added complexity of managing resources across multiple processors. Here’s a breakdown of the challenges and considerations involved:
+
+### Challenges in Parallel Query Optimization
+
+* **More Complex Cost Models:**
+    * In a parallel system, cost modeling is not just about assessing the time and resources needed for operations. It also considers partitioning costs (how data is split across processors), load balancing or skew (where data or processing loads may be unevenly distributed), and resource competition (where multiple operations might compete for the same resources).
+* **Scheduling Execution:**
+    * When setting up a parallel query execution plan, there are several decisions to make:
+        * **How to Parallelize Each Operation:** Should an operation run across all processors, or just some of them?
+        * **How Many Processors to Assign:** Allocating too few processors may lead to underutilization, while too many can increase overhead from communication between processors.
+        * **What Operations to Pipeline:** Operations that can start working with partial results (e.g., pipelining) may help with speed but need careful consideration to avoid bottlenecks.
+        * **What Operations to Execute Independently:** Some operations can run in parallel without depending on others, making them good candidates for independent execution.
+        * **What Operations to Execute Sequentially:** Certain tasks may only work sequentially due to dependencies on preceding operations.
+* **Resource Allocation Challenges:**
+    * Determining the optimal number of resources (processors) for each operation is difficult. If too many processors are allocated, communication overhead can become excessive, as processors need to frequently communicate and share results, slowing down the operation.
+    * Avoiding long pipelines is crucial because, in a lengthy pipeline, the final operation may have to wait a long time to receive all its input. Meanwhile, other operations in the chain may be left waiting, leading to inefficient resource use.
+
+* **Large Number of Parallel Evaluation Plans:**
+    * The number of potential parallel execution plans grows significantly compared to sequential plans because there are many more ways to split, schedule, and parallelize tasks.
+    * Heuristics are thus necessary to reduce complexity and make feasible decisions in a reasonable time.
+
+### Heuristics for Parallel Plan Selection
+To handle the complexity of choosing an optimal parallel plan, two main heuristics are commonly applied:
+
+* **Avoid Pipelining:** Avoiding pipelining reduces the dependencies among operations, simplifying the execution. However, it may lead to suboptimal performance if pipelining could have sped up certain parts of the query.
+
+* **Full Parallelization:** Running each operation across all processors can maximize resource utilization, though it risks increasing communication overhead if processors need to frequently coordinate and exchange data.
+
+Another approach combines both sequential and parallel planning:
+
+* **Optimize Sequentially, then Parallelize:**
+    1. Start by selecting the most efficient sequential plan as a baseline.
+    2. Next, parallelize individual operations in this plan to take advantage of the available processors. This approach balances the efficiency of sequential planning with the potential speedup from parallel execution.
+
+This approach helps avoid the overwhelming number of options in a fully parallel search space by first focusing on efficient sequential execution and then incrementally adding parallelism.

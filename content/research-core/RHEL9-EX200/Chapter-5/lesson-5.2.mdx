@@ -1,0 +1,159 @@
+---
+title: "Lesson 5.2: Mount and unmount network file systems using NFS"
+description:
+date: "2024-04-04"
+parent: "Chapter 5: Create and configure file systems"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 2
+completed: true
+---
+
+## NFS 
+
+Creating two servers 
+- server
+- client
+
+#### Server Configuration
+```bash 
+[root@server ~]# hostname 
+server
+[root@server ~]# hostname -I 
+192.168.205.100 192.168.206.41 
+```
+
+#### Client Configuration
+```bash 
+[root@client ~]# hostname 
+client
+[root@client ~]# hostname -I 
+192.168.205.101 192.168.206.17 
+```
+
+# Configuring NFS Server to share folders (Not necessary for exams)
+Creating files and folders in server 
+```bash 
+[root@server pis]# tree 
+.
+├── development
+│   └── dev
+├── research
+│   └── res
+├── support
+│   └── sup
+└── trainingl
+    └── trn
+
+# Install Required Package if not installed
+[root@server pis]# rpm -q nfs-utils 
+nfs-utils-2.5.4-25.el9.aarch64
+
+# Start the Nfs service and enable 
+[root@server pis]# systemctl start nfs-server.service 
+[root@server pis]# systemctl enable nfs-server.service 
+Created symlink /etc/systemd/system/multi-user.target.wants/nfs-server.service → /usr/lib/systemd/system/nfs-server.service.
+
+# Allow nfs packets through the firewall 
+[root@server pis]# firewall-cmd --permanent  --add-service={nfs,mountd,rpc-bind}
+success
+[root@server pis]# firewall-cmd --reload 
+success
+[root@server pis]# firewall-cmd --list-all 
+public (active)
+  target: default
+  icmp-block-inversion: no
+  interfaces: ens160
+  sources: 
+  services: cockpit dhcpv6-client http mountd nfs rpc-bind ssh
+  ports: 
+  protocols: 
+  forward: yes
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: 
+
+# Share the folders with appropriate permission 
+[root@server pis]# cat /etc/exports
+# Format
+# <Path of the folder to be shared>		<allowed host>(<mount option>)
+
+/pis/training	    192.168.205.101(ro)		192.168.205.102(rw)
+/pis/support 	    192.168.205.101(rw,root,no_root_squash)
+/pis/development    192.168.205.101(rw)
+/pis/research	    192.168.205.101(rw)
+
+# Here rw is read-write
+# Here ro is read-only
+# You can add as many hosts giving a space
+# To allow all the host in the network class C , 192.168.234.0/24 
+# To allow any ipaddress , write *(ro)
+
+
+# Restart the service
+[root@server pis]# systemctl restart nfs-server.service 
+
+# If the folders to be shared are rw , then for the others you have to provide permission 
+# You can give permission to others, but is not a good practice 
+# A user will be created named 'nobody' when installing nfs-utils in server as well as client
+[root@server pis]# grep nobody /etc/passwd
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+
+[root@server pis]# chown nobody /pis/{research,development,support}
+[root@server pis]# ls -lh
+total 0
+drwxr-xr-x. 2 nobody root 17 Sep 30 03:12 development
+drwxr-xr-x. 2 nobody root 17 Sep 30 03:12 research
+drwxr-xr-x. 2 nobody root 17 Sep 30 03:13 support
+drwxr-xr-x. 2 root   root 17 Sep 30 03:13 training
+
+```
+
+# Client-Side Configuration [Accessing/Importing the NFS-Shared Folders]
+
+```bash 
+# Installed Required Packages
+[root@client ~]# yum -y install nfs-utils 
+
+# Display the list of shared folder by NFS server
+[root@client ~]# showmount -e 192.168.205.100 
+Export list for 192.168.205.100:
+/pis/research    192.168.205.101
+/pis/development 192.168.205.101
+/pis/support     192.168.205.101
+/pis/training    192.168.205.102,192.168.205.101
+
+# Access/Mount the NFS-Shared Folders
+[root@client ~]# showmount -e 192.168.205.100 
+Export list for 192.168.205.100:
+/pis/research    192.168.205.101
+/pis/development 192.168.205.101
+/pis/support     192.168.205.101
+/pis/training    192.168.205.102,192.168.205.101
+
+[root@client ~]# mkdir -p /mnt/nfsdata 
+
+# Temporary Mount 
+[root@client ~]# mount 192.168.205.100:/pis/support /mnt/nfsdata
+[root@client ~]# cd /mnt/nfsdata/
+[root@client nfsdata]# ls
+sup
+[root@client nfsdata]# cat sup 
+This is supports file !!
+
+# Permanent Mount
+# <NFS_Server_IP_or_Hostname>:<NFS_Share>  <Mount_Point>  nfs  defaults  0  0
+[root@client ~]# vim /etc/fstab 
+[root@client ~]# tail -1 /etc/fstab 
+192.168.205.100:/pis/training		/mnt/nfsdata/nfstraining		nfs	defaults	0	0
+
+[root@client ~]# systemctl daemon-reload 
+[root@client ~]# mount -a
+
+[root@client nfstraining]# ls
+trn
+[root@client nfstraining]# cat trn
+This is training file !!
+
+```

@@ -1,0 +1,189 @@
+---
+title: "Chapter 4: Configure local storage"
+description: 
+date: "2024-04-02"
+parent: "Redhat Enterprise Linux 9 - EX200 RHCSA"
+grand_parent : null
+order: 4
+---
+
+When you run the command df -h in Linux, it provides information about disk space usage on all mounted filesystems in a human-readable format. Here's an explanation of the table generated:
+## df -h 
+
+- Filesystem: This column displays the filesystem's device name or mount point. Each row represents a separate filesystem, either a physical disk partition, a virtual filesystem, or a mounted network share.
+- Size: Indicates the total size of the filesystem in human-readable units (e.g., gigabytes, terabytes).
+- Used: Shows the amount of disk space used by files and data within the filesystem.
+- Available: Displays the amount of free space available for additional data to be written to the filesystem.
+- Use%: Represents the percentage of disk space used relative to the total size of the filesystem. It's calculated as (Used / Size) * 100.
+- Mounted on: Indicates the mount point where the filesystem is mounted within the directory structure of the Linux system. For example, /, /home, or /mnt/data.
+
+```bash 
+[root@server ~]# df -h
+Filesystem           Size  Used Avail Use% Mounted on
+devtmpfs             4.0M     0  4.0M   0% /dev
+tmpfs                1.8G     0  1.8G   0% /dev/shm
+tmpfs                717M  9.3M  708M   2% /run
+/dev/mapper/cs-root   17G  5.7G   11G  35% /
+/dev/nvme0n2p2       436M   29M  408M   7% /data2
+/dev/nvme0n1p2       960M  481M  480M  51% /boot
+/dev/nvme0n1p1       599M  7.0M  592M   2% /boot/efi
+/dev/nvme0n2p1       974M   24K  907M   1% /data1
+tmpfs                359M  100K  359M   1% /run/user/1000
+```
+
+The first line represents the root filesystem (/) mounted on /dev/sda1. It has a total size of 20 gigabytes (Size), with 9.8 gigabytes (Used) currently in use. There's 8.6 gigabytes (Avail) of free space available, which means 54% (Use%) of the space is utilized.
+
+The second line represents another filesystem mounted at /mnt/data, mounted on /dev/sdb1. It has a total size of 100 gigabytes (Size), with only 20 gigabytes (Used) utilized. Thus, it has 80 gigabytes (Avail) of free space, resulting in a usage of 20% (Use%).
+
+```bash 
+[root@server ~]# lsblk 
+NAME        MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+sr0          11:0    1 1024M  0 rom  
+nvme0n1     259:0    0   20G  0 disk 
+├─nvme0n1p1 259:1    0  600M  0 part /boot/efi
+├─nvme0n1p2 259:2    0    1G  0 part /boot
+└─nvme0n1p3 259:3    0 18.4G  0 part 
+  ├─cs-root 253:0    0 16.4G  0 lvm  /
+  └─cs-swap 253:1    0    2G  0 lvm  [SWAP]
+nvme0n2     259:4    0    5G  0 disk 
+├─nvme0n2p1 259:5    0    1G  0 part /data1
+├─nvme0n2p2 259:6    0  500M  0 part /data2
+└─nvme0n2p3 259:7    0    1G  0 part [SWAP]
+```
+## To View the disk partition information
+- fdisk -l
+- lsblk
+## To view specific disk partitioning
+- `fdisk -l /dev/<disk_name>`
+---
+# Disk Management Tools
+- fdisk - Traditional tools that creates MBR-based partitioning structure (DOS-based)
+- gdisk - Newer disk partitioning tool that creates GPT-based disk partitioning
+- parted - It can create both the MBR and GPT based disk partitioning
+---
+
+# Type of Partition
+## MBR (Master Boot Record) Based
+On a device formatted with the Master Boot Record (MBR) partition table, you can have:
+- Up to four primary partitions.
+- Up to three primary partitions, one extended partition
+    - Multiple logical partitions within the extended partition
+## GPT  (GUID Partition Table) Based
+- On a device formatted with the GUID Partition Table (GPT), you can have:
+    - Up to 128 partitions, if using the parted utility.
+        - Though the GPT specification allows more partitions by increasing the reserved size of the partition table, the parted utility limits the area required for 128 partitions.
+
+# Filesystem - ID
+- ext2/ext3/ext4/xfs (Linux Native Filesystems ) → 83 (8300)
+    - ext4 is enhanced of ext3
+    - ext3 is enhanced of ext2
+    - xfs in enhanced of ext4 ( used in RHEL8 and RHEL9 )
+- Linux Swap → 82 (8200)
+- Linux LVM → 8e (8e00)
+
+let's break down each of these concepts:
+
+## Linux LVM (Logical Volume Manager):
+Linux LVM is a method for managing disk storage on Linux systems. It offers a higher-level abstraction layer over physical storage devices, enabling more flexible management of disk space. Key components of LVM include:
+- Physical Volumes (PV): These are physical storage devices like hard drives, SSDs, or partitions that are initialized for use by LVM.
+- Volume Groups (VG): Volume groups are created by combining one or more physical volumes. They represent a pool of storage from which logical volumes can be allocated.
+- Logical Volumes (LV): Logical volumes are created within volume groups. They behave like traditional partitions and can be formatted with a file system and mounted like any other partition.
+- LVM snapshots: LVM allows for the creation of snapshots, which are read-only copies of a logical volume at a particular point in time. This feature is useful for backup and system recovery purposes.
+
+LVM provides advantages such as dynamic resizing of logical volumes, easy addition/removal of storage devices, and improved reliability through features like mirroring and striping.
+
+## Linux Swap:
+Swap space, often referred to simply as "swap," is an area on a disk that the operating system uses as virtual memory when it runs out of physical RAM (Random Access Memory). When the system's physical RAM is fully utilized, inactive pages of memory are moved to the swap space, allowing the system to free up RAM for more active processes.
+In Linux, swap space can be a dedicated partition on a disk or a swap file within the file system. It's typically recommended to have a swap space equivalent to or larger than the system's RAM size, although modern systems with ample RAM may require less swap space.
+The swapon and swapoff commands are used to enable and disable swap space, respectively, and the free and top commands can be used to monitor swap usage.
+
+## Linux Native File System:
+The term "Linux native file system" generally refers to the file systems commonly used on Linux-based operating systems. The most commonly used native file systems on Linux are:
+
+- Ext4: Extended File System 4 is the default file system for many Linux distributions. It is an improvement over its predecessors (Ext2 and Ext3) and offers features such as support for larger file sizes and volumes, improved performance, and better reliability.
+- XFS: XFS is a high-performance file system known for its scalability and support for large files and volumes. It is commonly used in enterprise environments and is known for its efficient handling of large files and high-throughput workloads.
+- Btrfs: B-tree file system is a modern copy-on-write file system that offers features such as snapshots, checksums for data integrity, and support for volume management functionalities similar to LVM.
+- Others: There are several other file systems supported by Linux, including but not limited to Ext3 (an earlier version of Ext4), ReiserFS, and JFS (IBM's Journaled File System). However, Ext4, XFS, and Btrfs are among the most widely used and supported in modern Linux distributions.
+
+## Getting Disk informations
+
+### Using fdisk -l
+```bash 
+[root@server ~]# fdisk -l 
+Disk /dev/nvme0n1: 20 GiB, 21474836480 bytes, 41943040 sectors
+Disk model: VMware Virtual NVMe Disk
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: gpt
+Disk identifier: 028CCBBE-5452-4A7B-8FE9-542CBE517782
+
+Device           Start      End  Sectors  Size Type
+/dev/nvme0n1p1    2048  1230847  1228800  600M EFI System
+/dev/nvme0n1p2 1230848  3327999  2097152    1G Linux filesystem
+/dev/nvme0n1p3 3328000 41940991 38612992 18.4G Linux LVM
+
+
+Disk /dev/nvme0n2: 5 GiB, 5368709120 bytes, 10485760 sectors
+Disk model: VMware Virtual NVMe Disk
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: gpt
+Disk identifier: E0095413-4144-47C5-86A9-E1553AFD5F65
+
+Device           Start     End Sectors  Size Type
+/dev/nvme0n2p1    2048 2099199 2097152    1G Linux filesystem
+/dev/nvme0n2p2 2099200 3123199 1024000  500M Linux filesystem
+/dev/nvme0n2p3 3123200 5220351 2097152    1G Linux swap
+/dev/nvme0n2p4 5220352 5425151  204800  100M Linux filesystem
+
+
+Disk /dev/mapper/cs-root: 16.41 GiB, 17620271104 bytes, 34414592 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+
+
+Disk /dev/mapper/cs-swap: 2 GiB, 2147483648 bytes, 4194304 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+```
+
+### Using lsblk 
+```bash 
+[root@server ~]# lsblk 
+NAME        MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+sr0          11:0    1 1024M  0 rom  
+nvme0n1     259:0    0   20G  0 disk 
+├─nvme0n1p1 259:1    0  600M  0 part /boot/efi
+├─nvme0n1p2 259:2    0    1G  0 part /boot
+└─nvme0n1p3 259:3    0 18.4G  0 part 
+  ├─cs-root 253:0    0 16.4G  0 lvm  /
+  └─cs-swap 253:1    0    2G  0 lvm  [SWAP]
+nvme0n2     259:4    0    5G  0 disk 
+├─nvme0n2p1 259:5    0    1G  0 part /data1
+├─nvme0n2p2 259:6    0  500M  0 part /data2
+├─nvme0n2p3 259:7    0    1G  0 part [SWAP]
+└─nvme0n2p4 259:8    0  100M  0 part 
+```
+
+## Allocating a Hard Disk in VMWare Fusion
+![](https://lh3.googleusercontent.com/d/1D5RqA-25UdcfFKRQnZ7zXkXD-vtm_gth)
+![](https://lh3.googleusercontent.com/fife/ALs6j_GHO-0Q3ullRR4ZaCSgGTR7RsN_liCZvcMDaxeLHbrpAbcyV6G5EaiOqnk7lufupr8sFn3uTm2K5_e8tU_Y1dQaPLO8bSsXKl5hL5bP2bhGUox23kBLInB_eWSidn3jxv-OaatjADwlyNHWnHaHkVaUya4J19BYWlEPjaI13bUj7rVQgZzkUrEtsbMM8bVu4rVCl21OR3dGH7Rcpong6lJQ8EQOWI-C_HJ5joHHQ-aZMMHqH7b4cyuSlUPsNp3utWUQHBfJxRk0VUr7igTuUHywL2Swoeg7qRASgsyFDI5GPtgCtKnE6nOf3qHmYN-ioPyC8IMWdYURsXW_3SmXVdFsMniiIBjDa8PITTbGtwVsSsWsiP7bjkbXFZ322Ye4-lIkyZ3gCykKPOWAB-4Z63X2_hleoNi1VR_R0MVIaoWvtX1CS4TEXl-HWLxLOUe5QDDgrui8ae22R4tsbPauHS1hFCcDmXmhzhi9AkRLWhArwgVxSA94Lvpfgcb19YYiTRcSDxP-LvqjqTtDJTPc3UpcSdOWKzgdIWoaDhYdb60MpCfnMoGTTrCtaWlBeZa8ZgXEcOI_3RgizWkV1E-RyzNbGn1eNtrkCiORI7cmVQjOlzX8JUyb_UW2jwLaGnniZSffTpufyYLxF9n0t8u33bQC9W_WcVIPsbG9gaO23aZK-aW-pRuJGshBB6qah_npM-P7CXcRgOt8IlWoGkShWgxjUKXTHEfRr8AXZaoZ7SPNhWKOrk4rqwtOBEK0AoKVOkfoe8Cr1kJp3xD9WxuLZhsZJKQtQIGc_eeua420YJiA97zu2ArFEmbgYdJIkZxG0ED0WsWjBIvgIGCe656OjO-1yVWQVmW20PaXgKIY4PTDB6_f97-G_6kpu4L_r-7_sN9YwJkP1wFw2fhx_jS6DTxtImnnrTGem1uC3L9GDLLAUZRi_WLQMUbssqwH10_gZcA_E-m88stQhFcnctjPajZOYOzH-2vIQt6i0EzW48cnuFnMmtIeWH1kCdKt5-W7bWArvJUFgOlE4W2Aw_U6zt0WK_uYjUfaLh8OioO-mNtIjM617pI-LuRxpq66tF3PvgJYaF2o98uKWFxxRSHZxqNXiiTbtIvpiVMJTAUu3kFHXLNjZet2jG6WKg1lqbdVcUXMO8gVEQ1U2H2TUBuyZvlKOUFwMwmzKbkTjlCNlIHUo0Rpb7KG3_O8c3dkgz2Zqug2tgh9PklZLtRmlClZgzXywuZqO_UfhkU8dE09VvitvgdEqvD5BMRuew-YLGSg8010246HfXAmcMxdlKJgvyd4cQaattEzxGusX9moysfz14GvYO3Vp19DfdF65G6oIKeTyAgXbCJOe9ex8SO5y_IT-WE1rIAjPoK821KwEZJLRpZBStAMwdGWD0OoSo6GZ594B1kT0KySKGBzIoO1BKIhfM6gniPSY3QDG7mHRltkn3tqZ8TKSilSKuN-CJiDKeMfhqDg4jtVvOIh0BPGXrAy3udM41R6UP9CjNdnHKGiGARBiRQP6toxHTeUjbrW54nziuQn-desBvyj7T562FUCUs1m3NsMZUKZHvehL7Oux3Kd44wqPJS0zzUhjzEq0unEvr2yNrlGxLfoWeu97jCq6eUIMubK8DOPylhQnA8KAk3At-5NzZ-a51jzEyRKbW__mNiy_q96hCDQV_I)
+![](https://lh3.googleusercontent.com/d/1eW-WJJSkUroUF2SYz8QTs0dUD1ftZg0g)
+
+```bash /nvme0n2/ /nvme0n3/
+[root@server ~]# lsblk 
+NAME        MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+sr0          11:0    1 1024M  0 rom  
+nvme0n1     259:0    0   20G  0 disk 
+├─nvme0n1p1 259:1    0  600M  0 part /boot/efi
+├─nvme0n1p2 259:2    0    1G  0 part /boot
+└─nvme0n1p3 259:3    0 18.4G  0 part 
+  ├─cs-root 253:0    0 16.4G  0 lvm  /
+  └─cs-swap 253:1    0    2G  0 lvm  [SWAP]
+nvme0n2     259:4    0    5G  0 disk 
+nvme0n3     259:5    0    6G  0 disk 
+```

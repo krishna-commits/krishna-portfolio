@@ -1,0 +1,173 @@
+---
+title: "Lesson 1.9: Create hard and soft links"
+date: "2024-04-04"
+parent: "Chapter 1: Understand and use essential tools"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 9
+completed: true
+---
+<table>
+<thead>
+<tr>
+<th><span>Comparison Parameters</span></th>
+<th><span>Hard link</span></th>
+<th><span>Soft link</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span>Inode number*</span></td>
+<td><span> Files that are hard linked    take the same inode number. </span></td>
+<td><span> Files that are soft linked   take a different inode number. </span></td>
+</tr>
+<tr>
+<td><span>Directories</span></td>
+<td><span> Hard links are not  allowed for directories. (Only a superuser* can do it) </span></td>
+<td><span> Soft links can be used for  linking directories. </span></td>
+</tr>
+<tr>
+<td><span> File system </span></td>
+<td><span> It cannot be used  across file systems. </span></td>
+<td><span> It can be used  across file systems. </span></td>
+</tr>
+<tr>
+<td><span>Data </span></td>
+<td><span> Data present in the original file will still be available in the hard links. </span></td>
+<td><span> Soft links only point to the file name, it does not retain data of the file. </span></td>
+</tr>
+<tr>
+<td><span>Original file’s deletion</span></td>
+<td><span> If the original file is removed, the link  will still work as it accesses the data the  original was having access to.  </span></td>
+<td><span> If the original file is removed, the link  will not work as it doesn’t access the  original file’s data. </span></td>
+</tr>
+<tr>
+<td><span>Speed</span></td>
+<td><span>Hard links are comparatively faster.</span></td>
+<td><span>Soft links are comparatively slower.</span></td>
+</tr>
+</tbody>
+</table>
+### Creating a Soft Link
+- Use the command ln -s `<source file/dir> <link name>` to create a soft link.
+- For example, to create a soft link named softdoc1 for the file /home/sanjeeb/Documents/doc1, you can execute:
+```bash
+[sanjeeb@server ~]$ ln -s /home/sanjeeb/Documents/doc1 /home/sanjeeb/softdoc1
+```
+- Soft links are typically displayed in cyan color for easy identification.
+- To view the source of a soft link, employ the ls -l command. The permissions column will begin with 'l', indicating it's a soft link.
+```bash /l/2 
+[sanjeeb@server ~]$ ls -lh
+lrwxrwxrwx. 1 sanjeeb sanjeeb   28 Apr  6 20:54 softdoc1 -> /home/sanjeeb/Documents/doc1
+```
+- Soft links function as pointers, reflecting changes made in either the soft link or the original file.
+- If the background color is black and text color is red, then it denotes that the source of the soft link file is not present or deleted.
+
+### Creating a Hard Link
+- To establish a hard link between two files, use the `ln` command followed by the name of the source file and the desired name for the hard link.
+- For example, to create a hard link named testfile1 for the file file1, execute:
+```bash
+[sanjeeb@server ~]$ ln /home/sanjeeb/Documents/doc2 /home/sanjeeb/harddoc2
+```
+- Unlike copying files using the cp command, where the copied file is independent of the original, hard links maintain a direct relationship with the original file. This means changes made to either file are reflected in both.
+- To confirm the creation of the hard link and ensure it shares properties with the original file, use the ls -l command. The size, date and time, and other attributes will be identical between the original and hard link files.
+- Additionally, you can use the -i option with ls to display files along with their inode numbers. Files with the same inode number are hard links to the same underlying data. This can be verified by comparing the inode numbers of the original file and its hard link.
+```bash
+[sanjeeb@server ~]$ ls -lhi 
+  543913 -rw-r--r--. 2 sanjeeb sanjeeb   24 Apr  6 21:20 harddoc2
+
+[sanjeeb@server Documents]$ ls -lhi 
+total 4.0K
+543913 -rw-r--r--. 2 sanjeeb sanjeeb 24 Apr  6 21:20 doc2
+```
+
+
+
+## Soft Link
+In soft link, if the source file is deleted then the soft file will also be deleted. 
+
+Command: `ln -s < source file/dir > < Link name >`
+
+```bash
+[sanjeeb@assignmentserver dir2]$ ln -s /home/sanjeeb/class/dir1/file1 softfile1 
+
+[sanjeeb@assignmentserver dir2]$ ls -lh 
+total 0
+lrwxrwxrwx. 1 sanjeeb sanjeeb 30 Sep 19 20:03 softfile1 -> /home/sanjeeb/class/dir1/file1
+
+[sanjeeb@assignmentserver dir1]$ cat file1 
+This is file1.
+
+[sanjeeb@assignmentserver dir2]$ cat softfile1 
+This is file1.
+
+# Now editing softlinked file
+[sanjeeb@assignmentserver dir2]$ vim softfile1 
+[sanjeeb@assignmentserver dir2]$ cat softfile1 
+This is file1.
+Edited from softlinked file.        # New line addded
+
+[sanjeeb@assignmentserver dir1]$ cat file1 
+This is file1.
+Edited from softlinked file.
+
+# Removing the main file for soft linked file
+[sanjeeb@assignmentserver class]$ tree 
+.
+├── dir1
+│   └── file1
+└── dir2
+    └── softfile1 -> /home/sanjeeb/class/dir1/file1
+
+[sanjeeb@assignmentserver class]$ rm -f /home/sanjeeb/class/dir1/file1 
+[sanjeeb@assignmentserver class]$ tree 
+.
+├── dir1
+└── dir2
+    └── softfile1 -> /home/sanjeeb/class/dir1/file1
+
+2 directories, 1 file
+[sanjeeb@assignmentserver class]$ cat /home/sanjeeb/class/dir2/softfile1 
+cat: /home/sanjeeb/class/dir2/softfile1: No such file or directory
+```
+
+## Hard Links
+- Files having same inode number are hardlinks
+- If the main file is deleted then also, The linked file remains as it is. 
+- inode number is same
+- Size, date time, everything is same
+
+```bash {1}
+[sanjeeb@assignmentserver dir2]$ ln /home/sanjeeb/class/dir1/file1 hardfile1
+
+[sanjeeb@assignmentserver class]$ tree
+.
+├── dir1
+│   └── file1
+└── dir2
+    └── hardfile1
+
+2 directories, 2 files
+
+# Everything is same for the hardlink as the main file
+[sanjeeb@assignmentserver class]$ ls -lh dir2 
+total 4.0K
+-rw-r--r--. 2 sanjeeb sanjeeb 17 Sep 19 20:15 hardfile1
+[sanjeeb@assignmentserver class]$ ls -lh dir1 
+total 4.0K
+-rw-r--r--. 2 sanjeeb sanjeeb 17 Sep 19 20:15 file1
+
+# The inode number is also same for hardlinks
+[sanjeeb@assignmentserver dir1]$ ls -i 
+19548937 file1
+
+[sanjeeb@assignmentserver dir2]$ ls -i 
+19548937 hardfile1
+
+# Removing the main file to check if hard link exists - yes
+
+[sanjeeb@assignmentserver dir1]$ rm -rf file1 
+[sanjeeb@assignmentserver dir2]$ cat hardfile1 
+This is file1. 
+Editing the file from hardlink.
+
+```

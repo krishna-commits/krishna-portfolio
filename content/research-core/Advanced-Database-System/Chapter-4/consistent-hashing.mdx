@@ -1,0 +1,45 @@
+---
+title: Consistent Hashing
+description:
+parent: NOSQL
+grand_parent : Advanced Database System
+order: 6
+completed: true
+---
+
+Consistent Hashing is a technique used in distributed systems to efficiently map data (or keys) to a set of nodes (or servers) while minimizing the number of reassignments when nodes are added or removed. This technique is particularly useful in scenarios where the **number of nodes in the system can vary**, and the system needs to handle changes dynamically without causing excessive redistribution of data.
+
+### Problem with Simple Hashing:
+* In traditional hashing, each object's key is hashed, and the resulting hash value is used to assign it to one of several servers. The server is selected by performing a modulo operation on the hash.
+* This approach works well when the number of servers is fixed, but when servers are added or removed, many objects may need to be redistributed, causing performance issues (this is known as a "reshuffling problem").
+
+### Why Consistent Hashing?
+In a distributed system, data is often partitioned and stored across multiple nodes. When nodes are added or removed, traditional hash-based systems can result in a lot of data being moved or redistributed across the system, which can be inefficient and time-consuming. Consistent hashing solves this problem by ensuring that only a small fraction of the data needs to be moved when the cluster size changes, leading to better scalability and fault tolerance.
+
+### How Consistent Hashing Solves This:
+* **Hashing Servers and Objects:** Instead of hashing only the objects, consistent hashing hashes both the object keys and the server names (or IP addresses) onto a circular hash ring.
+* **Ring Structure:** The ring is a continuous range, and both objects and servers are placed on the ring based on their hash values.
+* **Server Assignment:** To find a server for an object, the system looks clockwise around the ring from the object’s position until it encounters a server. The object is then assigned to that server.
+
+### Adding and Removing Servers:
+* **When adding a server:** Only the objects closest to the new server's position on the ring need to be moved. Most objects remain unaffected.
+* **When removing a server:** Only the objects assigned to the removed server are reassigned to the next available server on the ring. Again, most objects are unaffected.
+
+### Virtual Nodes for Better Distribution:
+* **Virtual Nodes:** To avoid uneven distribution of data across servers, virtual nodes are introduced. Each physical server is hashed to multiple points on the ring, improving load balancing. For example, a server may appear as server_0, server_1, etc., at different points on the ring.
+* The more virtual nodes you use, the more evenly distributed the objects will be across the servers.
+
+### Advantages:
+* **Minimal Rebalancing:** When servers are added or removed, only a small fraction of the objects need to be redistributed, ensuring minimal disruption.
+* **Scalability:** The system can easily scale by adding or removing servers without causing major data movement.
+* **Balanced Load Distribution:** Virtual nodes help ensure that data is evenly distributed across servers, preventing bottlenecks or underutilization.
+
+### Real-world Applications:
+* **NoSQL Databases:** Systems like Amazon DynamoDB and Apache Cassandra use consistent hashing for partitioning data, reducing data movement during rebalancing.
+* **CDNs**: Akamai and other content delivery networks use consistent hashing to distribute web content evenly across edge servers.
+* **Load Balancers:** Google Load Balancer and others use consistent hashing to manage persistent connections efficiently across backend servers.
+
+
+![](https://sufqavlxovkf8wxj.public.blob.vercel-storage.com/Consistent-hashing-DH52toQtxWhXxWsRFuc5Zwj8FGANsX.png)
+
+![](https://sufqavlxovkf8wxj.public.blob.vercel-storage.com/consistent-hashing-1-tAoov8DbwkcvKqmDciE27aunSy73SM.png)

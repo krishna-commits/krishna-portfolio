@@ -1,0 +1,130 @@
+---
+title: "Lesson 1.19: Advanced file permissions"
+description: 
+date: "2024-04-04"
+parent: "Chapter 1: Understand and use essential tools"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 19
+completed: true
+---
+
+# Special Permission Bits 
+
+## SGID Bit 
+If SGID bit is set on a directory, then any files/dirs created inside that directory inherits group ownership of parent directory.
+- `chmod g+s <dir name>` : To set SGID Bit
+- `chmod g-s <dir name>` : To unset SGID Bit 
+To check if SGID set
+- `ls -ld`
+- d --- --s --- : Here in permission , `s` indicates SGID bit set. 
+- lowercase `s` : Indicates both execute & SGID bit is set. 
+- uppercase `S` : Indicates that only SGID bit is set. 
+
+```bash
+[root@sanjeeb /]# ls -ld prod sls mkt 
+drwxrwx---. 2 boss marketing  6 Sep 26 21:31 mkt
+drwxrwx---. 2 boss production 6 Sep 26 21:31 prod
+drwxrwx---. 2 boss sales      6 Sep 26 21:31 sls
+
+[root@sanjeeb /]# chmod g+s prod sls mkt 
+
+[root@sanjeeb /]# ls -ld prod sls mkt 
+drwxrws---. 2 boss marketing  6 Sep 26 21:31 mkt
+drwxrws---. 2 boss production 6 Sep 26 21:31 prod
+drwxrws---. 2 boss sales      6 Sep 26 21:31 sls
+
+
+[root@sanjeeb /]# su - boss 
+Last login: Fri Sep 27 07:12:23 +0545 2024 on tty3
+# Creating a file in prod dir, we can see group is set to production due to SGID 
+[boss@sanjeeb prod]$ touch file_1
+[boss@sanjeeb prod]$ ls -lh 
+total 0
+-rw-r--r--. 1 boss production 0 Sep 27 07:50 file_1
+
+# Creating a file in mkt dir, we can see group is set to marketing due to SGID 
+[boss@sanjeeb mkt]$ touch file2
+[boss@sanjeeb mkt]$ ls -lh 
+total 0
+-rw-r--r--. 1 boss marketing 0 Sep 27 07:50 file2
+
+```
+
+---
+
+## Sticky Bit
+If sticky bit is set in the directory then only the owner can delete their files/dir
+- `chmod o+t <dir name>`: To set sticky bit 
+- `chmod o-t <dir name>`: To unset sticky bit
+- d --- --- --t : indicates that sticky bit is set 
+- `lowercase t` : Indicated that both the execute and sticky bit is set. 
+- `uppercase T` : Indicates that only sticky bit is set. 
+
+```bash 
+[root@sanjeeb /]# ls -ld mkt sls prod 
+drwxrws---. 2 boss marketing  19 Sep 27 07:50 mkt
+drwxrws---. 2 boss production 20 Sep 27 07:50 prod
+drwxrwx---. 2 boss sales       6 Sep 26 21:31 sls
+
+[root@sanjeeb /]# chmod o+t sls
+
+[root@sanjeeb /]# ls -ld mkt sls prod 
+drwxrws---. 2 boss marketing  19 Sep 27 07:50 mkt
+drwxrws---. 2 boss production 20 Sep 27 07:50 prod
+drwxrwx--T. 2 boss sales       6 Sep 26 21:31 sls
+
+# Switicing to salesman1 of the group sales , but cannot remove folder sls. 
+# Eventhough sls has rwx permission for group , as it is set to T (sticky bit)
+[salesman1@sanjeeb /]$ rm -rf sls 
+rm: cannot remove 'sls': Permission denied
+[salesman1@sanjeeb /]$ ls -ld sls 
+drwxrwx--T. 2 boss sales 6 Sep 27 08:20 sls
+
+# Removing the sticky bit from root user
+[root@sanjeeb /]# chmod o-t sls 
+[root@sanjeeb /]# ls -ld sls 
+drwxrwx---. 2 boss sales 6 Sep 27 08:20 sls
+
+```
+
+## SUID Bit 
+If SUID Bit set then the executable file works on the security context of owner. 
+```bash 
+# Here SUID bit is set in /usr/bin/passwd shown by s in owner
+[boss@sanjeeb ~]$ which passwd 
+/usr/bin/passwd
+[boss@sanjeeb ~]$ ls -lh /usr/bin/passwd 
+-rwsr-xr-x. 1 root root 68K Aug 10  2021 /usr/bin/passwd
+
+# Removing the SUID Bit 
+[root@sanjeeb ~]# ls -lh /usr/bin/passwd 
+-rwsr-xr-x. 1 root root 68K Aug 10  2021 /usr/bin/passwd
+[root@sanjeeb ~]# chmod u-s /usr/bin/passwd 
+[root@sanjeeb ~]# ls -lh /usr/bin/passwd 
+-rwxr-xr-x. 1 root root 68K Aug 10  2021 /usr/bin/passwd
+
+# Checking the passwd command 
+[boss@sanjeeb ~]$ passwd 
+Changing password for user boss.
+Current password: 
+New password: 
+Retype new password: 
+passwd: Authentication token manipulation error
+
+# Now adding SUID Bit
+[root@sanjeeb ~]# chmod u+s /usr/bin/passwd 
+[root@sanjeeb ~]# ls -lh /usr/bin/passwd 
+-rwsr-xr-x. 1 root root 68K Aug 10  2021 /usr/bin/passwd
+
+[boss@sanjeeb ~]$ passwd 
+Changing password for user boss.
+Current password: 
+New password: 
+Retype new password: 
+passwd: all authentication tokens updated successfully.
+```
+
+# Numerical Representation of Special Permission Bits 
+- SUID Bit : 4
+- SGID Bit : 2
+- Sticky Bit : 1

@@ -1,0 +1,87 @@
+---
+title: "Lesson 1.13: Defining Command Alias"
+description: 
+date: "2024-04-04"
+parent: "Chapter 1: Understand and use essential tools"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 13
+completed: true
+---
+
+## Defining Command Alias Temporarily
+
+```bash
+[sanjeeb@assignmentserver ~]$ alias
+alias cls='clear'
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias grep='grep --color=auto'
+
+[sanjeeb@assignmentserver ~]$ alias safagara='clear'
+```
+
+## Defining Command Alias Permanently
+
+### CASE 1 : User Specific Alias
+```bash
+[sanjeeb@assignmentserver ~]$ # View hidden files 
+[sanjeeb@assignmentserver ~]$ ls -a 
+.              .bash_profile  Desktop    image.png  .mozilla  Script     test
+..             .bashrc        Documents  .lesshst   Music     Scripts    Videos
+.bash_history  .cache         Downloads  .local     Pictures  .ssh       .viminfo
+.bash_logout   .config        folder     Marketing  Public    Templates
+
+[sanjeeb@assignmentserver ~]$ # Open .bashrc and then add the specific line
+[sanjeeb@assignmentserver ~]$ vi .bashrc
+alias safagara='clear'
+
+[sanjeeb@assignmentserver ~]$ # Refresh .bashrc
+[sanjeeb@assignmentserver ~]$ . .bashrc
+# OR
+[sanjeeb@assignmentserver ~]$ source .bashrc
+```
+
+### CASE 2 : System Wide Alias
+```bash  {31} /.bashrc/2
+# Switch to root user
+[root@assignmentserver ~]# whoami 
+root
+
+# Find the .bashrc file in the hidden file of the root directory 
+[root@assignmentserver ~]# ls -a
+.                backup2        .cache   Desktop    .local    .ssh       .viminfo
+..               .bash_history  .config  Documents  Music     .tcshrc    .xauthtK6NH4
+allerr           .bash_logout   .cshrc   Downloads  Pictures  Templates
+allout           .bash_profile  data1    full_out   Public    userinfo
+anaconda-ks.cfg  .bashrc        data2    .lesshst   scr       Videos
+
+# Edit the .bashrc file and add alias command
+[root@assignmentserver ~]# vim .bashrc 
+alias safagara='clear'
+
+# Refresh the .bashrc
+[root@assignmentserver ~]# source .bashrc
+
+# View the alias
+[root@assignmentserver ~]# alias
+alias cp='cp -i'
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias grep='grep --color=auto'
+alias l.='ls -d .* --color=auto'
+alias ll='ls -l --color=auto'
+alias ls='ls --color=auto'
+alias mv='mv -i'
+alias rm='rm -i'
+alias safagara='clear'
+alias xzegrep='xzegrep --color=auto'
+alias xzfgrep='xzfgrep --color=auto'
+alias xzgrep='xzgrep --color=auto'
+alias zegrep='zegrep --color=auto'
+alias zfgrep='zfgrep --color=auto'
+alias zgrep='zgrep --color=auto'
+
+# Check if the command is working
+[root@assignmentserver ~]# safagara
+
+```

@@ -1,0 +1,45 @@
+---
+title: "Cloud-Native Architecture "
+description: ""
+parent: Introduction
+grand_parent: Service and Cloud Computing
+order: 7
+completed: true
+---
+
+Cloud-native architecture represents a paradigm shift in designing and deploying modern applications, focusing on scalability, resilience, and flexibility. It is built on principles that allow applications to take full advantage of the cloud environment's features, such as on-demand scaling, distributed infrastructure, and fault tolerance.
+
+### Key Characteristics of Cloud-Native Architecture
+1. **Decomposition into Microservices:**
+    * Applications are decomposed into a set of small, isolated, and self-contained services called microservices.
+    * Each microservice encapsulates its own code, data, and dependencies, functioning independently to fulfill a specific purpose.
+2. **Service-Specific Datastores:**
+    * Unlike monolithic architectures, where a single relational database is shared across the application, each microservice owns its datastore.
+    * The choice of datastore depends on the service's requirements:
+    * Relational databases for structured data.
+    * NoSQL databases for unstructured or semi-structured data.
+    *Distributed caches for fast, stateful operations.
+3. **Use of Containers:**
+    * Each service is packaged in a software container (e.g., Docker) that includes all necessary dependencies, ensuring consistent behavior across different environments.
+    * Containers are managed by orchestrators like Kubernetes, which handle scaling, scheduling, and availability.
+4. **API Gateway:**
+    * All incoming traffic is routed through an API Gateway, which serves as the entry point for the application.
+    * It handles traffic routing to appropriate back-end services and enforces cross-cutting concerns, such as security, authentication, and rate limiting.
+5. **Cloud Scalability and Resilience:**
+    * Applications leverage cloud platform features like auto-scaling, distributed infrastructure, and failover mechanisms to achieve high availability and resiliency.
+
+### Technological Building Blocks of Cloud-Native Architecture
+1. Immutable Infrastructure
+    * Infrastructure is provisioned and managed using declarative code (e.g., Infrastructure as Code tools like Terraform).
+    * Changes to the environment result in redeployment rather than modification, ensuring consistency and reducing configuration drift.
+2. Microservices
+    * Applications are built using the microservices architecture pattern, which focuses on developing fine-grained, loosely coupled services.
+    * These services communicate using lightweight protocols, typically RESTful APIs or messaging systems like Kafka.
+3. Declarative APIs:
+    * APIs are designed to describe the desired state of the system rather than instruct how to achieve it, enabling automation and easier management.
+4. Containers
+    * Services are containerized, ensuring portability and consistent deployment across different environments.
+    * Container orchestration platforms like Kubernetes manage scaling, updates, and failure recovery.
+5. Service Meshes:
+    * A service mesh (e.g., Istio or Linkerd) provides communication, security, and observability for microservices.
+    * It enables seamless service-to-service communication, load balancing, and monitoring without requiring changes to the application code.

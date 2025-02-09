@@ -1,0 +1,445 @@
+---
+title: "Preparation Set 3"
+description:
+date: "2024-04-04"
+parent: "Exam Preparation"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 3
+completed: true
+---
+
+### Q1: Configure network and set the static parameters
+- IP-ADDRESS= 192.168.208.138
+- NETMASK= 255.255.255.0
+- GATEWAY= 192.168.208.2
+- (DNS) Nameserver= 192.168.208.2
+- Domain Name= domainX.example.com
+- hostname= node1.domainX.example.com
+
+```bash 
+[root@serverA ~]# hostnamectl set-hostname node1.domainX.example.com
+
+[root@node1 ~]# nmcli conn modify serverAnet ipv4.addresses 192.168.208.138/24 ipv4.dns 192.168.208.2 ipv4.gateway 192.168.208.2 ipv4.method manual
+
+[root@node1 ~]# systemctl restart NetworkManager
+
+[root@node1 ~]# cat /etc/hosts
+192.168.208.138		node1.domainX.example.com
+```
+
+### Q2. Configure YUM repos with the given link (2repos: 1st is BaseOS and 2nd is AppStream)
+- BaseOS http://192.168.208.137/softwares/BaseOS
+- AppSteam http://192.168.208.137/softwares/AppStream
+
+```bash
+[root@node1 yum.repos.d]# pwd
+/etc/yum.repos.d
+
+[root@node1 yum.repos.d]# cat appstream.repo
+[appstream]
+name = appstream
+baseurl = http://192.168.208.137/softwares/AppStream
+enabled = 1
+gpgcheck = 0
+
+[root@node1 yum.repos.d]# cat baseos.repo
+[baseos]
+name = baseos
+baseurl = http://192.168.208.137/softwares/BaseOS
+enabled = 1
+gpgcheck = 0 
+```
+
+### Q3: Debug SELinux - A web server running on non standard port 82 is having issues serving content, Debug and fix the issues.
+```bash 
+[root@node1 ~]# vim /etc/httpd/conf/httpd.conf
+Listen 8200
+# [root@node1 ~]# cat /etc/ssh/sshd_config Search the code semanage
+[root@node1 ~]# semanage port -a -t http_port_t -p tcp 8200
+# Check for port 
+[root@node1 ~]# semanage port -l | grep 8200
+http_port_t                    tcp      8200, 8000, 82, 7788, 5566, 80, 81, 443, 488, 8008, 8009, 8443, 9000
+trivnet1_port_t                tcp      8200
+trivnet1_port_t                udp      8200
+
+[root@node1 ~]# systemctl start httpd
+[root@node1 ~]# systemctl enable httpd
+[root@node1 ~]# systemctl status httpd
+
+[root@node1 ~]# firewall-cmd --permanent --add-port=82/tcp
+[root@node1 ~]# firewall-cmd --reload
+```
+### Q4. Create User accounts with supplementry group.
+- create the group a named "sysadms".
+- create users as named "natasha" and "harry", will be the supplementry group "sysadms".
+- cerate a user as named "sarah", should have non-interactive shell and it should be not the member of "sysadms".
+- password for all users should be "trootent"
+
+```bash 
+[root@node1 ~]# groupadd sysadms
+
+[root@node1 ~]# useradd natasha -G sysadms
+[root@node1 ~]# useradd harry -G sysadms
+[root@node1 ~]# useradd sarah -s /sbin/nologin
+[root@node1 ~]# cat /etc/passwd | grep natasha harry sarah
+
+[root@node1 ~]# cat /etc/passwd | grep natasha
+natasha:x:5126:5128::/home/natasha:/bin/bash
+[root@node1 ~]# cat /etc/passwd | grep harry
+harry:x:5127:5129::/home/harry:/bin/bash
+[root@node1 ~]# cat /etc/passwd | grep sarah
+sarah:x:5128:5130::/home/sarah:/sbin/nologin
+
+[root@node1 ~]# passwd natasha
+[root@node1 ~]# passwd harry
+[root@node1 ~]# passwd sarah
+```
+
+### Q5. Configure a cron job that runs every 2minutes and executes: logger "EX200 in progress" as the user natasha.
+```bash 
+[root@node1 etc]# vim cron.allow
+[root@node1 etc]# cat cron.allow
+natasha
+[root@node1 etc]# su - natasha
+Last login: Thu Oct 10 19:30:51 CST 2024 on pts/1
+[natasha@node1 ~]$ crontab -e
+no crontab for natasha - using an empty one
+crontab: installing new crontab
+[natasha@node1 ~]$ crontab -l
+*/2	*	*	*	*	 logger "EX200 in progress"
+```
+### Q6. Create a collaborative Directory.
+- Create the Directory "/home/manager" with the following characteristics
+- Group ownership of "/home/manager" should go to "sysadms" group
+- The directory should have full permission for all members of "sysadms" group but not to the other users except "root"
+- Files created in future under "/home/manager" should get the same group ownership
+```bash 
+[root@node1 home]# chown :sysadms manager
+[root@node1 home]# ls -ld manager
+drwxr-xr-x. 2 root sysadms 6 Oct 10 19:54 manager
+
+[root@node1 home]# chmod g+rwx manager
+[root@node1 home]# ls -ld manager
+drwxrwxr-x. 2 root sysadms 6 Oct 10 19:54 manager
+
+[root@node1 home]# chmod o-rwx manager
+[root@node1 home]# ls -ld manager/
+drwxrwx---. 2 root sysadms 6 Oct 10 19:54 manager/
+
+[root@node1 home]# chmod g+s manager
+[root@node1 home]# ls -ld manager
+drwxrws---. 2 root sysadms 6 Oct 10 19:54 manager
+
+[root@node1 home]# cd manager
+[root@node1 manager]# touch f1 f2
+[root@node1 manager]# ls -lh
+total 0
+-rw-r--r--. 1 root sysadms 0 Oct 10 20:09 f1
+-rw-r--r--. 1 root sysadms 0 Oct 10 20:09 f2
+```
+
+### Q7. Configure NTP - Synchronize time of your system with the server 'us.pool.ntp.org'
+```bash 
+[root@node1 ~]# rpm -q chrony
+chrony-4.6-1.el9.aarch64
+[root@node1 ~]# systemctl status chronyd.service
+
+[root@node1 ~]# vim /etc/chrony.conf
+server us.pool.ntp.org iburst
+
+[root@node1 ~]# systemctl restart chronyd.service
+
+[root@node1 ~]# timedatectl set-ntp true
+
+[root@node1 ~]# chronyc sources
+MS Name/IP address         Stratum Poll Reach LastRx Last sample
+===============================================================================
+^* ntp1a.versadns.com            1   6    17    44  -3869us[-2737us] +/-  162ms
+```
+
+### Q8. Configure AutoFS - All remoteuserX home directory is exported via NFS, which is available on utility.example.com(172.24.10.100) and your NFS-exports directory is /home/remoteuserX for remoteuserX
+- remoteuserX's home directory is utility.example.com:/rhome/remoteuserX, where X is your station number and benath as /rhome/remoteuser5
+- remoteuserX's home directory should be automounted autofs service.
+- home directories must be writable by their users
+```bash 
+[root@node1 ~]# rpm -q autofs
+autofs-5.1.7-58.el9.aarch64
+[root@node1 ~]# systemctl start autofs
+[root@node1 ~]# systemctl enable autofs
+
+[root@node1 ~]# vim /etc/auto.master
+[root@node1 ~]# cat /etc/auto.master
+/home/rhome	/etc/auto.nfs	--timeout=300
+
+[root@node1 ~]# vim /etc/auto.nfs
+[root@node1 ~]# cat /etc/auto.nfs
+remoteuser5	-rw,soft,sync	192.168.208.137:/rhome/remoteuser5
+
+[root@node1 remoteuser5]# pwd
+[root@node1 remoteuser5]# ls
+f1  f2  f3
+```
+
+### Q9. Create a container image from the provided link.
+- create a container image from "http://utility.example.com/container/Containerfile" name it as 'monitor' with user athena
+- login to 'registry.lab.example.com' through "admin" and "redhat321" ->find it out credentials from Instructions page
+```bash 
+[root@node1 ~]# loginctl enable-linger athena
+[root@node1 ~]# su - athena
+[athena@node1 ~]$ rpm -q container-tools
+container-tools-1-14.el9.noarch
+
+[athena@node1 containers]$ pwd
+/home/athena/.config/containers
+[athena@node1 containers]$ cat registries.conf
+unqualified-search-registries = ["docker.io"]
+[[registry]]
+insecure = false
+blocked = false
+location = 'docker.io'
+
+[athena@node1 ~]$ podman build -t monitor .
+STEP 1/1: FROM docker.io/library/httpd
+Trying to pull docker.io/library/httpd:latest...
+Getting image source signatures
+Copying blob 0ffcdbb5bd41 done   |
+Copying blob 14c9d9d19932 done   |
+Copying blob f5db40045454 done   |
+Copying blob 4f4fb700ef54 done   |
+Copying blob ac0ad684e55d done   |
+Copying blob b59792d2b7f1 done   |
+Copying config a3e79aafef done   |
+Writing manifest to image destination
+COMMIT monitor
+--> a3e79aafef7f
+Successfully tagged localhost/monitor:latest
+Successfully tagged docker.io/library/httpd:latest
+a3e79aafef7f07a3a11d94f546220d8189719a5143d4bbda9568e48ffbac4a9d
+
+[athena@node1 ~]$ podman images
+REPOSITORY               TAG         IMAGE ID      CREATED       SIZE
+localhost/monitor        latest      a3e79aafef7f  2 months ago  182 MB
+docker.io/library/httpd  latest      a3e79aafef7f  2 months ago  182 MB
+```
+
+### Q10. Create rootless container and do volume mapping which they asked you in the question and run container as a service from normal user account, the service must be enable so it could start automatically after reboot
+- Create a container named as '' using the previously created container image from previous question 'monitor'
+- Map the '/opt/processed' to container '/opt/outgascii2pdfoing
+- Map the '/opt/files' to container '/opt/incoming'
+- Create systemd service as container-ascii2pdf.service
+- Make service active after all server reboots.
+
+```bash
+[root@node1 opt]#  chown -R athena:athena /opt/files
+[root@node1 opt]# chown -R athena:athena /opt/processed
+
+[athena@node1 ~]$ podman run -d -v /opt/processed:/opt/outgascii2pdfoing:Z -v /opt/files:/opt/incoming:Z --name ascii2pdf localhost/monitor:latest
+647b7a7f532cb52575e92a93bfded7b845cb9202e0cca3158be4ad0a06fb96b6
+[athena@node1 ~]$ podman ps -a
+CONTAINER ID  IMAGE                     COMMAND           CREATED        STATUS        PORTS       NAMES
+647b7a7f532c  localhost/monitor:latest  httpd-foreground  4 seconds ago  Up 4 seconds  80/tcp      ascii2pdf
+
+[athena@node1 user]$ pwd
+/home/athena/.config/systemd/user
+
+[athena@node1 user]$ podman generate systemd --name ascii2pdf --files --new
+
+DEPRECATED command:
+It is recommended to use Quadlets for running containers and pods under systemd.
+
+Please refer to podman-systemd.unit(5) for details.
+/home/athena/.config/systemd/user/container-ascii2pdf.service
+
+[athena@node1 user]$ ls
+container-ascii2pdf.service
+[athena@node1 user]$ systemctl --user enable container-ascii2pdf.service
+Created symlink /home/athena/.config/systemd/user/default.target.wants/container-ascii2pdf.service → /home/athena/.config/systemd/user/container-ascii2pdf.service.
+[athena@node1 user]$ systemctl --user start container-ascii2pdf.service
+[athena@node1 user]$ podman ps -a
+CONTAINER ID  IMAGE                     COMMAND           CREATED        STATUS        PORTS       NAMES
+1b9173e5e933  localhost/monitor:latest  httpd-foreground  9 seconds ago  Up 9 seconds  80/tcp      ascii2pdf
+
+[athena@node1 ~]$ systemctl --user status container-ascii2pdf.service
+● container-ascii2pdf.service - Podman container-ascii2pdf.service
+     Loaded: loaded (/home/athena/.config/systemd/user/container-ascii2pdf.service; enabled; preset: disabled)
+     Active: active (running) since Thu 2024-10-10 21:24:18 CST; 33s ago
+       Docs: man:podman-generate-systemd(1)
+   Main PID: 15914 (conmon)
+      Tasks: 2 (limit: 22565)
+     Memory: 16.2M
+        CPU: 132ms
+     CGroup: /user.slice/user-5129.slice/user@5129.service/app.slice/container-ascii2pdf.service
+             ├─15912 /usr/bin/pasta --config-net --dns-forward 169.254.0.1 -t none -u none -T none -U none --no-map-gw --qui>
+             └─15914 /usr/bin/conmon --api-version 1 -c 1b9173e5e9330936c1976c6837d097dbcfca8a494d9ee8d46dc99e1256cf625c -u >
+```
+
+### Q11. Find a string 'ich' from "/usr/share/dict/words" and put it into /root/lines
+file.
+```bash 
+[root@node1 ~]# grep ich /usr/share/dict/words >/root/lines
+```
+### Q12. create an archive '/root/backup.tar.bz2' of /usr/local directory and
+compress it with bzip2
+```bash 
+[root@node1 ~]# tar -jcvf backup.tar.bz2  /usr/local/
+```
+### Q13. script. Store the search result of all files in the /usr/share directory that is greater than 30k and less than 50k in the /mnt/freespace/search.txt file
+```bash
+[root@node1 ~]# find /usr/share -type f -size +30k -size -50k >/mnt/freespace/search.txt
+[root@node1 ~]# cat /mnt/freespace/search.txt
+```
+### Q14. Resize a logical Volume - Resize the logical volume "mylv" so that after reboot size should be in between 290MB to 330MB 
+```bash 
+[root@node1 ~]# lvextend -L 310M /dev/myvg/mylv
+[root@node1 ~]# resize2fs /dev/mapper/myvg-mylv
+```
+### Q15. Add a swap partition of 512MB and mount it permanently
+```bash
+[root@node1 ~]# vim /etc/fstab
+[root@node1 ~]# tail -1 /etc/fstab
+/dev/nvme0n3p1 		swap		swap		defaults	0	0
+
+[root@node1 ~]# mkswap /dev/nvme0n3p1
+mkswap: /dev/nvme0n3p1: warning: wiping old xfs signature.
+Setting up swapspace version 1, size = 512 MiB (536866816 bytes)
+no label, UUID=cf881383-bcf5-4a87-9c3f-6fd8bbf0ad7d
+[root@node1 ~]# systemctl daemon-reload
+[root@node1 ~]# swapon -a
+
+[root@node1 ~]# lsblk
+nvme0n3     259:6    0    6G  0 disk
+└─nvme0n3p1 259:10   0  512M  0 part [SWAP]
+```
+### Q16. Create logical volume and mount it permanently
+- Create a logical volume of name/mnt/wshare "wshare" from a volume group name "wgroup" physical extents of 16M and logical volume should have size of 50extents
+- Mount logical volume with  and format with ext3 filesystem
+
+```bash 
+[root@node1 ~]# gdisk /dev/nvme0n3
+Command (? for help): n
+Partition number (2-128, default 2):
+First sector (34-12582878, default = 1050624) or {+-}size{KMGTP}:
+Last sector (1050624-12582878, default = 12582878) or {+-}size{KMGTP}: +3G
+Current type is 8300 (Linux filesystem)
+Hex code or GUID (L to show codes, Enter = 8300): L
+Type search string, or <Enter> to show all codes: LV
+8e00 Linux LVM
+Hex code or GUID (L to show codes, Enter = 8300): 8e00
+Changed type of partition to 'Linux LVM'
+
+Command (? for help): p
+Number  Start (sector)    End (sector)  Size       Code  Name
+   1            2048         1050623   512.0 MiB   8200  Linux swap
+   2         1050624         7342079   3.0 GiB     8E00  Linux LVM
+
+Command (? for help): w
+Do you want to proceed? (Y/N): y
+The operation has completed successfully.
+
+# Create PV
+[root@node1 ~]# pvcreate /dev/nvme0n3p2
+  Physical volume "/dev/nvme0n3p2" successfully created.
+[root@node1 ~]# pvs
+  PV             VG   Fmt  Attr PSize  PFree
+  /dev/nvme0n1p3 cs   lvm2 a--  18.41g     0
+  /dev/nvme0n2   myvg lvm2 a--  <5.00g <4.00g
+  /dev/nvme0n3p2      lvm2 ---   3.00g  3.00g
+
+# Create VG
+[root@node1 ~]# vgcreate -s 16M wgroup /dev/nvme0n3p2
+  Volume group "wgroup" successfully created
+[root@node1 ~]# vgs
+  VG     #PV #LV #SN Attr   VSize  VFree
+  cs       1   2   0 wz--n- 18.41g     0
+  myvg     1   1   0 wz--n- <5.00g <4.00g
+  wgroup   1   0   0 wz--n-  2.98g  2.98g
+[root@node1 ~]# vgdisplay wgroup
+  --- Volume group ---
+  VG Name               wgroup
+  System ID
+  Format                lvm2
+  Metadata Areas        1
+  Metadata Sequence No  1
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                0
+  Open LV               0
+  Max PV                0
+  Cur PV                1
+  Act PV                1
+  VG Size               2.98 GiB
+  PE Size               16.00 MiB
+  Total PE              191
+  Alloc PE / Size       0 / 0
+  Free  PE / Size       191 / 2.98 GiB
+  VG UUID               qiffjO-C26Z-71T7-Bzsm-hoVf-b7SU-1d1btA
+
+# Create LV 
+[root@node1 ~]# lvcreate -l 50 --name wshare wgroup
+  Logical volume "wshare" created.
+[root@node1 ~]# lvs
+  LV     VG     Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  root   cs     -wi-ao----  16.41g
+  swap   cs     -wi-ao----   2.00g
+  mylv   myvg   -wi-a-----   1.00g
+  wshare wgroup -wi-a----- 800.00m
+[root@node1 ~]# lvdisplay /dev/wgroup/wshare
+  --- Logical volume ---
+  LV Path                /dev/wgroup/wshare
+  LV Name                wshare
+  VG Name                wgroup
+  LV UUID                8v3B93-SRQ0-FGyJ-m7tz-nn1Z-l0j7-e5SzN6
+  LV Write Access        read/write
+  LV Creation host, time node1.domainX.example.com, 2024-10-11 08:57:17 +0800
+  LV Status              available
+  # open                 0
+  LV Size                800.00 MiB
+  Current LE             50
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     8192
+  Block device           253:3
+
+[root@node1 ~]# mkfs -t ext4 /dev/wgroup/wshare
+mke2fs 1.46.5 (30-Dec-2021)
+Creating filesystem with 204800 4k blocks and 51296 inodes
+Filesystem UUID: 32a56347-9075-4bba-ada5-ddf6da05a42b
+Superblock backups stored on blocks:
+	32768, 98304, 163840
+
+Allocating group tables: done
+Writing inode tables: done
+Creating journal (4096 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+[root@node1 ~]# vim /etc/fstab
+[root@node1 ~]# tail -1 /etc/fstab
+/dev/wgroup/wshare	/mnt/wshare	ext4		defaults	0	0
+
+[root@node1 ~]# systemctl daemon-reload
+[root@node1 ~]# mount -a
+
+[root@node1 ~]# lsblk
+NAME              MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+nvme0n3           259:6    0    6G  0 disk
+├─nvme0n3p2       259:5    0    3G  0 part
+│ └─wgroup-wshare 253:3    0  800M  0 lvm  /mnt/wshare
+```
+
+### Q17. Configure System Tuning: Choose the recommended 'tuned' profile for your system and set it as the default
+```bash
+[root@node1 ~]# rpm -q tuned
+tuned-2.24.0-1.el9.noarch 
+[root@node1 ~]# systemctl status tuned.service
+
+[root@node1 ~]# tuned-adm active
+Current active profile: powersave
+[root@node1 ~]# tuned-adm recommend
+virtual-guest
+[root@node1 ~]# tuned-adm profile virtual-guest
+[root@node1 ~]# tuned-adm active
+Current active profile: virtual-guest
+```
+

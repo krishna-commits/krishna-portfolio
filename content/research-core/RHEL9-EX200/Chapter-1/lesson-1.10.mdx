@@ -1,0 +1,291 @@
+---
+title: "Lesson 1.10: Basics of Users, Groups & Permissions"
+date: "2024-04-04"
+parent: "Chapter 1: Understand and use essential tools"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 10
+completed: true
+---
+## Users
+### Type of Users
+<table>
+<tbody>
+<tr>
+<td>
+<strong>Type of Users</strong>
+</td>
+<td>
+<strong>UID</strong>
+</td>
+</tr>
+<tr>
+<td>Root User</td>
+<td>0</td>
+</tr>
+<tr>
+<td>System User</td>
+<td>1-200</td>
+</tr>
+<tr>
+<td>App User</td>
+<td>201-999</td>
+</tr>
+<tr>
+<td>Normal User</td>
+<td>>=1000</td>
+</tr>
+</tbody
+></table>
+
+### Adding User
+```bash 
+[root@client ~]# useradd ribik 
+[root@client ~]# passwd ribik 
+Changing password for user ribik.
+New password: 
+Retype new password: 
+passwd: all authentication tokens updated successfully.
+```
+### User's Database file : `/etc/passwd`
+- Format : ribik:x:1001:1001::/home/ribik:/bin/bash
+- < username >:< encrypted password >:< uid >:< gid >:< comment >:< home directory >:< shell >
+- Example: ribik:x:1001:1001::/home/ribik:/bin/bash
+
+## Groups
+### Type of Groups
+<table>
+<tbody>
+<tr>
+<td>
+<strong>Type of Groups</strong>
+</td>
+<td>
+<strong>GID</strong>
+</td>
+</tr>
+<tr>
+<td>Root User's Group</td>
+<td>0</td>
+</tr>
+<tr>
+<td>System User's Group</td>
+<td>1-200</td>
+</tr>
+<tr>
+<td>App User's Group</td>
+<td>201-999</td>
+</tr>
+<tr>
+<td>Normal User's Group</td>
+<td>>=1000</td>
+</tr>
+</tbody
+></table>
+
+## Permissions
+### Conversions
+- r (read) = 4
+- w (write) = 2
+- x (execute) = 1
+> chmod 777 filename
+
+### Identity & Position
+- User  =	First or left-most
+- Group =	Middle
+- Others =	Last or right-most
+> chmod u=rwx,g=rw,o=x filename
+
+### Viewing Permissions on a file/directory
+- `ls -l` : Show Long Listing
+- Format : < Permissions > < hardlink > < owner name > < group name > < file size > < date & time of modification > < name >
+```bash
+[root@client ~]# ls -l 
+total 4
+-rw-------. 1 root root 1143 Dec  6  2023 anaconda-ks.cfg
+drwxr-xr-x. 2 root root    6 Mar  7  2024 Desktop
+drwxr-xr-x. 2 root root    6 Mar  7  2024 Documents
+drwxr-xr-x. 2 root root    6 Mar  7  2024 Downloads
+drwxr-xr-x. 2 root root    6 Mar  7  2024 Music
+drwxr-xr-x. 2 root root    6 Mar  7  2024 Pictures
+drwxr-xr-x. 2 root root    6 Mar  7  2024 Public
+drwxr-xr-x. 2 root root    6 Mar  7  2024 Templates
+drwxr-xr-x. 2 root root    6 Mar  7  2024 Videos
+```
+
+### Permissions Field
+- The field is of 10 Character
+- < Type >< Owner >< Group >< Others >
+- Type ( - normal fiel ), ( d directory ), (l soft link), (b block device file), (c Character device file)
+
+### UMASK
+- umask is a value that determines default permission on a file/directory in the time of creation.
+```bash
+[root@client ~]# umask 
+0022 
+```
+- Default value of permission for file is 644 (-rw-r--r--) and for folder is 755 (drwxr-xr-x).
+```bash
+[root@client class]# touch file1 && mkdir folder1 && ls -l
+total 0
+-rw-r--r--. 1 root root 0 Sep 21 09:37 file1
+drwxr-xr-x. 2 root root 6 Sep 21 09:37 folder1
+```
+#### Formula to Calculate default permission of file
+- Maximum allowed permission at the time of file creation (666)
+- Substract : Max allowed Permission (666) - umask value (022) : 644 (Default value)
+
+#### Formula to Calculate default permission of directory
+- Maximum allowed permission at the time of directory creation (777)
+- Substract : Max allowed Permission (777) - umask value (022) : 755 (Default value)
+
+### Chaning the umask Command
+#### Temporary umask change 
+- `umask <umask value>`
+#### Permanently umask change 
+- CASE I: User-specific umask change
+- - Go to .bashrc and add the line `umask <umask value>`
+- CASE II: System-wide umask change
+- - Go to /etc/.basrc and the line `umask <umask value>`
+
+#### How to calculate the required umask value for file ? 
+- Suppose we want a file to have only read write permission for the owner. (-rw-------)
+- Using the Substraction method :
+- What is the substractor ( 666 - ??? =  600 )
+- ( 666 - 066 = 600 ), 066 is the umask value. 
+
+#### Example : Temporarily changing Umask value for file
+```bash
+# Default umask value
+[sanjeeb@client ~]$ mkdir class && cd class && touch file1 && ls -lh 
+total 0
+-rw-r--r--. 1 sanjeeb sanjeeb 0 Sep 21 09:51 file1
+[sanjeeb@client class]$ umask 
+0022
+
+# Changing the umask value temporarily
+[sanjeeb@client class]$ umask 066
+[sanjeeb@client class]$ umask 
+0066
+
+# Creating a file and viewing permission
+[sanjeeb@client class]$ touch file2 && ls -lh file2 
+-rw-------. 1 sanjeeb sanjeeb 0 Sep 21 09:53 file2
+```
+
+#### How to calculate the required umask value for directory ? 
+- Suppose we want a file to have only read write permission for the owner. (-rwx------)
+- Using the Substraction method :
+- What is the substractor ( 777 - ??? =  700 )
+- ( 777 - 077 = 700 ), 077 is the umask value. 
+
+#### Example : Temporarily changing Umask value for directory
+```bash
+# Default permission of folder
+[sanjeeb@client class]$ mkdir dir1 | ls -lh 
+total 0
+drwx--x--x. 2 sanjeeb sanjeeb 6 Sep 21 09:56 dir1
+
+# Changing the umask value temporarily
+[sanjeeb@client class]$ umask 077
+
+# Viewing the permission after change
+[sanjeeb@client class]$ mkdir dir2 && ls -lh dir2
+total 0
+drwx------. 2 sanjeeb sanjeeb 6 Sep 21 09:58 dir2
+```
+
+---
+
+## Manipulating Permissions
+
+### There are also operators to manipulate the permissions:
+<table>
+<tbody>
+<tr>
+<td>
+<strong>Task</strong>
+</td>
+<td>
+<strong>Operator</strong>
+</td>
+</tr>
+<tr>
+<td>Grant a level of access</td>
+<td>+</td>
+</tr>
+<tr>
+<td>Remove a level of access</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Set a level of access</td>
+<td>=</td>
+</tr></tbody></table>
+
+```bash
+[sanjeeb@server Documents]$ ls -l 
+total 0
+-rw-r--r--. 1 sanjeeb sanjeeb 0 Apr  6 21:25 file1
+```
+```bash
+[sanjeeb@server Documents]$ chmod 777 file1 
+[sanjeeb@server Documents]$ ls -l 
+total 0
+-rwxrwxrwx. 1 sanjeeb sanjeeb 0 Apr  6 21:25 file1
+```
+```bash 
+[sanjeeb@server Documents]$ chmod u=rwx,g=rw,o=r file1 
+[sanjeeb@server Documents]$ ls -l
+total 0
+-rwxrw-r--. 1 sanjeeb sanjeeb 0 Apr  6 21:25 file1
+```
+
+#### Example 1: Change the permission of the /home/sanjeeb/Documents/file1 such that only the owner gets full permission and groups members & others do not get any permission. Use `symbolic` method to change the permission.
+```bash 
+[sanjeeb@server Documents]$ ls -lh
+total 0
+----------. 1 sanjeeb sanjeeb 0 Apr  6 21:25 file1
+[sanjeeb@server Documents]$ chmod u=rwx,g=,o= file1 
+[sanjeeb@server Documents]$ ls -lh
+total 0
+-rwx------. 1 sanjeeb sanjeeb 0 Apr  6 21:25 file1
+```
+
+#### Example 2: Change the permission of the /home/sanjeeb/Documents/file2 such that the owner and the group members get read and execute permission and others get read only permission. Use `numeric` method to change the permission. 
+```bash
+[sanjeeb@server Documents]$ chmod 554 file2
+[sanjeeb@server Documents]$ ls -lh
+total 0
+-r-xr-xr--. 1 sanjeeb sanjeeb 0 Apr  7 06:39 file2
+[sanjeeb@server Documents]$  
+```
+#### Example 3: Grant all privileges to all users to the directory /home/sanjeeb/Documents/folder1. Make sure that full privileges is granted to all users on that directory as well as to the contents and sub-contents of the directory at one shot. Use `numeric` method to change the permission.
+```bash 
+[sanjeeb@server Documents]$ chmod -R 777 folder1/
+
+[sanjeeb@server Documents]$ ls -lh
+total 0
+drwxrwxrwx. 2 sanjeeb sanjeeb 45 Apr  7 06:45 folder1
+
+[sanjeeb@server Documents]$ cd folder1
+[sanjeeb@server folder1]$ ls -lh
+total 0
+-rwxrwxrwx. 1 sanjeeb sanjeeb 0 Apr  7 06:45 file1
+-rwxrwxrwx. 1 sanjeeb sanjeeb 0 Apr  7 06:45 file2
+-rwxrwxrwx. 1 sanjeeb sanjeeb 0 Apr  7 06:45 file3
+```
+
+### Example 4: Removing rwx permission from file1 for other users
+```bash 
+[sanjeeb@server folder1]$ chmod o-rwx file1
+[sanjeeb@server folder1]$ ls -lh
+total 0
+-rwxrwx---. 1 sanjeeb sanjeeb 0 Apr  7 06:45 file1
+```
+
+### Example 5: Removing execute permission from owner, write-execute permission from group and everything from other in file2 
+```bash 
+[sanjeeb@server folder1]$ chmod u-x,g-wx,o= file2 
+[sanjeeb@server folder1]$ ls -lh | grep file2
+-rw-r-----. 1 sanjeeb sanjeeb 0 Apr  7 06:45 file2
+```

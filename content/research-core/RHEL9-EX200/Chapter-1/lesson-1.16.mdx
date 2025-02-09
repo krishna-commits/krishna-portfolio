@@ -1,0 +1,257 @@
+---
+title: "Lesson 1.16: Archiving Files & Directories"
+description: 
+date: "2024-04-04"
+parent: "Chapter 1: Understand and use essential tools"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 16
+completed: true
+---
+
+### Command: `tar [option] < files/dir to be archived >`
+#### Option
+- -c, --create : create a new archive
+- -v, --verbose : verbosely list files processed
+- -f : < archive filename > to specify archive file 
+- -t : list contents of an archive
+- -r : add new file/dir into an archive
+- -x : extract files/dir from an archive
+- -z : greate a `gzip` compressed archive (tar.gz, .tgz)
+- -j : create a `bzip2` compressed archive (tar.bz2 , .tbz)
+
+#### Example 1: Creating an archive
+```bash
+[sanjeeb@assignmentserver class]$ ls 
+appstream.conf  dir4          krb5.conf       nsswitch.conf  sestatus.conf
+asound.conf     dir5          ld.so.conf      pbm2ppa.conf   sysctl.conf
+brltty.conf     dnsmasq.conf  libuser.conf    php-fpm.conf   updatedb.conf
+chrony.conf     dracut.conf   locale.conf     pnm2ppa.conf   usb_modeswitch.conf
+dir1            fuse.conf     logrotate.conf  resolv.conf
+dir2            host.conf     man_db.conf     rsyncd.conf
+dir3            kdump.conf    mke2fs.conf     rsyslog.conf
+
+[sanjeeb@assignmentserver class]$ tar -cvf confanddir.tar /home/sanjeeb/class/*.conf /home/sanjeeb/class/dir{1..5}
+
+[sanjeeb@assignmentserver class]$ ls | grep .tar
+confanddir.tar
+
+```
+#### Example 2: Listing files/dir inside the archive
+
+```bash
+[sanjeeb@assignmentserver class]$ tar -tvf confanddir.tar 
+-rw-r--r-- sanjeeb/sanjeeb 833 2024-09-19 17:00 home/sanjeeb/class/appstream.conf
+-rw-r--r-- sanjeeb/sanjeeb  55 2024-09-19 17:00 home/sanjeeb/class/asound.conf
+-rw-r--r-- sanjeeb/sanjeeb 28974 2024-09-19 17:00 home/sanjeeb/class/brltty.conf
+-rw-r--r-- sanjeeb/sanjeeb  1371 2024-09-19 17:00 home/sanjeeb/class/chrony.conf
+-rw-r--r-- sanjeeb/sanjeeb 27839 2024-09-19 17:00 home/sanjeeb/class/dnsmasq.conf
+-rw-r--r-- sanjeeb/sanjeeb   117 2024-09-19 17:00 home/sanjeeb/class/dracut.conf
+-rw-r--r-- sanjeeb/sanjeeb    38 2024-09-19 17:00 home/sanjeeb/class/fuse.conf
+-rw-r--r-- sanjeeb/sanjeeb     9 2024-09-19 17:00 home/sanjeeb/class/host.conf
+-rw-r--r-- sanjeeb/sanjeeb  8979 2024-09-19 17:00 home/sanjeeb/class/kdump.conf
+-rw-r--r-- sanjeeb/sanjeeb   880 2024-09-19 17:00 home/sanjeeb/class/krb5.conf
+-rw-r--r-- sanjeeb/sanjeeb    28 2024-09-19 17:00 home/sanjeeb/class/ld.so.conf
+-rw-r--r-- sanjeeb/sanjeeb  2391 2024-09-19 17:00 home/sanjeeb/class/libuser.conf
+-rw-r--r-- sanjeeb/sanjeeb    19 2024-09-19 17:00 home/sanjeeb/class/locale.conf
+-rw-r--r-- sanjeeb/sanjeeb   496 2024-09-19 17:00 home/sanjeeb/class/logrotate.conf
+-rw-r--r-- sanjeeb/sanjeeb  5235 2024-09-19 17:00 home/sanjeeb/class/man_db.conf
+-rw-r--r-- sanjeeb/sanjeeb  1208 2024-09-19 17:00 home/sanjeeb/class/mke2fs.conf
+-rw-r--r-- sanjeeb/sanjeeb  2124 2024-09-19 17:00 home/sanjeeb/class/nsswitch.conf
+-rw-r--r-- sanjeeb/sanjeeb  1362 2024-09-19 17:00 home/sanjeeb/class/pbm2ppa.conf
+-rw-r--r-- sanjeeb/sanjeeb  4937 2024-09-19 17:00 home/sanjeeb/class/php-fpm.conf
+-rw-r--r-- sanjeeb/sanjeeb  6300 2024-09-19 17:00 home/sanjeeb/class/pnm2ppa.conf
+-rw-r--r-- sanjeeb/sanjeeb    55 2024-09-19 17:00 home/sanjeeb/class/resolv.conf
+-rw-r--r-- sanjeeb/sanjeeb   458 2024-09-19 17:00 home/sanjeeb/class/rsyncd.conf
+-rw-r--r-- sanjeeb/sanjeeb  3380 2024-09-19 17:00 home/sanjeeb/class/rsyslog.conf
+-rw-r--r-- sanjeeb/sanjeeb   216 2024-09-19 17:00 home/sanjeeb/class/sestatus.conf
+-rw-r--r-- sanjeeb/sanjeeb   449 2024-09-19 17:00 home/sanjeeb/class/sysctl.conf
+-rw-r--r-- sanjeeb/sanjeeb   624 2024-09-19 17:00 home/sanjeeb/class/updatedb.conf
+-rw-r--r-- sanjeeb/sanjeeb  1523 2024-09-19 17:00 home/sanjeeb/class/usb_modeswitch.conf
+drwxr-xr-x sanjeeb/sanjeeb     0 2024-09-19 19:15 home/sanjeeb/class/dir1/
+drwxr-xr-x sanjeeb/sanjeeb     0 2024-09-19 19:15 home/sanjeeb/class/dir2/
+drwxr-xr-x sanjeeb/sanjeeb     0 2024-09-19 19:15 home/sanjeeb/class/dir3/
+drwxr-xr-x sanjeeb/sanjeeb     0 2024-09-19 19:15 home/sanjeeb/class/dir4/
+drwxr-xr-x sanjeeb/sanjeeb     0 2024-09-19 19:15 home/sanjeeb/class/dir5/
+```
+
+#### Example 4: Adding new files/dir inside an existing archive
+```bash
+[sanjeeb@assignmentserver class]$ tar -rvf confanddir.tar /home/sanjeeb/class/dir{6..10}
+[sanjeeb@assignmentserver class]$ tar -rvf confanddir.tar /home/sanjeeb/class/file{1..5}
+
+#Listing the added files
+[sanjeeb@assignmentserver class]$ tar -tvf confanddir.tar 
+-rw-r--r-- sanjeeb/sanjeeb 833 2024-09-19 17:00 home/sanjeeb/class/appstream.conf
+-rw-r--r-- sanjeeb/sanjeeb  55 2024-09-19 17:00 home/sanjeeb/class/asound.conf
+-rw-r--r-- sanjeeb/sanjeeb 28974 2024-09-19 17:00 home/sanjeeb/class/brltty.conf
+-rw-r--r-- sanjeeb/sanjeeb  1371 2024-09-19 17:00 home/sanjeeb/class/chrony.conf
+-rw-r--r-- sanjeeb/sanjeeb 27839 2024-09-19 17:00 home/sanjeeb/class/dnsmasq.conf
+-rw-r--r-- sanjeeb/sanjeeb   117 2024-09-19 17:00 home/sanjeeb/class/dracut.conf
+-rw-r--r-- sanjeeb/sanjeeb    38 2024-09-19 17:00 home/sanjeeb/class/fuse.conf
+-rw-r--r-- sanjeeb/sanjeeb     9 2024-09-19 17:00 home/sanjeeb/class/host.conf
+-rw-r--r-- sanjeeb/sanjeeb  8979 2024-09-19 17:00 home/sanjeeb/class/kdump.conf
+-rw-r--r-- sanjeeb/sanjeeb   880 2024-09-19 17:00 home/sanjeeb/class/krb5.conf
+-rw-r--r-- sanjeeb/sanjeeb    28 2024-09-19 17:00 home/sanjeeb/class/ld.so.conf
+-rw-r--r-- sanjeeb/sanjeeb  2391 2024-09-19 17:00 home/sanjeeb/class/libuser.conf
+-rw-r--r-- sanjeeb/sanjeeb    19 2024-09-19 17:00 home/sanjeeb/class/locale.conf
+-rw-r--r-- sanjeeb/sanjeeb   496 2024-09-19 17:00 home/sanjeeb/class/logrotate.conf
+-rw-r--r-- sanjeeb/sanjeeb  5235 2024-09-19 17:00 home/sanjeeb/class/man_db.conf
+-rw-r--r-- sanjeeb/sanjeeb  1208 2024-09-19 17:00 home/sanjeeb/class/mke2fs.conf
+-rw-r--r-- sanjeeb/sanjeeb  2124 2024-09-19 17:00 home/sanjeeb/class/nsswitch.conf
+-rw-r--r-- sanjeeb/sanjeeb  1362 2024-09-19 17:00 home/sanjeeb/class/pbm2ppa.conf
+-rw-r--r-- sanjeeb/sanjeeb  4937 2024-09-19 17:00 home/sanjeeb/class/php-fpm.conf
+-rw-r--r-- sanjeeb/sanjeeb  6300 2024-09-19 17:00 home/sanjeeb/class/pnm2ppa.conf
+-rw-r--r-- sanjeeb/sanjeeb    55 2024-09-19 17:00 home/sanjeeb/class/resolv.conf
+-rw-r--r-- sanjeeb/sanjeeb   458 2024-09-19 17:00 home/sanjeeb/class/rsyncd.conf
+-rw-r--r-- sanjeeb/sanjeeb  3380 2024-09-19 17:00 home/sanjeeb/class/rsyslog.conf
+-rw-r--r-- sanjeeb/sanjeeb   216 2024-09-19 17:00 home/sanjeeb/class/sestatus.conf
+-rw-r--r-- sanjeeb/sanjeeb   449 2024-09-19 17:00 home/sanjeeb/class/sysctl.conf
+-rw-r--r-- sanjeeb/sanjeeb   624 2024-09-19 17:00 home/sanjeeb/class/updatedb.conf
+-rw-r--r-- sanjeeb/sanjeeb  1523 2024-09-19 17:00 home/sanjeeb/class/usb_modeswitch.conf
+
+drwxr-xr-x sanjeeb/sanjeeb     0 2024-09-19 19:15 home/sanjeeb/class/dir1/
+drwxr-xr-x sanjeeb/sanjeeb     0 2024-09-19 19:15 home/sanjeeb/class/dir2/
+drwxr-xr-x sanjeeb/sanjeeb     0 2024-09-19 19:15 home/sanjeeb/class/dir3/
+drwxr-xr-x sanjeeb/sanjeeb     0 2024-09-19 19:15 home/sanjeeb/class/dir4/
+drwxr-xr-x sanjeeb/sanjeeb     0 2024-09-19 19:15 home/sanjeeb/class/dir5/
+drwxr-xr-x sanjeeb/sanjeeb     0 2024-09-19 19:21 home/sanjeeb/class/dir6/
+drwxr-xr-x sanjeeb/sanjeeb     0 2024-09-19 19:21 home/sanjeeb/class/dir7/
+drwxr-xr-x sanjeeb/sanjeeb     0 2024-09-19 19:21 home/sanjeeb/class/dir8/
+drwxr-xr-x sanjeeb/sanjeeb     0 2024-09-19 19:21 home/sanjeeb/class/dir9/
+drwxr-xr-x sanjeeb/sanjeeb     0 2024-09-19 19:21 home/sanjeeb/class/dir10/
+
+-rw-r--r-- sanjeeb/sanjeeb     0 2024-09-19 19:21 home/sanjeeb/class/file1
+-rw-r--r-- sanjeeb/sanjeeb     0 2024-09-19 19:21 home/sanjeeb/class/file2
+-rw-r--r-- sanjeeb/sanjeeb     0 2024-09-19 19:21 home/sanjeeb/class/file3
+-rw-r--r-- sanjeeb/sanjeeb     0 2024-09-19 19:21 home/sanjeeb/class/file4
+-rw-r--r-- sanjeeb/sanjeeb     0 2024-09-19 19:21 home/sanjeeb/class/file5
+```
+
+#### Example 5: Compressing an archive file 
+```bash
+ [sanjeeb@assignmentserver class]$ gzip -v confanddir.tar 
+confanddir.tar:	 73.8% -- replaced with confanddir.tar.gz
+
+[sanjeeb@assignmentserver class]$ ls -lh confanddir.tar.gz 
+-rw-r--r--. 1 sanjeeb sanjeeb 35K Sep 19 19:29 confanddir.tar.gz
+```
+
+#### Example 6: Creating archive and compress it at the same time using `gzip`
+```bash {16} /-zcvf/
+
+[sanjeeb@assignmentserver class]$ ls
+appstream.conf  dir5          file3         locale.conf     rsyncd.conf
+asound.conf     dir6          file4         logrotate.conf  rsyslog.conf
+brltty.conf     dir7          file5         man_db.conf     sestatus.conf
+chrony.conf     dir8          fuse.conf     mke2fs.conf     sysctl.conf
+dir1            dir9          host.conf     nsswitch.conf   
+dir10           dnsmasq.conf  kdump.conf    pbm2ppa.conf    updatedb.conf
+dir2            dracut.conf   krb5.conf     php-fpm.conf    usb_modeswitch.conf
+dir3            file1         ld.so.conf    pnm2ppa.conf
+dir4            file2         libuser.conf  resolv.conf
+
+[sanjeeb@assignmentserver class]$ mkdir tar
+[sanjeeb@assignmentserver class]$ cd tar
+
+[sanjeeb@assignmentserver tar]$ tar -zcvf tarcompfile.tar.gz /home/sanjeeb/class/
+
+[sanjeeb@assignmentserver tar]$ ls
+tarcompfile.tar.gz
+[sanjeeb@assignmentserver tar]$ tar -tvf tarcompfile.tar.gz
+drwxr-xr-x sanjeeb/sanjeeb   0 2024-09-19 19:37 home/sanjeeb/class/
+-rw-r--r-- sanjeeb/sanjeeb  55 2024-09-19 17:00 home/sanjeeb/class/asound.conf
+-rw-r--r-- sanjeeb/sanjeeb 28974 2024-09-19 17:00 home/sanjeeb/class/brltty.conf
+-rw-r--r-- sanjeeb/sanjeeb  1371 2024-09-19 17:00 home/sanjeeb/class/chrony.conf
+-rw-r--r-- sanjeeb/sanjeeb 27839 2024-09-19 17:00 home/sanjeeb/class/dnsmasq.conf
+-rw-r--r-- sanjeeb/sanjeeb   117 2024-09-19 17:00 home/sanjeeb/class/dracut.conf
+-rw-r--r-- sanjeeb/sanjeeb    38 2024-09-19 17:00 home/sanjeeb/class/fuse.conf
+-rw-r--r-- sanjeeb/sanjeeb     9 2024-09-19 17:00 home/sanjeeb/class/host.conf
+-rw-r--r-- sanjeeb/sanjeeb  8979 2024-09-19 17:00 home/sanjeeb/class/kdump.conf
+-rw-r--r-- sanjeeb/sanjeeb   880 2024-09-19 17:00 home/sanjeeb/class/krb5.conf
+-rw-r--r-- sanjeeb/sanjeeb    28 2024-09-19 17:00 home/sanjeeb/class/ld.so.conf
+-rw-r--r-- sanjeeb/sanjeeb  2391 2024-09-19 17:00 home/sanjeeb/class/libuser.conf
+-rw-r--r-- sanjeeb/sanjeeb    19 2024-09-19 17:00 home/sanjeeb/class/locale.conf
+-rw-r--r-- sanjeeb/sanjeeb   496 2024-09-19 17:00 home/sanjeeb/class/logrotate.conf
+-rw-r--r-- sanjeeb/sanjeeb  5235 2024-09-19 17:00 home/sanjeeb/class/man_db.conf
+-rw-r--r-- sanjeeb/sanjeeb  1208 2024-09-19 17:00 home/sanjeeb/class/mke2fs.conf
+-rw-r--r-- sanjeeb/sanjeeb  2124 2024-09-19 17:00 home/sanjeeb/class/nsswitch.conf
+-rw-r--r-- sanjeeb/sanjeeb  1362 2024-09-19 17:00 home/sanjeeb/class/pbm2ppa.conf
+-rw-r--r-- sanjeeb/sanjeeb  4937 2024-09-19 17:00 home/sanjeeb/class/php-fpm.conf
+-rw-r--r-- sanjeeb/sanjeeb  6300 2024-09-19 17:00 home/sanjeeb/class/pnm2ppa.conf
+-rw-r--r-- sanjeeb/sanjeeb    55 2024-09-19 17:00 home/sanjeeb/class/resolv.conf
+-rw-r--r-- sanjeeb/sanjeeb   458 2024-09-19 17:00 home/sanjeeb/class/rsyncd.conf
+-rw-r--r-- sanjeeb/sanjeeb  3380 2024-09-19 17:00 home/sanjeeb/class/rsyslog.conf
+-rw-r--r-- sanjeeb/sanjeeb   216 2024-09-19 17:00 home/sanjeeb/class/sestatus.conf
+-rw-r--r-- sanjeeb/sanjeeb   449 2024-09-19 17:00 home/sanjeeb/class/sysctl.conf
+-rw-r--r-- sanjeeb/sanjeeb   624 2024-09-19 17:00 home/sanjeeb/class/updatedb.conf
+-rw-r--r-- sanjeeb/sanjeeb  1523 2024-09-19 17:00 home/sanjeeb/class/usb_modeswitch.conf
+-rw-r--r-- sanjeeb/sanjeeb   833 2024-09-19 17:00 home/sanjeeb/class/appstream.conf
+drwxr-xr-x sanjeeb/sanjeeb     0 2024-09-19 19:15 home/sanjeeb/class/dir1/
+drwxr-xr-x sanjeeb/sanjeeb     0 2024-09-19 19:15 home/sanjeeb/class/dir2/
+drwxr-xr-x sanjeeb/sanjeeb     0 2024-09-19 19:15 home/sanjeeb/class/dir3/
+drwxr-xr-x sanjeeb/sanjeeb     0 2024-09-19 19:15 home/sanjeeb/class/dir4/
+drwxr-xr-x sanjeeb/sanjeeb     0 2024-09-19 19:15 home/sanjeeb/class/dir5/
+drwxr-xr-x sanjeeb/sanjeeb     0 2024-09-19 19:21 home/sanjeeb/class/dir6/
+drwxr-xr-x sanjeeb/sanjeeb     0 2024-09-19 19:21 home/sanjeeb/class/dir7/
+drwxr-xr-x sanjeeb/sanjeeb     0 2024-09-19 19:21 home/sanjeeb/class/dir8/
+drwxr-xr-x sanjeeb/sanjeeb     0 2024-09-19 19:21 home/sanjeeb/class/dir9/
+drwxr-xr-x sanjeeb/sanjeeb     0 2024-09-19 19:21 home/sanjeeb/class/dir10/
+-rw-r--r-- sanjeeb/sanjeeb     0 2024-09-19 19:21 home/sanjeeb/class/file1
+-rw-r--r-- sanjeeb/sanjeeb     0 2024-09-19 19:21 home/sanjeeb/class/file2
+-rw-r--r-- sanjeeb/sanjeeb     0 2024-09-19 19:21 home/sanjeeb/class/file3
+-rw-r--r-- sanjeeb/sanjeeb     0 2024-09-19 19:21 home/sanjeeb/class/file4
+-rw-r--r-- sanjeeb/sanjeeb     0 2024-09-19 19:21 home/sanjeeb/class/file5
+drwxr-xr-x sanjeeb/sanjeeb     0 2024-09-19 19:37 home/sanjeeb/class/tar/
+-rw-r--r-- sanjeeb/sanjeeb     0 2024-09-19 19:37 home/sanjeeb/class/tar/tarcompfile.tar.gz
+```
+
+#### Example 7: Creating archive and compress it at the same time using `bzip`
+```bash {4}
+[sanjeeb@assignmentserver class]$ mkdir bziptar
+[sanjeeb@assignmentserver class]$ cd bziptar/
+
+[sanjeeb@assignmentserver bziptar]$ tar -jcvf bziptarcomp.tar.bz2 /home/sanjeeb/class/dir{1..10}
+tar: Removing leading `/` from member names
+/home/sanjeeb/class/dir1/
+/home/sanjeeb/class/dir2/
+/home/sanjeeb/class/dir3/
+/home/sanjeeb/class/dir4/
+/home/sanjeeb/class/dir5/
+/home/sanjeeb/class/dir6/
+/home/sanjeeb/class/dir7/
+/home/sanjeeb/class/dir8/
+/home/sanjeeb/class/dir9/
+/home/sanjeeb/class/dir10/
+
+# List the files inside compressed archive
+[sanjeeb@assignmentserver bziptar]$ tar -tvf bziptarcomp.tar.bz2 
+drwxr-xr-x sanjeeb/sanjeeb   0 2024-09-19 19:15 home/sanjeeb/class/dir1/
+drwxr-xr-x sanjeeb/sanjeeb   0 2024-09-19 19:15 home/sanjeeb/class/dir2/
+drwxr-xr-x sanjeeb/sanjeeb   0 2024-09-19 19:15 home/sanjeeb/class/dir3/
+drwxr-xr-x sanjeeb/sanjeeb   0 2024-09-19 19:15 home/sanjeeb/class/dir4/
+drwxr-xr-x sanjeeb/sanjeeb   0 2024-09-19 19:15 home/sanjeeb/class/dir5/
+drwxr-xr-x sanjeeb/sanjeeb   0 2024-09-19 19:21 home/sanjeeb/class/dir6/
+drwxr-xr-x sanjeeb/sanjeeb   0 2024-09-19 19:21 home/sanjeeb/class/dir7/
+drwxr-xr-x sanjeeb/sanjeeb   0 2024-09-19 19:21 home/sanjeeb/class/dir8/
+drwxr-xr-x sanjeeb/sanjeeb   0 2024-09-19 19:21 home/sanjeeb/class/dir9/
+drwxr-xr-x sanjeeb/sanjeeb   0 2024-09-19 19:21 home/sanjeeb/class/dir10/
+
+[sanjeeb@assignmentserver bziptar]$ ls 
+bziptarcomp.tar.bz2
+```
+
+#### Example 8: Extracting from compressed archive 
+```bash /-jxvf/
+# For Bzip use -j , and for Gzip use -z
+[sanjeeb@assignmentserver extract]$ tar -jxvf ../bziptar/bziptarcomp.tar.bz2 
+home/sanjeeb/class/dir1/
+home/sanjeeb/class/dir2/
+home/sanjeeb/class/dir3/
+home/sanjeeb/class/dir4/
+home/sanjeeb/class/dir5/
+home/sanjeeb/class/dir6/
+home/sanjeeb/class/dir7/
+home/sanjeeb/class/dir8/
+home/sanjeeb/class/dir9/
+home/sanjeeb/class/dir10/
+```

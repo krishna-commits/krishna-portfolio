@@ -1,0 +1,22 @@
+---
+title: "Kubernetes Services"
+description: ""
+parent: Kubernetes
+grand_parent: Service and Cloud Computing
+order: 6
+completed: true
+---
+
+In Kubernetes, a **Service** is an abstraction layer that defines a set of networked pods and provides a stable endpoint for accessing them. It acts as a way to expose an application running on a set of pods to other applications or external users, allowing seamless communication between different components within a Kubernetes cluster. Services manage the complexity of pod networking, such as IP address changes, and ensure reliable access to the application by providing a consistent DNS name or IP address, regardless of the underlying pod lifecycle. This helps decouple application components, making the system more resilient and scalable by handling load balancing and routing traffic to the appropriate pods based on defined selectors.
+
+In Kubernetes, there are four primary Service Types, each designed to handle different scenarios for exposing and accessing applications within and outside a cluster.
+
+* **ClusterIP:** This is the default service type in Kubernetes. It assigns a virtual IP (VIP) within the cluster, which makes the service accessible only from within the cluster. It is the most common type used for internal communication between pods and services, ensuring that they can interact without exposing their IP addresses to the outside world. ClusterIP services are ideal for use cases where external access to the service is not required, and communication should be confined to the internal network of the Kubernetes cluster.
+
+* **NodePort:** The NodePort service type exposes the service on a specific port across all nodes in the cluster. This allows external traffic to access the service by connecting to the IP address of any node in the cluster, using the specified port. The NodePort type is useful for scenarios where direct external access is needed, but without relying on a cloud-based load balancer. However, it is generally less flexible and secure compared to other types, as the service is open on all nodes, making it accessible externally through any node's IP address and port.
+
+* **LoadBalancer:** The LoadBalancer service type is designed for cloud environments and provides an external load balancer to distribute incoming traffic across the cluster's nodes. When this service type is created in cloud providers like AWS, GCP, or Azure, it automatically provisions an external load balancer and assigns a public IP address to the service. This service type is ideal for production environments where high availability, scalability, and automatic traffic distribution are required. It ensures that the application can handle varying traffic loads efficiently and provides a stable external IP address for clients to access the service.
+
+* **ExternalName:** The ExternalName service type maps a service within the Kubernetes cluster to an external DNS name. Instead of managing and exposing services within the cluster, Kubernetes uses this service type to reference resources outside the cluster, such as legacy systems or external databases. This service type does not expose ports or create an IP address for the service; instead, it redirects traffic to the external resource using DNS resolution. ExternalName is particularly useful for integrating Kubernetes-managed applications with existing infrastructure that resides outside the Kubernetes ecosystem.
+
+Each of these service types is tailored to meet specific use cases, allowing Kubernetes clusters to manage how applications are exposed and accessed based on the desired level of internal or external visibility, scalability, and availability.

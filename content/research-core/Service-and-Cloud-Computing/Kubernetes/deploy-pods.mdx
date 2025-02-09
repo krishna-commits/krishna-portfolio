@@ -1,0 +1,73 @@
+---
+title: "Deploy Pods"
+description: ""
+parent: Kubernetes
+grand_parent: Service and Cloud Computing
+order: 4
+completed: true
+---
+
+### Create or Delete Pods 
+```shell 
+# run [test-nginx] pods
+[root@mgr ~]# kubectl create deployment test-nginx --image=nginx
+deployment.apps/test-nginx created
+
+[root@mgr ~]# kubectl get pods 
+NAME                          READY   STATUS    RESTARTS   AGE
+test-nginx-6cc69bb979-dm2w9   1/1     Running   0          24s
+
+[root@mgr ~]# kubectl get pods -o wide 
+NAME                          READY   STATUS    RESTARTS   AGE   IP              NODE               NOMINATED NODE   READINESS GATES
+test-nginx-6cc69bb979-dm2w9   1/1     Running   0          73s   192.168.143.1   node01.offix.com   <none>           <none>
+
+# scale out pods
+[root@mgr ~]# kubectl scale deployment test-nginx --replicas=3 
+deployment.apps/test-nginx scaled
+
+[root@mgr ~]# kubectl get pods -o wide 
+NAME                          READY   STATUS    RESTARTS   AGE   IP               NODE               NOMINATED NODE   READINESS GATES
+test-nginx-6cc69bb979-dm2w9   1/1     Running   0          22m   192.168.143.1    node01.offix.com   <none>           <none>
+test-nginx-6cc69bb979-nc55n   1/1     Running   0          49s   192.168.143.2    node01.offix.com   <none>           <none>
+test-nginx-6cc69bb979-sw8qq   1/1     Running   0          49s   192.168.102.65   node02.offix.com   <none>           <none>
+
+# set service
+[root@mgr ~]# kubectl expose deployment test-nginx --type="NodePort" --port 80
+service "test-nginx" exposed
+
+[root@mgr ~]# kubectl get services test-nginx
+NAME         TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+test-nginx   NodePort   10.111.178.61   <none>        80:32139/TCP   18m
+
+
+# set port-forwarding and verify access
+[root@mgr ~]# kubectl port-forward service/test-nginx --address 127.0.0.1 8082:80 &
+[1] 2930
+[root@mgr ~]# curl localhost:8082
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+.....
+.....
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+
+```
+
+### Getting detailed information about pod 
+```shell
+# kubectl describe pod <pod_name> 
+[root@mgr ~]# kubectl describe pod test-nginx-6cc69bb979-sw8qq 
+```
+
+### Getting labels
+```shell
+[root@mgr ~]# kubectl get pods --show-labels 
+NAME                          READY   STATUS    RESTARTS   AGE   LABELS
+test-nginx-6cc69bb979-dm2w9   1/1     Running   0          18h   app=test-nginx,pod-template-hash=6cc69bb979
+test-nginx-6cc69bb979-nc55n   1/1     Running   0          17h   app=test-nginx,pod-template-hash=6cc69bb979
+test-nginx-6cc69bb979-sw8qq   1/1     Running   0          17h   app=test-nginx,pod-template-hash=6cc69bb979
+```
+

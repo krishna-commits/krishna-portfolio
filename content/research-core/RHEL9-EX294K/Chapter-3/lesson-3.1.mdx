@@ -1,0 +1,115 @@
+---
+title: "Lesson 3.1: Writing and Running Playbooks"
+description:
+parent: "Chapter 3: Implementing Playbooks"
+grand_parent : "Redhat Enterprise Linux 9 - EX294K RHCE"
+order: 1
+completed: false
+---
+
+## Configuring YUM Repositories Using Ansible Playbook
+
+This Ansible playbook automates the setup of **BaseOS** and **AppStream** YUM repositories on managed hosts. It ensures that each node has access to essential software packages by defining repository details, enabling GPG checks, and importing the required GPG key for package security. The playbook is structured as follows:
+
+* Adds the **BaseOS** repository with the specified baseurl and GPG key.
+* Adds the **AppStream** repository for additional software packages.
+* Imports the GPG key from the specified URL to ensure package authenticity.
+
+Before execution, a syntax check ```ansible-playbook --syntax-check yum-repos.yml``` verifies correctness. Running the playbook ```ansible-playbook yum-repos.yml``` applies the configuration across all managed hosts, ensuring a consistent and secure package management setup.
+
+```ansible.builtin.rpm_key``` is an Ansible module used to manage RPM GPG keys on Red Hat-based systems (RHEL, CentOS, Fedora, etc.). It allows you to import, remove, or verify GPG keys, which are used to authenticate RPM packages before installation.
+We use ```ansible-doc rpm_key``` to retrieve documentation about the rpm_key module, including its description, parameters, and usage examples.
+
+```shell
+[devops@ansible-server ansible]$ vim yum-repos.yml
+[devops@ansible-server ansible]$ cat yum-repos.yml 
+- name: Playbook to create BaseOs and AppStream repos
+  hosts: all
+  tasks:
+  - name: Add BaseOS repository
+    ansible.builtin.yum_repository:
+      name: BaseOS
+      description: Base OS Repo
+      baseurl: http://192.168.208.100/softwares/BaseOS
+      file: external_repos
+      enabled: yes
+      gpgcheck: yes
+      gpgkey: http://192.168.208.100/softwares/RPM-GPG-KEY-centosofficial
+  - name: Add AppStream repository
+    ansible.builtin.yum_repository:
+      name: AppStream
+      description: AppStream Repo
+      baseurl: http://192.168.208.100/softwares/AppStream
+      file: external_repos
+      enabled: yes
+      gpgcheck: yes
+      gpgkey: http://192.168.208.100/softwares/RPM-GPG-KEY-centosofficial
+  - name: Import a key from a url
+    ansible.builtin.rpm_key:
+      state: present
+      key: http://192.168.208.100/softwares/RPM-GPG-KEY-centosofficial
+[devops@ansible-server ansible]$ ansible-playbook --syntax-check yum-repos.yml 
+
+playbook: yum-repos.yml
+[devops@ansible-server ansible]$ ansible-playbook yum-repos.yml
+```
+---
+
+## Ansible Playbook for Package Installation and Updates
+This task requires creating a playbook ```/home/devops/ansible/packages.yml``` to manage package installations across different host groups. The playbook will:
+* Install **PHP** and **MariaDB** packages on hosts in the **dev, test, and prod** groups.
+* Install the **Development tools** package group on hosts in the dev group only.
+* Update all installed packages to their latest versions on hosts in the **dev** group only.
+This ensures that each environment has the necessary software while keeping development systems up to date.
+
+```shell
+[devops@ansible-server ansible]$ cat packages.yml 
+- name: Playbook to manage package installations
+  hosts: all
+  tasks:
+  - name: Install the latest version of PHP and mariadb
+    ansible.builtin.yum:
+      name: "{{ item }}"
+      state: latest
+    loop:
+    - php
+    - mariadb
+    when: inventory_hostname in groups['dev'] or inventory_hostname in groups['test'] or inventory_hostname in groups['prod']
+
+  - name: Install the 'Development tools' package group
+    ansible.builtin.yum:
+      name: "@Development tools"
+      state: present
+    when: inventory_hostname in groups['dev']
+
+  - name: Upgrade all packages
+    ansible.builtin.yum:
+      name: '*'
+      state: latest
+    when: inventory_hostname in groups['dev']
+
+[devops@ansible-server ansible]$ ansible-playbook --syntax-check packages.yml 
+
+playbook: packages.yml
+[devops@ansible-server ansible]$ ansible-playbook packages.yml 
+```
+---
+
+## Configuring Time Synchronization Using RHEL System Roles in Ansible
+This task involves installing the RHEL system roles package and creating an Ansible playbook (/home/devops/ansible/timesync.yml) to manage time synchronization across all managed hosts. The playbook:
+* Uses the timesync role from RHEL system roles to configure NTP settings.
+* Sets the time server to time.google.com for accurate synchronization.
+* Enables the iburst parameter, allowing faster clock adjustments when servers first connect
+
+```shell
+[devops@ansible-server ansible]$ cat timesync.yml 
+- name: Manage timesync
+  hosts: all
+  vars:
+    timesync_ntp_servers:
+      - hostname: time.google.com
+        iburst: true
+  roles:
+    - /usr/share/ansible/roles/rhel-system-roles.timesync
+[devops@ansible-server ansible]$ ansible-playbook timesync.yml 
+```

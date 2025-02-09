@@ -1,0 +1,27 @@
+---
+title: "Lesson 5.5: Create and configure set-GID directories for collaboration"
+description:
+date: "2024-04-04"
+parent: "Chapter 5: Create and configure file systems"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 5
+completed: true
+---
+
+```bash 
+[sanjeeb@serverB home]$ sudo chmod g+s dir1/
+[sanjeeb@serverB home]$ ls -lh
+total 4.0K
+drwxrwsr-x.  2 root    sales     26 Oct 27 19:07 dir1
+
+[sanjeeb@serverB home]$ cd dir1/
+[sanjeeb@serverB dir1]$ ls
+f1  f2
+
+[sanjeeb@serverB dir1]$ touch f3
+[sanjeeb@serverB dir1]$ ls -lh
+total 0
+-rw-r--r--. 1 root    root    0 Oct 27 19:07 f1
+-rw-r--r--. 1 sanjeeb sanjeeb 0 Oct 27 19:07 f2
+-rw-r--r--. 1 sanjeeb sales   0 Oct 27 19:21 f3 # Newly Added with SGID 
+```

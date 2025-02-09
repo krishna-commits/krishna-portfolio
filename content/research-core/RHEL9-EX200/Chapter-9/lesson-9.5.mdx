@@ -1,0 +1,52 @@
+---
+title: "Lesson 9.5: List and identify SELinux file and process context"
+description:
+date: "2024-04-04"
+parent: "Chapter 9: Manage security"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 5
+---
+
+## To view the security context of a file/dir
+Format : `user:role:type:sensitivity`
+```bash 
+[root@server ~]# ls -Z 
+unconfined_u:object_r:admin_home_t:s0 data1  unconfined_u:object_r:admin_home_t:s0 loans
+unconfined_u:object_r:admin_home_t:s0 data2  unconfined_u:object_r:admin_home_t:s0 stratis
+```
+
+### Effects of create, copy & move operations on a file for SELinux point of view
+- Create : Whenever any file is created then the file inherits SELinux context of it parents directory.
+- Copy : Whenever file is copied from one dir to another dir, then the file takes SELinux Security Context of the destination directory.
+- Move : Whenever file is  moved from one dir to another dir, then the file still retains its original SELINUX Security Context.
+
+### Viewing an example of create, copy & move operations on a web server 
+```bash 
+# Creating a file , new file takes the SELinux Context of its parent directoy. Hence Website displayed
+[root@server html]# vim index.html 
+[root@server html]# ls
+index.html
+[root@server html]# ls -Z 
+unconfined_u:object_r:httpd_sys_content_t:s0 index.html
+[root@server html]# 
+[root@server html]# ls -dZ /var/www/html/
+system_u:object_r:httpd_sys_content_t:s0 /var/www/html/
+
+# Copying a file, copyed file takes the SELinux context of the destination directory /var/www/html
+[root@server ~]# ls -dZ 
+system_u:object_r:admin_home_t:s0 .
+[root@server ~]# vim index.html
+[root@server ~]# cp index.html /var/www/html/
+[root@server ~]# cd /var/www/html/
+[root@server html]# ls -Z index.html 
+unconfined_u:object_r:httpd_sys_content_t:s0 index.html
+
+# Moving a file, moved file takes the SELinux context of the directory from where it was moved  /
+[root@server ~]# vim index.html
+[root@server ~]# ls -dZ 
+system_u:object_r:admin_home_t:s0 .
+[root@server ~]# mv index.html /var/www/html/
+[root@server ~]# cd /var/www/html/
+[root@server html]# ls -Z index.html 
+unconfined_u:object_r:admin_home_t:s0 index.html
+```

@@ -1,0 +1,142 @@
+---
+title: "Lesson 1.14: Copying, Removing Files and Directories"
+description: 
+date: "2024-04-04"
+parent: "Chapter 1: Understand and use essential tools"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 14
+completed: true
+---
+## Copying Files and Directories
+### Command: `cp [option] [source] <destination>`
+
+#### Option
+- -i : Ask for confirmation
+- -f : Forcefully overwrite
+- -r : To copy a dir and sub directory
+
+```bash {3,14.20}
+[sanjeeb@assignmentserver test2]$ ls
+d1  d2  f1  f2
+[sanjeeb@assignmentserver test2]$ cp f1 d1 
+[sanjeeb@assignmentserver test2]$ tree
+.
+├── d1
+│   └── f1
+├── d2
+├── f1
+└── f2
+
+2 directories, 3 files
+
+[sanjeeb@assignmentserver test2]$ cp -i f2 d2
+[sanjeeb@assignmentserver test2]$ tree
+.
+├── d1
+│   └── f1
+├── d2
+│   └── f2
+├── f1
+└── f2
+
+[sanjeeb@assignmentserver test2]$ cp -r  d3.1 d3 
+[sanjeeb@assignmentserver test2]$ tree
+.
+├── d1
+│   └── f1
+├── d2
+│   ├── f2
+│   └── f3
+├── d3
+│   ├── d3.1
+│   └── f3
+├── d3.1
+├── f1
+├── f2
+└── f3
+
+```
+
+---
+## Removing Files and Directories
+### Command: `rm [option] [source] <destination>`
+
+#### Option
+- -i : Ask for confirmation for removal
+- -f : Forcefully remove without confirmation
+- -r : To remove a directory
+
+```bash {5,10,16}
+[sanjeeb@assignmentserver test2]$ ls
+d1  d2  d3  d3.1  f1  f2  f3
+
+# Default 
+[sanjeeb@assignmentserver test2]$ rm f1 
+[sanjeeb@assignmentserver test2]$ ls
+d1  d2  d3  d3.1  f2  f3
+
+# -i : Ask for confirmation for removal
+[sanjeeb@assignmentserver test2]$ rm -i f2 
+rm: remove regular empty file 'f2'? y
+[sanjeeb@assignmentserver test2]$ ls
+d1  d2  d3  d3.1  f3
+
+# -r : To remove a directory
+[sanjeeb@assignmentserver test2]$ rm -r d3.1
+[sanjeeb@assignmentserver test2]$ ls
+d1  d2  d3  f3
+```
+---
+
+## Examples 
+
+### Example 1: Using the copy command with wildcard (ending with .conf)
+```bash /.conf/
+[sanjeeb@assignmentserver /]$ cp /etc/*.conf /home/sanjeeb/class/
+
+[sanjeeb@assignmentserver class]$ pwd
+/home/sanjeeb/class
+
+[sanjeeb@assignmentserver class]$ ls
+appstream.conf  dracut.conf  ld.so.conf      mke2fs.conf    resolv.conf    updatedb.conf
+asound.conf     fuse.conf    libuser.conf    nsswitch.conf  rsyncd.conf    usb_modeswitch.conf
+brltty.conf     host.conf    locale.conf     pbm2ppa.conf   rsyslog.conf   vconsole.conf
+chrony.conf     kdump.conf   logrotate.conf  php-fpm.conf   sestatus.conf  xattr.conf
+dnsmasq.conf    krb5.conf    man_db.conf     pnm2ppa.conf   sysctl.conf    yum.conf
+```
+
+### Example 2: Using the copy command with wildcard ( starting with yum and everthing after)
+```bash
+# Checking the files or directories first
+[sanjeeb@assignmentserver /]$ ls -l /etc | grep yum*
+drwxr-xr-x.  2 root root        57 Dec  6  2023 yum
+lrwxrwxrwx.  1 root root        12 Oct 26  2023 yum.conf -> dnf/dnf.conf
+drwxr-xr-x.  3 root root      4096 Apr 14 17:35 yum.repos.d
+
+# Using -r for directories 
+[sanjeeb@assignmentserver /]$ cp -r /etc/yum* /home/sanjeeb/class/
+
+#Checking whether it's copied or not 
+[sanjeeb@assignmentserver class]$ ls | grep yum
+yum
+yum.conf
+yum.repos.d
+```
+
+### Example 3: Using rm command to remove with wildcard ( starting with yum and everything after )
+```bash 
+[sanjeeb@assignmentserver class]$ ls -lh | grep yum 
+drwxr-xr-x. 2 sanjeeb sanjeeb   57 Sep 19 17:24 yum
+lrwxrwxrwx. 1 sanjeeb sanjeeb   12 Sep 19 17:24 yum.conf -> dnf/dnf.conf
+drwxr-xr-x. 3 sanjeeb sanjeeb 4.0K Sep 19 17:24 yum.repos.d
+
+[sanjeeb@assignmentserver class]$ rm -rf yum*
+
+[sanjeeb@assignmentserver class]$ ls -lh | grep yum 
+[sanjeeb@assignmentserver class]$ ls
+appstream.conf  dracut.conf  ld.so.conf      mke2fs.conf    resolv.conf    updatedb.conf
+asound.conf     fuse.conf    libuser.conf    nsswitch.conf  rsyncd.conf    usb_modeswitch.conf
+brltty.conf     host.conf    locale.conf     pbm2ppa.conf   rsyslog.conf   vconsole.conf
+chrony.conf     kdump.conf   logrotate.conf  php-fpm.conf   sestatus.conf  xattr.conf
+dnsmasq.conf    krb5.conf    man_db.conf     pnm2ppa.conf   sysctl.conf
+```

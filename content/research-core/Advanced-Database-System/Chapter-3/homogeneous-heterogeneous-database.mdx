@@ -1,0 +1,34 @@
+---
+title: Introduction to Distributed Database
+description:
+parent: Distributed Database System
+grand_parent : Advanced Database System
+order: 1
+completed: true
+---
+
+A distributed database system is a type of database architecture where data is stored across multiple locations, or sites, rather than in a single centralized database. Each site operates independently and can process transactions on its own, but sites are loosely connected and collaborate as needed. There is no shared physical component between the sites, meaning they are loosely coupled.
+
+### Key Characteristics:
+* **Independent Operation:** Each site’s database system runs independently, without direct dependency on the software or operations at other sites.
+* **Transactions Across Sites:** Transactions can access data from a single site or multiple sites, depending on the need.
+Distributed databases can be homogeneous or heterogeneous:
+
+## Homogeneous Distributed Databases
+In a homogeneous distributed database:
+* **Uniform Software:** All sites use the same database software.
+* **Full Awareness and Cooperation:** Each site is aware of the others and cooperates to process user requests. The system behaves like a single unified database from the user's perspective.
+* **No Independent Changes:** Each site has agreed to relinquish the ability to independently modify schemas or software, ensuring consistency across all sites.
+* **Single System Appearance:** To the end user, the distributed database system appears as a single logical database rather than multiple sites.
+
+This setup simplifies management and allows for easier coordination of transactions and data consistency, as all sites are standardized in terms of software and schemas.
+
+## Heterogeneous Distributed Databases
+In a heterogeneous distributed database:
+
+* **Varied Software and Schemas:** Different sites may use different database software, configurations, and schemas, which makes coordination and consistency more challenging.
+* **Schema Differences:** Differences in schemas (data structures, table layouts, etc.) make query processing more complex, as each site may store data in a unique format.
+* **Software Differences:** Differences in software complicate transaction processing since various database management systems may handle transactions, locking, and recovery differently.
+* **Limited Awareness:** Sites may not be fully aware of each other’s existence or may only partially coordinate, which can affect data consistency and transaction integrity.
+
+The heterogeneous model is often used when sites are maintained independently or use legacy systems that cannot be easily standardized, but it requires additional mechanisms to handle compatibility and coordination between systems.

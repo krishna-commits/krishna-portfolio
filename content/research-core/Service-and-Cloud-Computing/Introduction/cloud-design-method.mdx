@@ -1,0 +1,126 @@
+---
+title: "Cloud application design methodologies"
+description: ""
+parent: Introduction
+grand_parent: Service and Cloud Computing
+order: 12
+completed: true
+---
+
+##  Service Oriented Architecture
+Service Oriented Architecture (SOA) is a well established architectural approach for designing and developing applications in the form services that can be shared and reused. 
+* SOA is a collection of discrete software modules or services that form a part of an application and collectively provide the functionality of an application. 
+* SOA services are developed as loosely coupled modules with no hard-wired calls embedded in the services.  
+* The services communicate with each other by passing messages. 
+* Services are described using the **Web Services Description Language (WSDL)**. 
+WSDL is an XML-based web services description language that is used to create service descriptions containing information on the functions performed by a service and the inputs and outputs of the service.
+
+## SOA LAyers 
+* Business Systems
+    * This layer consists of custom built applications and legacy systems such as Enterprise Resource Planning (ERP), Customer Relationship Management (CRM), Supply Chain Management (SCM), etc.
+* Service Components 
+    *  The service components allow the layers above to interact with the business systems. The service components are responsible for realizing the functionality of the services exposed.
+* Composite Services
+    * These are coarse-grained services which are composed of two or more service components. Composite services can be used to create enterprise scale components or business-unit specific components.
+* Orchestrated Business Processes
+    * Composite services can be orchestrated to create higher level business processes.  In this layers the compositions and orchestrations of the composite services are defined to create business processes.
+* Presentation Services
+    * This is the topmost layer that includes user interfaces that exposes the services and the orchestrated business processes to the users.
+* Enterprise Service Bus
+    * This layer integrates the services through adapters, routing, transformation and messaging mechanisms.
+
+## Software Design Pattern 
+
+### MVC
+* **Model View Controller (MVC)** is a popular software design pattern for web applications.
+* **Model** manages the data and the behavior of the applications.   Model processes events sent by the controller. Model has no information about the views and controllers. Model responds to the requests for  information about its state (from the view) and responds to the instructions to change state (from controller).
+* **View** prepares the interface which is shown to the user. Users interact with the application through views. Views present the information that the model or controller tell the view to present to the user and also handle user requests and sends them to the controller.
+* **Controller** glues the model to the view. Controller processes user requests and updates the model when the user manipulates the view. Controller also updates the view when the model changes.
+
+### RESTful Web Services
+* A RESTful web service is a web API implemented using HTTP and REST principles.
+* Representational State Transfer (REST) is a set of architectural principles by which you can design web services and web APIs that focus on a system’s resources and how resource states are addressed and transferred. 
+* The REST architectural constraints apply to the components, connectors, and data elements, within a distributed hypermedia system.
+* The REST architectural constraints are as follows:
+    * Client-Server
+    * Stateless
+    * Cacheable
+    * Layered System
+    * Uniform Interface
+    * Code on demand
+
+## Reference Architectures for Cloud Applications
+
+![](https://sufqavlxovkf8wxj.public.blob.vercel-storage.com/Screenshot%202025-01-03%20at%2007.10.51-RLUQLWoaweftCMYqprIW2HCeAcpjQz.png)
+* Database Tier
+    * The database tier includes a primary database instance and multiple replica instances.  
+    * The **primary node** serves all the write requests and the read requests are served from the **replica nodes**. 
+    * This improves the throughput for the database tier since most applications have a higher number of read requests than write requests.
+* Application Tier
+    * For this tier, it is  recommended to configure auto scaling. 
+    * Auto scaling can be triggered when the recorded values for any of the specified metrics such as CPU usage, memory usage, etc. goes above defined thresholds. 
+* Load Balancing Tier
+    * Load balancing tier consists of one or more load balancers.
+    * Load balancing distributes workloads across multiple servers to meet the application workloads.
+    * Depending on what the load balancer checks in the client request to redirect the traffic
+        * Application load balancing
+            * Application load balancers look at the request content, such as HTTP headers or SSL session IDs, to redirect traffic. 
+        * Network load balancing
+            * Network load balancers examine IP addresses and other network information to redirect traffic optimally. 
+            * They track the source of the application traffic and can assign a static IP address to several servers. 
+            * Network load balancers use the static and dynamic load balancing algorithms to balance server load.
+        * Global server load balancing
+            * Global server load balancing occurs across several geographically distributed servers. 
+            * For example, companies can have servers in multiple data centers, in different countries, and in third-party cloud providers around the globe. 
+            * In this case, local load balancers manage the application load within a region or zone. 
+            * They attempt to redirect traffic to a server destination that is geographically closer to the client. 
+            * They might redirect traffic to servers outside the client’s geographic zone only in case of server failure.
+        * DNS load balancing
+            * In DNS load balancing, you configure your domain to route network requests across a pool of resources on your domain.
+            * A domain can correspond to a website, a mail system, a print server, or another service that is made accessible through the internet. 
+            * DNS load balancing is helpful for maintaining application availability and balancing network traffic across a globally distributed pool of resources. 
+        
+## Load balancing approaches
+* Dynamic load balancing 
+    * uses algorithms that take into account the current state of each server and distribute traffic accordingly
+* Static load balancing 
+    * distributes traffic without making these adjustments
+    * some static algorithms send an equal amount of traffic to each server in a group, either in a specified order or at random
+
+## Static load balancing algorithms
+* Round robin: 
+    * Round robin load balancing distributes traffic to a list of servers in rotation using the Domain Name System (DNS). 
+* Weighted round robin: 
+    * Allows an administrator to assign different weights to each server. Servers deemed able to handle more traffic will receive slightly more. Weighting can be configured within DNS records.
+* IP hash: 
+    * Combines incoming traffic's source and destination IP addresses and uses a **mathematical function** to convert it into a hash. Based on the hash, the connection is assigned to a specific server.
+
+## Dynamic load balancing algorithms
+* Least connection: 
+    * Checks which servers have the fewest connections open at the time and sends traffic to those servers. 
+    * This assumes all connections require roughly equal processing power.
+* Weighted least connection: 
+    * Gives administrators the ability to assign different weights to each server, assuming that some servers can handle more connections than others.
+* Weighted response time: 
+    * Averages the response time of each server, and combines that with the number of connections each server has open to determine where to send traffic. By sending traffic to the servers with the quickest response time, the algorithm ensures faster service for users.
+* Resource-based: 
+    * Distributes load based on what resources each server has available at the time. Specialized software (called an "agent") running on each server measures that server's available CPU and memory, and the load balancer queries the agent before distributing traffic to that server.
+
+## Load Balancing Benifits
+* Application availability
+* Application scalability
+* Application security
+* Application performance
+
+## Reference Architecture 
+### CDN ( Content Delivery Network )
+![](https://sufqavlxovkf8wxj.public.blob.vercel-storage.com/Screenshot%202025-01-03%20at%2007.25.06-mPI1iCMGxCxusLO0S701GqJQzvgwsk.png)
+* A content delivery network (CDN) which consists of a global network of edge locations is used for media delivery. 
+* Both relational and non-relational data stores are shown in this deployment. 
+
+### Analytics App
+![](https://sufqavlxovkf8wxj.public.blob.vercel-storage.com/Screenshot%202025-01-03%20at%2007.25.31-n51EsOpyHQPjWciWIDEP8VJK2jKJWG.png)
+* Comprises of web, application, storage, computing/analytics and database tiers. 
+* The analytics tier consists of cloud-based distributed batch processing frameworks such as Hadoop which are suitable for analyzing big data. 
+* Data analysis jobs (such as MapReduce) jobs are submitted to the analytics tier from the application servers. 
+* The jobs are queued for execution and upon completion the analyzed data is presented from the application servers.

@@ -1,0 +1,51 @@
+---
+title: "Lesson 1.1: Access a shell prompt and issue commands with correct syntax"
+description:
+date: "2024-04-04"
+parent: "Chapter 1: Understand and use essential tools"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 1
+completed: true
+---
+
+Access to shell can be done by logging in at boot, or if a graphical desktop environment (X) is used, access can be gained by opening gnome-terminal, konsole, or Terminal. Alternatively, using Alt-Ctrl+fX (F1-F6) will gain access to a virtual teletype terminal. The default shell environment is bash, though sh, zsh, and csh are also available.
+
+- **hostname**: This command prints the name of the current host or machine. In this case, it prints "client" which is the hostname of the machine.
+
+- **hostname -I**: This command prints the IP addresses associated with the current host. In this case, it prints "192.168.208.130" which is the IP address assigned to the machine.
+
+- **whoami**: This command prints the username of the currently logged-in user. In this case, it prints "root" indicating that the user is logged in as the root user.
+
+```bash
+[root@client ~]# hostname 
+client
+[root@client ~]# hostname -I 
+192.168.208.130 
+[root@client ~]# whoami 
+root
+```
+- **pwd**:The pwd command stands for "print working directory". It prints the current working directory, which is the directory you are currently in within the file system. In this case, it shows that the current working directory is /etc/systemd.
+```bash
+[root@client systemd]# pwd
+/etc/systemd
+```
+
+- **ls -lhtra**: The command ls -lhtra is used to list files and directories in the current directory with detailed information. Here's what each option means:
+    - -l: Long format listing, displaying detailed information about each file or directory.
+    - -h: Human-readable file sizes, displaying file sizes in a format that is easier to understand for humans (e.g., "1K" instead of "1024").
+    - -t: Sort by modification time, with the newest files or directories appearing first.
+    - -r: Reverse the order of the sort, so the oldest files or directories appear first.
+    - -a: When used, it includes hidden files and directories (those whose names start with a dot .) in the listing
+
+```bash
+[root@client ~]# ls -lhtra
+total 64K
+-rw-r--r--.  1 root root  129 Aug 10  2021 .tcshrc
+-rw-r--r--.  1 root root  100 Aug 10  2021 .cshrc
+-rw-r--r--.  1 root root  429 Aug 10  2021 .bashrc
+-rw-r--r--.  1 root root  141 Aug 10  2021 .bash_profile
+-rw-r--r--.  1 root root   18 Aug 10  2021 .bash_logout
+drwx------.  2 root root    6 Dec  6 10:44 .ssh
+-rw-------.  1 root root 1.2K Dec  6 10:48 anaconda-ks.cfg
+drwxr-xr-x.  2 root root    6 Mar  7 13:10 Videos
+```

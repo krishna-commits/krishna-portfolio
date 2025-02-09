@@ -1,0 +1,377 @@
+---
+title: "Lesson 2.3: Running Adhoc Commands"
+description:
+parent: "Chapter 2: Deploying Ansible"
+grand_parent : "Redhat Enterprise Linux 9 - EX294K RHCE"
+order: 3
+completed: true
+---
+
+* Adhoc commands are like individual commands.
+* Ansible Commands are called **Ansible Modules**
+* -m : module
+* -a : argument
+
+#### Syntax of Ad-hoc Command 
+> anisble < hostgroup > -m < ansible module > -a '< arguements >'
+
+#### Basic Example using ping module
+```bash 
+[devops@serverA playbooks]$ ansible all -m ping
+192.168.208.103 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+192.168.208.104 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+192.168.208.102 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+```
+
+### Finding the right module name 
+**Syntax:** ansible-doc -l | grep < name >
+```bash 
+[devops@serverA playbooks]$ ansible-doc -l | grep user | grep builtin
+ansible.builtin.user
+```
+
+### Taking help 
+**Syntax:** ansible-doc help < module_name >
+```bash 
+[devops@serverA playbooks]$ ansible-doc help ansible.builtin.user
+```
+
+### Creating a user using ansible 
+- --become : Become as root / sudo previllages
+- -u [user_name] : Running as which user. The user defined will run the command in the managed hosts from the specified user. If you do not provide the username then, it will use the current user of the system of control host in managed host. 
+* Color Indication
+    * Red - Failed / Command Failed.
+    * Yellow - Changed / Really the command executed.
+    * Green - Success / Has already performed this action previously.
+```bash 
+# For all listed Managed Hosts
+[devops@serverA playbooks]$ ansible all -m ansible.builtin.user -a "name=david" -u devops --become
+
+# For only a group 
+[devops@serverA playbooks]$ ansible testservers -m ansible.builtin.user -a 'name=testuser' --become
+```
+
+#### Another Method 
+- Without using --become
+- Without using -u
+```bash 
+# Modify the ansible.cfg file
+[devops@serverA playbooks]$ vim ansible.cfg
+
+[devops@serverA playbooks]$ cat ansible.cfg
+[defaults]
+inventory=/home/devops/playbooks/inventory
+remote_user=devops
+
+[privilege_escalation]
+become=true
+
+[devops@serverA playbooks]$ ansible testservers -m ansible.builtin.user -a 'name=testuser'
+```
+> Idempotent Property: The actions that are already performed in a server, will not be executed. Shows green color output, with success status.
+
+#### Removing a user 
+```bash 
+[devops@serverA playbooks]$ ansible testservers -m ansible.builtin.user -a 'name=testuser'
+```
+
+### Modifying a user in all 
+```bash 
+# Modifying the uid of the user david
+[devops@serverA playbooks]$ ansible all -m ansible.builtin.user -a 'name=david uid=3001'
+```
+
+### Deploying web page on Apache Web Server Using Ansible Ad-Hoc Commands
+```bash 
+# Modified inventory file, with added webservers 
+[devops@serverA playbooks]$ cat inventory
+[devservers]
+192.168.208.102
+
+[testservers]
+192.168.208.103
+
+[webservers]
+192.168.208.104
+
+[test:children]
+testservers
+
+[dev:children]
+devservers
+
+[web:children]
+webservers
+
+# Listing Hosts of Webservers 
+[devops@serverA playbooks]$ ansible webservers --list-hosts
+  hosts (1):
+    192.168.208.104
+
+# Finding Out the Module for YUM in ansible 
+[devops@serverA playbooks]$ ansible-doc -l | grep yum
+ansible.builtin.yum                                                                              Manages packages with the...
+ansible.builtin.yum_repository                                                                   Add or r...
+community.general.yum_versionlock                                                                Locks / unlocks a installed package(s) from being updated ...
+
+# View the examples of the ansible.builtin.yum module 
+[devops@serverA playbooks]$ ansible-doc help ansible.builtin.yum
+
+# Install yum using ad-hoc command 
+[devops@serverA playbooks]$ ansible webservers  -m ansible.builtin.yum -a "name=httpd state=latest"
+192.168.208.104 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": true,
+    "msg": "",
+    "rc": 0,
+    "results": [
+        "Installed: httpd-tools-2.4.62-1.el9.aarch64",
+        "Installed: centos-logos-httpd-90.8-1.el9.noarch",
+        "Installed: apr-util-openssl-1.6.1-23.el9.aarch64",
+        "Installed: mod_lua-2.4.62-1.el9.aarch64",
+        "Installed: httpd-2.4.62-1.el9.aarch64",
+        "Installed: httpd-core-2.4.62-1.el9.aarch64",
+        "Installed: apr-1.7.0-12.el9.aarch64",
+        "Installed: httpd-filesystem-2.4.62-1.el9.noarch",
+        "Installed: mod_http2-2.0.26-2.el9.aarch64",
+        "Installed: apr-util-1.6.1-23.el9.aarch64",
+        "Installed: apr-util-bdb-1.6.1-23.el9.aarch64"
+    ]
+}
+
+# Testing in the original Server ~ For Reference 
+[devops@serverD ~]# rpm -q httpd
+package httpd is not installed
+[devops@serverD ~]$ rpm -q httpd
+httpd-2.4.62-1.el9.aarch64
+
+# Start and Enable httpd service  
+[devops@serverA playbooks]$ ansible webservers -m ansible.builtin.service -a 'name=httpd state=started'
+[devops@serverA playbooks]$ ansible webservers -m ansible.builtin.service -a 'name=httpd enabled=yes'
+
+# Testing in the original Server ~ For Reference 
+# Before
+[devops@serverD ~]$ systemctl status httpd
+○ httpd.service - The Apache HTTP Server
+     Loaded: loaded (/usr/lib/systemd/system/httpd.service; disabled; preset: disabled)
+     Active: inactive (dead)
+# After 
+[devops@serverD ~]$ systemctl status httpd
+● httpd.service - The Apache HTTP Server
+     Loaded: loaded (/usr/lib/systemd/system/httpd.service; enabled; preset: disabled)
+     Active: active (running) since Fri 2024-10-25 09:55:09 +0545; 2min 9s ago
+
+# Adding firewall http 
+[devops@serverA playbooks]$ ansible-doc -l | grep firewall
+[devops@serverA playbooks]$ ansible-doc help ansible.posix.firewalld
+
+# Testing in the Original Server ~ For Reference FIREWALLD
+[devops@serverD ~]$ sudo firewall-cmd --list-all
+public (active)
+  target: default
+  icmp-block-inversion: no
+  interfaces: ens160
+  sources:
+  services: cockpit dhcpv6-client http ssh
+  ports:
+  protocols:
+  forward: yes
+  masquerade: no
+  forward-ports:
+  source-ports:
+  icmp-blocks:
+  rich rules:
+
+# SCP index file
+[devops@serverA playbooks]$ cat index.html
+<h1>This is Ansible Deployed Website ! </h1>
+[devops@serverA playbooks]$ ansible webservers -m ansible.builtin.copy -a 'src=index.html dest=/var/www/html/ '
+192.168.208.104 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": true,
+    "checksum": "5880f8b97b4dfd17ed95095308b88558010835ef",
+    "dest": "/var/www/html/index.html",
+    "gid": 0,
+    "group": "root",
+    "md5sum": "21d306eb3cb6580eee7b103b92971959",
+    "mode": "0644",
+    "owner": "root",
+    "secontext": "system_u:object_r:httpd_sys_content_t:s0",
+    "size": 45,
+    "src": "/home/devops/.ansible/tmp/ansible-tmp-1729830584.104643-22457-58708790527688/source",
+    "state": "file",
+    "uid": 0
+}
+
+# Test in the Original Server ~ For Reference SCP
+# Before
+[devops@serverD html]$ pwd
+/var/www/html
+[devops@serverD html]$ ls
+[devops@serverD html]$
+# After 
+[devops@serverD html]$ ls
+index.html
+[devops@serverD html]$ cat index.html
+<h1>This is Ansible Deployed Website ! </h1>
+```
+
+
+## Using Playbook 
+```bash 
+ansible.cfg  index.html  inventory  webdeploy.yaml
+[devops@serverA playbooks]$ cat webdeploy.yaml
+- name: Playbook to deploy webpage using apache web server
+  hosts: webservers
+  tasks:
+  - name: Install the latest version of Apache
+    ansible.builtin.yum:
+      name: httpd
+      state: latest
+  - name: Start service httpd, if not started
+    ansible.builtin.service:
+      name: httpd
+      state: started
+      enabled: yes
+  - name: permit http traffic in the firewall
+    ansible.posix.firewalld:
+      service: http
+      permanent: true
+      state: enabled
+      immediate: yes
+  - name: copy index.html file
+    ansible.builtin.copy:
+      src: index.html
+      dest: /var/www/html/index.html
+
+# Checking if syntax is correct
+[devops@serverA playbooks]$ ansible-playbook --syntax-check webdeploy.yaml
+playbook: webdeploy.yaml
+
+[devops@serverA playbooks]$ ansible-playbook webdeploy.yaml
+```
+
+## Rrmoving 
+
+```bash 
+[devops@serverA playbooks]$ cat removewebdeploy.yaml
+- name: Playbook to remove deployed web page
+  hosts: webservers
+  tasks:
+  - name: Un-Install the latest version of Apache
+    ansible.builtin.yum:
+      name: httpd
+      state: absent
+  - name: Stop service httpd, if not started
+    ansible.builtin.service:
+      name: httpd
+      state: stopped
+      enabled: no
+  - name: Remove http traffic in the firewall
+    ansible.posix.firewalld:
+      service: http
+      permanent: true
+      state: disabled
+      immediate: yes
+  - name: remove index.html file
+    ansible.builtin.file:
+      path: /var/www/html/index.html
+      state: absent
+
+[devops@serverA playbooks]$ ansible-playbook --syntax-check removewebdeploy.yaml
+playbook: removewebdeploy.yaml
+```
+---
+
+## Creating and Running an Ansible Ad-Hoc Command for Software Installation
+As a system administrator, you need to install software on managed hosts using Ansible ad-hoc commands. This task involves creating a shell script (yum-repo.sh) that executes an Ansible ad-hoc command to set up YUM repositories on each managed node. Specifically, you must configure two repositories: BaseOS and AppStream.
+
+```shell
+[devops@ansible-server ansible]$ cat yum-repos.sh 
+ansible all -m yum_repository -a 'file=external_repos name=BaseOS description="BaseOS Repo" baseurl=http://192.168.208.100/softwares/BaseOS gpgcheck=yes gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial enabled=yes state=present'
+
+ansible all -m yum_repository -a 'file=external_repos name=AppStream description="AppStream Repo" baseurl=http://192.168.208.100/softwares/AppStream gpgcheck=yes gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial enabled=yes state=present'
+
+[devops@ansible-server ansible]$ chmod +x yum-repos.sh 
+[devops@ansible-server ansible]$ ./yum-repos.sh 
+[devops@ansible-server ansible]$ ansible all -m command -a 'cat /etc/yum.repos.d/external_repos.repo'
+
+node1 | CHANGED | rc=0 >>
+[BaseOS]
+baseurl = http://192.168.208.100/softwares/BaseOS
+enabled = 1
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
+name = BaseOS Repo
+
+[AppStream]
+baseurl = http://192.168.208.100/softwares/AppStream
+enabled = 1
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
+name = AppStream Repo
+node3 | CHANGED | rc=0 >>
+[BaseOS]
+baseurl = http://192.168.208.100/softwares/BaseOS
+enabled = 1
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
+name = BaseOS Repo
+
+[AppStream]
+baseurl = http://192.168.208.100/softwares/AppStream
+enabled = 1
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
+name = AppStream Repo
+node4 | CHANGED | rc=0 >>
+[BaseOS]
+baseurl = http://192.168.208.100/softwares/BaseOS
+enabled = 1
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
+name = BaseOS Repo
+
+[AppStream]
+baseurl = http://192.168.208.100/softwares/AppStream
+enabled = 1
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
+name = AppStream Repo
+node2 | CHANGED | rc=0 >>
+[BaseOS]
+baseurl = http://192.168.208.100/softwares/BaseOS
+enabled = 1
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
+name = BaseOS Repo
+
+[AppStream]
+baseurl = http://192.168.208.100/softwares/AppStream
+enabled = 1
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
+name = AppStream Repo
+```

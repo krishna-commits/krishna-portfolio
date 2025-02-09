@@ -1,0 +1,286 @@
+---
+title: "Lesson 6.5: Install and update software packages from Red Hat Network, a remote repository, or from the local file system"
+description:
+date: "2024-04-04"
+parent: "Chapter 6: Deploy, configure, and maintain systems"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 5
+completed: true
+---
+### Managing Packages using RPM
+
+#### View Package installation in system
+```bash
+# To check for a single package
+[sanjeeb@sanjeeb ~]$ rpm -q httpd 
+httpd-2.4.57-8.el9.aarch64
+
+# To check for multiple package
+[sanjeeb@sanjeeb ~]$ rpm -q php httpd zip 
+package php is not installed
+httpd-2.4.57-8.el9.aarch64
+zip-3.0-35.el9.aarch64
+
+# To check using wildcard, using -qa queryall
+[sanjeeb@sanjeeb ~]$ rpm -qa *zip*
+bzip2-libs-1.0.8-8.el9.aarch64
+gzip-1.12-1.el9.aarch64
+unzip-6.0-56.el9.aarch64
+zip-3.0-35.el9.aarch64
+bzip2-1.0.8-8.el9.aarch64
+
+# To view all tha installed packages 
+[sanjeeb@sanjeeb ~]$ rpm -qa 
+autofs-5.1.7-58.el9.aarch64
+openssh-8.7p1-38.el9.aarch64
+openssh-clients-8.7p1-38.el9.aarch64
+openssh-server-8.7p1-38.el9.aarch64
+... ... ...
+
+# To view related file and bundle related to package
+[sanjeeb@sanjeeb ~]$ rpm -ql zip 
+/usr/bin/zip
+/usr/bin/zipcloak
+/usr/bin/zipnote
+/usr/bin/zipsplit
+/usr/lib/.build-id
+/usr/lib/.build-id/98
+/usr/share/doc/zip
+... ... ...
+
+# To get the information of the package
+[sanjeeb@sanjeeb ~]$ rpm -qi zip 
+Name        : zip
+Version     : 3.0
+Release     : 35.el9
+Architecture: aarch64
+Install Date: Wed 06 Dec 2023 10:45:30 AM +0545
+Group       : Unspecified
+Size        : 776983
+License     : BSD
+Signature   : RSA/SHA256, Thu 16 Feb 2023 02:57:05 PM +0545, Key ID 05b555b38483c65d
+Source RPM  : zip-3.0-35.el9.src.rpm
+Build Date  : Wed 15 Feb 2023 04:17:44 PM +0545
+Build Host  : aarch64-03.stream.rdu2.redhat.com
+Packager    : builder@centos.org
+Vendor      : CentOS
+URL         : http://www.info-zip.org/Zip.html
+Summary     : A file compression and packaging utility compatible with PKZIP
+Description :
+The zip program is a compression and file packaging utility.  Zip is
+analogous to a combination of the UNIX tar and compress commands and
+is compatible with PKZIP (a compression and file packaging utility for
+MS-DOS systems).
+Install the zip package if you need to compress files using the zip
+program.
+
+# To find out which part of the package is a file
+[sanjeeb@sanjeeb ~]$ rpm -qf /etc/passwd
+setup-2.13.7-9.el9.noarch
+
+# To find out the dependanct of a package (zip is dependant on these following packages)
+[sanjeeb@sanjeeb ~]$ rpm -q --requires zip
+ld-linux-aarch64.so.1()(64bit)
+ld-linux-aarch64.so.1(GLIBC_2.17)(64bit)
+libbz2.so.1()(64bit)
+libc.so.6()(64bit)
+libc.so.6(GLIBC_2.17)(64bit)
+libc.so.6(GLIBC_2.33)(64bit)
+libc.so.6(GLIBC_2.34)(64bit)
+rpmlib(CompressedFileNames) <= 3.0.4-1
+rpmlib(FileDigests) <= 4.6.0-1
+rpmlib(PayloadFilesHavePrefix) <= 4.0-1
+rpmlib(PayloadIsZstd) <= 5.4.18-1
+rtld(GNU_HASH)
+unzip
+
+# To find out the dependancy of a package (what packages are dependant on glibc)
+[sanjeeb@sanjeeb ~]$ rpm -q --whatrequires glibc
+glibc-all-langpacks-2.34-88.el9.aarch64
+glibc-langpack-en-2.34-88.el9.aarch64
+glibc-common-2.34-88.el9.aarch64
+libstdc++-11.4.1-2.3.el9.aarch64
+pam-1.5.1-16.el9.aarch64
+lockdev-1.0.4-0.37.20111007git.el9.aarch64
+
+# To view development history
+[sanjeeb@sanjeeb ~]$ rpm -q --changelog zip 
+* Tue Feb 14 2023 Jakub Martisko <jamartis@redhat.com> - 3.0-35
+- Fix the annocheck issus from 3-0-33 without reintroducing the regression from 3.0-34
+Related: rhbz#2162688
+
+* Wed Feb 02 2022 Jakub Martisko <jamartis@redhat.com> - 3.0-31
+- Add the missing linker flags
+- Add the patch that allows to configure the linker flags from the spec file
+  Resolves: rhbz #2044902
+
+* Tue Aug 10 2021 Mohan Boddu <mboddu@redhat.com> - 3.0-30
+- Rebuilt for IMA sigs, glibc 2.34, aarch64 flags
+  Related: rhbz#1991688
+
+* Fri Apr 16 2021 Mohan Boddu <mboddu@redhat.com> - 3.0-29
+- Rebuilt for RHEL 9 BETA on Apr 15th 2021. Related: rhbz#1947937
+```
+
+## Installing a package using YUM 
+```bash
+# -y is used for not asking confirmation
+[root@sanjeeb ~]# yum -y install httpd
+```
+
+## Uninstalling a package using YUM
+```bash
+# -y is used for not asking confirmation
+# This will remove the package with it's dependancy
+[root@sanjeeb ~]# yum -y remove httpd 
+
+# To remove a package without removing it's dependencies rpm -e --nodeps <package_name>
+[root@sanjeeb ~]# rpm -e --nodeps apr
+```
+
+## Query a package using YUM
+```bash
+# YUM queries package that are installed as well as available
+[sanjeeb@sanjeeb ~]$ yum list httpd
+CentOS Stream 9 - BaseOS                                                  313 kB/s | 9.3 MB     00:30    
+CentOS Stream 9 - AppStream                                               213 kB/s |  18 MB     01:28    
+CentOS Stream 9 - Extras packages                                         1.8 kB/s |  19 kB     00:10    
+Last metadata expiration check: 0:00:01 ago on Mon 23 Sep 2024 06:11:59 AM +0545.
+Installed Packages
+httpd.aarch64                                   2.4.57-8.el9                                    @appstream
+Available Packages
+httpd.aarch64                                   2.4.62-1.el9                                    appstream 
+
+# To get information about package 
+[sanjeeb@sanjeeb ~]$ yum info httpd
+
+# To display the history of packages installed using yum
+[sanjeeb@sanjeeb ~]$ yum history 
+ID     | Command line                                        | Date and time    | Action(s)      | Altered
+----------------------------------------------------------------------------------------------------------
+     7 | install openssh-server                              | 2024-04-06 08:47 | Upgrade        |    3   
+     6 | -y install autofs                                   | 2024-03-29 16:01 | Install        |    2   
+     5 | -y install nfs-utils                                | 2024-03-29 14:38 | I, U           |   14 EE
+     4 | -y install httpd                                    | 2024-03-06 17:04 | Install        |   11  <
+
+# Undo the yum operation from history yum history undo <history number>
+[sanjeeb@sanjeeb ~]$ yum history undo 4
+```
+
+### Install a group of packages
+```bash
+[sanjeeb@sanjeeb ~]$ yum group list 
+Last metadata expiration check: 4:52:42 ago on Mon 23 Sep 2024 06:11:59 AM +0545.
+Available Environment Groups:
+   Server
+   Minimal Install
+   Custom Operating System
+Installed Environment Groups:
+   Server with GUI
+Installed Groups:
+   Container Management
+   Headless Management
+Available Groups:
+   Legacy UNIX Compatibility
+   Console Internet Tools
+   Development Tools
+   .NET Development
+   Graphical Administration Tools
+   Network Servers
+   RPM Development Tools
+   Scientific Support
+   Security Tools
+   Smart Card Support
+   System Tools
+
+### To install all the tools for a developer machine using group
+[sanjeeb@sanjeeb ~]$ yum -y install "Development Tools"
+```
+
+## Configuring Local YUM Server using HTTP 
+- Install apache web server package
+- Copy the linux softwares into /var/www/html directory
+- Start the apache web service
+- Allow http packets through the firewall 
+
+```bash
+# YUM SERVER CONFIGURATION
+[root@sanjeeb ~]# hostname -I 
+172.20.10.201
+
+# 1. Install apache web server package
+[root@sanjeeb ~]# yum -y install httpd
+
+# 2. Copy the linux softwares into /var/www/html directory
+[root@sanjeeb ~]# cp -r /run/media/sanjeeb/CentOS-Stream-9-BaseOS-aarch64/BaseOS /var/www/html/softwares
+[root@sanjeeb ~]# cp -r /run/media/sanjeeb/CentOS-Stream-9-BaseOS-aarch64/AppStream /var/www/html/softwares
+
+# 4. Allow http packets through the firewall 
+[root@sanjeeb ~]# systemctl start firewalld 
+[root@sanjeeb ~]# systemctl status firewalld 
+● firewalld.service - firewalld - dynamic firewall daemon
+     Loaded: loaded (/usr/lib/systemd/system/firewalld.service; disabled; preset: enabled)
+     Active: active (running) since Mon 2024-09-23 12:21:11 +0545; 6s ago
+       Docs: man:firewalld(1)
+   Main PID: 4222 (firewalld)
+      Tasks: 2 (limit: 22585)
+     Memory: 28.3M
+        CPU: 188ms
+     CGroup: /system.slice/firewalld.service
+             └─4222 /usr/bin/python3 -s /usr/sbin/firewalld --nofork --nopid
+
+[root@sanjeeb ~]# firewall-cmd --permanent --add-service=http
+
+[root@sanjeeb ~]# firewall-cmd --list-all 
+public (active)
+  target: default
+  icmp-block-inversion: no
+  interfaces: ens160
+  sources: 
+  services: cockpit dhcpv6-client http ssh
+  ports: 
+  protocols: 
+  forward: yes
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: 
+
+# ---------
+
+# CLIENT SERVER CONFIGURATION
+[root@assignmentserver yum.repos.d]# hostname -I 
+172.20.10.200
+
+[root@assignmentserver yum.repos.d]# pwd
+/etc/yum.repos.d
+
+[root@assignmentserver yum.repos.d]# cat appstream.repo
+[appstream]
+name = Appstream Repository
+baseurl = http://172.20.10.201/softwares/AppStream
+enabled = 1
+gpgcheck = 0
+
+[root@assignmentserver yum.repos.d]# cat baseos.repo 
+[baseos]
+name = BaseOS Repository
+baseurl = http://172.20.10.201/softwares/BaseOS
+enabled = 1
+gpgcheck = 0
+
+[root@assignmentserver yum.repos.d]# yum list httpd 
+Repository 'appstream' is missing name in configuration, using id.
+Repository 'baseos' is missing name in configuration, using id.
+appstream                                                                  77 MB/s | 5.7 MB     00:00    
+baseos                                                                     69 MB/s | 2.1 MB     00:00    
+Installed Packages
+httpd.aarch64                                   2.4.62-1.el9                                    @appstream
+```
+
+## Extra packgae for Enterprise Linux 
+```bash
+[root@sanjeeb ~]# yum -y install epel-release
+
+```

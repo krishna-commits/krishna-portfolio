@@ -1,0 +1,152 @@
+---
+title: Setting up oracle using docker in macos
+description:
+parent: Lab Work
+grand_parent : Advanced Database System
+order: 1
+completed: true
+---
+
+### Pulling the Oracle Database Image
+Run the following command to pull the Oracle Database Free image from Oracle’s registry:
+```bash
+term@mac $ docker run -d --name train_oracle_db -p 1623:1521  container-registry.oracle.com/database/free:latest
+```
+#### Explanation:
+* -d runs the container in detached mode.
+* --name train_oracle_db assigns a name to the container.
+* -p 1623:1521 maps port 1521 in the container to 1623 on the host.
+
+#### Output:
+* Docker begins pulling the necessary layers of the Oracle Database image and shows progress as each layer completes.
+---
+
+### Checking Container Status
+
+Use docker ps to verify that the container is running:
+```bash 
+term@mac $ docker ps
+```
+
+#### Output:
+* This lists active containers. The train_oracle_db container should be displayed with the status "Up" and port 1623 mapped to 1521.
+---
+
+### Viewing Container Logs
+To check if the Oracle Database setup completed successfully:
+```bash 
+term@mac $ docker logs train_oracle_db
+```
+**Key Log Message:** Look for DATABASE IS READY TO USE which indicates that Oracle Database is fully set up.
+
+---
+
+### Setting the System Password
+Execute a script inside the container to set the password for the system user:
+```bash 
+term@mac $ docker exec -it train_oracle_db ./setPassword.sh oracle
+The Oracle base remains unchanged with value /opt/oracle
+
+SQL*Plus: Release 23.0.0.0.0 - Production on Sun Nov 3 04:06:07 2024
+Version 23.5.0.24.07
+
+Copyright (c) 1982, 2024, Oracle.  All rights reserved.
+
+Connected to:
+Oracle Database 23ai Free Release 23.0.0.0.0 - Develop, Learn, and Run for Free
+Version 23.5.0.24.07
+
+SQL>
+User altered.
+
+SQL>
+User altered.
+
+SQL>
+Session altered.
+
+SQL>
+User altered.
+
+SQL> Disconnected from Oracle Database 23ai Free Release 23.0.0.0.0 - Develop, Learn, and Run for Free
+Version 23.5.0.24.07
+```
+#### Explanation:
+* docker exec -it runs a command interactively inside the container.
+* ./setPassword.sh oracle sets "oracle" as the password for the system user.
+
+---
+
+### Accessing the Oracle Database Shell
+For further commands and configuration, enter the container’s shell.
+```bash 
+term@mac $ docker exec -it train_oracle_db /bin/bash
+bash-4.4$
+
+bash-4.4$ ps -ef | grep pmon
+oracle      37     1  0 04:01 ?        00:00:00 db_pmon_FREE
+oracle     737   685  0 04:07 pts/0    00:00:00 grep pmon
+```
+**Verification:** Run ps -ef to see Oracle processes like db_pmon_FREE, confirming the database processes are active.
+
+---
+
+### Starting SQL*Plus in SYSDBA Mode
+Connect to SQL*Plus as the SYSDBA:
+```bash
+bash-4.4$ sqlplus / as sysdba
+SQL> 
+SQL> exit
+```
+**Output:** SQLPlus starts, showing a connected state to the Oracle Database.
+
+---
+
+### Accessing SQL*Plus with System User
+To connect as the system user:
+```bash
+bash-4.4$ sqlplus system/oracle
+SQL> 
+SQL> exit
+```
+**Explanation:** system is the username, and oracle is the password set earlier.
+
+---
+
+### Enter the Container with Root Privileges:
+
+```bash
+term@mac $ docker exec -u 0 -it train_oracle_db /bin/bash
+```
+* Accesses the train_oracle_db container as root.
+* Opens an interactive Bash shell inside the container.
+
+### Start SQL*Plus and Connect to Oracle Database:
+
+```bash
+[root@1db651ee7fcb oracle]# sqlplus system/oracle@localhost:1521/freepdb1
+```
+
+* **sqlplus system/oracle@localhost:1521/freepdb1** - Initiates SQL*Plus to connect to Oracle DB using:
+    * system - Username (default system admin).
+    * oracle - Password.
+    * localhost:1521/freepdb1 - Host and port (mapped to 1623 on the host) and the pluggable database (freepdb1).
+
+
+* **SQL*Plus Output:**
+    * Confirms successful connection to Oracle Database version 23.0.0.0.0.
+    * Ready to run SQL commands within freepdb1.
+
+### Using Persistant Volume 
+
+```bash 
+term@mac $ docker run -d --name train_oracle_db -p 1623:1521 -v /Users/sanjeeb/Training/oracle-training/oracle-container-volume:/opt/oracle/oradata container-registry.oracle.com/database/free:latest
+82bea39e667c14ed623219db877b03c2bb1103e3799b5519a737f2904218c9a5
+
+term@mac $ docker ps
+CONTAINER ID   IMAGE                                                COMMAND                  CREATED         STATUS                            PORTS                    NAMES
+82bea39e667c   container-registry.oracle.com/database/free:latest   "/bin/bash -c $ORACL…"   8 seconds ago   Up 7 seconds (health: starting)   0.0.0.0:1623->1521/tcp   train_oracle_db
+
+term@mac $ docker exec -u 0 -it train_oracle_db /bin/bash
+[root@82bea39e667c oracle]#
+```

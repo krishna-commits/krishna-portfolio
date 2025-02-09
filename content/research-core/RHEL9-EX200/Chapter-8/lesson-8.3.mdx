@@ -1,0 +1,89 @@
+---
+title: "Lesson 8.3: Create, delete, and modify local groups and group memberships"
+description:
+date: "2024-04-04"
+parent: "Chapter 8: Manage users and groups"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 3
+completed: true
+---
+
+### Group 
+- Group Entries File : `/etc/group`
+
+### Password File 
+- Password Entries File : `/etc/shadow`
+
+### File Example 
+```bash 
+[root@sanjeeb ~]# grep sanjeeb /etc/passwd
+sanjeeb:x:1000:1000:Sanjeeb KC:/home/sanjeeb:/bin/bash
+
+[root@sanjeeb ~]# grep sanjeeb /etc/group 
+sanjeeb:x:1000:
+
+[root@sanjeeb ~]# grep sanjeeb /etc/shadow 
+sanjeeb:$6$8E/Bt1v3w03gU8O/$KAI7oPCnjbzZ8mhaHFGcIREWlaxzqNi1nxOg6cs5x09dGvciEZd8bSSiccWZUA5eBBQRRAzLg0cnp2FvtnZFV1::0:99999:7:::
+```
+---
+# Creating Local Groups
+```bash 
+[root@sanjeeb ~]# groupadd friends 
+
+[root@sanjeeb ~]# grep friends /etc/group 
+friends:x:1006:
+
+# Creating group with id 
+[root@sanjeeb ~]# groupadd -g 4000 family 
+[root@sanjeeb ~]# grep family /etc/group 
+family:x:4000:
+```
+---
+
+# Modifying Local Group 
+```bash 
+# Modifying group name 
+[root@sanjeeb ~]# groupmod -n newfriends friends 
+[root@sanjeeb ~]# grep friends /etc/group 
+newfriends:x:1006:
+
+# Modifying group id
+[root@sanjeeb /]# groupmod -g 1009 manager 
+[root@sanjeeb /]# grep manager /etc/group 
+manager:x:1009:
+```
+---
+# Deleting Local group 
+```bash
+[root@sanjeeb ~]# groupdel newfriends 
+```
+---
+### Example of group 
+```bash
+[root@sanjeeb ~]# groupadd sales 
+[root@sanjeeb ~]# groupadd marketing 
+[root@sanjeeb ~]# groupadd production 
+
+[root@sanjeeb ~]# egrep '(sales|marketing|production)' /etc/group 
+sales:x:1001:
+marketing:x:1002:
+production:x:1003:
+
+# To add user in group when creating user 
+[root@sanjeeb ~]# useradd -G sales hanuman 
+
+# To modify a user to add group 
+[root@sanjeeb ~]# usermod -G marketing ram 
+
+# To modify user in multiple groups 
+[root@sanjeeb ~]# usermod -G marketing,sales,production bharat 
+[root@sanjeeb ~]# egrep '(sales|marketing|production)' /etc/group 
+sales:x:1001:hanuman,bharat
+marketing:x:1002:ram,bharat
+production:x:1003:bharat
+
+# To append a user in another group 
+[root@sanjeeb ~]# usermod -aG sales ram 
+[root@sanjeeb ~]# grep sales /etc/group 
+sales:x:1001:hanuman,bharat,ram
+```

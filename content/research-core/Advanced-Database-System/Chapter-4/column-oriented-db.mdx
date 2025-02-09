@@ -1,0 +1,131 @@
+---
+title: Column Oriented DB
+description:
+parent: NOSQL
+grand_parent : Advanced Database System
+order: 3
+completed: true
+---
+
+**Column-oriented NoSQL databases** offer distinct advantages over **traditional row-based databases**. They are optimized for read-heavy workloads and scenarios where data is queried by specific columns rather than rows. Below are detailed explanations for the various points.
+
+### Advantages & Situations Where Column-Oriented DBs Fit
+
+* **Aggregates by Values of Certain Columns:**
+    * In columnar databases, because data is stored in columns rather than rows, aggregation operations like SUM, AVG, and COUNT can be much more efficient. This is because only the necessary column data needs to be scanned, and not entire rows.
+    * **Example**: If you want to calculate the average age from a dataset, you can directly access the age column, avoiding the need to load unrelated columns like name or address. This speeds up the query, especially with large datasets.
+* **Frequently Modify Some Columns:**
+    * Column-oriented databases are particularly beneficial when certain columns are updated often while others remain static. Unlike traditional relational databases, which require the whole row to be rewritten when any column changes, columnar databases can efficiently update just the relevant columns.
+    * **Example**: In an RDBMS, if you have millions of records and need to split a column (like name into first name and last name), altering the table structure becomes a performance bottleneck. In contrast, column stores allow more flexible, fine-grained updates without affecting the rest of the table.
+* **Can Cope with Temporal Data:**
+    * Temporal data, which changes over time (e.g., time-series data, logs, sensor data), is easier to manage in columnar databases. Since columns are stored separately, you can store each time-stamped record in its own column family or as different versions in the same column, making it simple to track changes over time.
+    * **Example:** A column family might represent address, and the timestamp could be included as a column, making it easy to track when a user’s address changed. In row-based stores, handling temporal data can be more complex because rows need to be modified every time a change occurs.
+* **Do Not Need to Define Schema in Advance:**
+    * Columnar databases often allow more flexibility in schema design. You don’t need to define the full schema upfront. In contrast to traditional relational databases, where each row must adhere to a strict schema, column stores allow columns to be added dynamically without disrupting existing data.
+    * **Example**: You can create name, address, and preferences column families without needing to define a complete schema beforehand. New columns can be added as needed without altering the structure of the entire table.
+* **Optimized for Disk Storage:**   
+    * Columnar databases optimize disk storage by storing similar types of data together. This leads to better compression and more efficient storage use. Since all values in a column are typically of the same type, column stores can achieve higher compression rates compared to row-based stores.
+    * **Example:** If you have a column family for name, another for address, and another for preferences, each column’s data is stored together, which helps in compressing and optimizing space.
+* **Scalable Design:**
+    * Columnar databases are designed to handle large amounts of data and can be easily scaled horizontally. Large tables can be stored across multiple nodes in a distributed system, allowing the database to grow as needed (millions or billions of columns). This makes columnar databases ideal for big data applications.
+    * **Example**: If your database stores massive logs or user data, it can be split across multiple machines without impacting performance. New columns and rows can be added seamlessly.
+
+
+## Column Store Structure and Data Representation
+In columnar databases, data is stored in column families, where each family can contain multiple columns. Each column family contains key-value pairs where:
+* **Column family:** Logical grouping of columns.
+* **Column:** A specific attribute or field.
+* **Timestamp:** If dealing with temporal data, each value might be associated with a timestamp.
+* **Record:** The entire entry, which could include multiple column families.
+
+```sql
+{
+  "row_key_i": {
+    "name": {
+      "firstname": { 1: "Mary", 5: "Angel" }
+    },
+    "address": {
+      "street": { 2: "123 Street Ave", 6: "456 Elm St" }
+    }
+  }
+}
+```
+
+Here:
+
+`row_key_i` is the **identifier** for a specific record.
+`name` and `address` are **column families**, and within them, individual columns (e.g., firstname, street) store their respective values.
+
+
+### Benefits of Compression:
+
+Column stores tend to have higher compressibility because the values within a column are often similar (e.g., all integers or dates). This allows for more efficient use of disk space, faster I/O operations, and reduced transfer times.
+* **Reduces Size of Data:** Compression reduces storage requirements.
+* **Improves I/O Performance:** With less data to read from disk, I/O operations are faster.
+* **Reduces Seek Time:** Data is stored contiguously, leading to faster retrieval.
+* **Reduces Transfer Time:** Less data is transferred between storage and memory.
+* **Increases Buffer Hit Rate:** Compressed data allows more information to be cached, improving query performance.
+
+### Compression Techniques:
+
+* Traditional compression methods like **Huffman Encoding and Dictionary Encoding** are used to compress the columnar data efficiently.
+* Run-Length Encoding (RLE) is a specific technique well-suited for compressing data where values repeat frequently.
+* **Example:** "aaabccccccddeee" would be compressed to "3a1b6c2d3e".
+
+### Querying Compressed Columns in Column-Oriented Databases
+* In column-oriented NoSQL databases, data compression plays a significant role in improving storage and query performance. When columns are compressed using techniques like Run-Length Encoding (RLE), querying those columns becomes more efficient, but understanding how to work with compressed data is key.
+
+Let’s break down how to query compressed columns, particularly focusing on **Run-Length Encoding (RLE)**, and how compression-aware optimization is applied to improve query performance, especially in operations like joins.
+
+### Querying a Compressed Column Directly (Using RLE)
+1. **Run-Length Encoding (RLE)** stores repeated values as a single value paired with a count of how many times that value occurs consecutively. This is ideal for columns with repetitive data (e.g., status flags or timestamp values) and significantly reduces storage space.
+
+2. **Decompression during Querying:**
+    * Normally, when a query is run on compressed data, the system would need to decompress the column first to return the results.
+    * However, in the case of Run-Length Encoding, simple operations like SUM, COUNT, and comparisons can be performed directly on the compressed data without needing full decompression. This is a key performance benefit of RLE.
+
+### Example: Query SUM(C1) on a Compressed Column with RLE
+* Let's say we have a column, C1, where the value 42 appears 1000 times consecutively. This column is compressed using Run-Length Encoding.
+
+    * Instead of storing 1000 occurrences of 42 in the column, RLE stores it as a single pair: (42, 1000), where 42 is the value and 1000 is the number of times it appears consecutively.
+    * When you issue a query like SUM(C1):
+        * Normally, the database would have to read each value in the column, decompress it, and then compute the sum.
+        * However, with RLE compression, the database can directly compute the sum as follows:
+        SUM(C1) = 42 * 1000 = 42,000.
+        * This avoids the need to decompress the entire column and perform individual additions, making it extremely efficient for large columns with repetitive values.
+
+### Query Execution in RLE:
+1. **Match the Key:** The query identifies the key that corresponds to the column being queried. In our case, it would match the key for column C1.
+
+2. **Extract Occurrences:** Instead of scanning all 1000 values, the system directly fetches the compressed tuple (42, 1000) and applies the sum directly.
+
+This process greatly reduces computation time for aggregation queries and makes SUM, AVG, COUNT, or MIN/MAX operations on large columns very efficient.
+
+## Compression-Aware Optimization: Natural Join
+Compression-aware optimization allows the database to perform operations like joins more efficiently by taking compression into account. When one input column is compressed using RLE and the other is uncompressed, it is possible to execute certain operations, like joins, without decompressing the entire data. Here’s how this optimization works:
+
+1. **Join Operations in Column Stores:**
+    * Consider you have two columns: C1 (compressed with RLE) and C2 (uncompressed).
+    * For a join operation, you typically need to match rows from both columns.
+2. **Optimizing Join with RLE:**
+    * In traditional systems, for every row in one column, you would have to search through the other column to find the matching rows. But with RLE compression, the matching process is optimized because you don’t need to decompress the entire column.
+    * The RLE compression reduces the number of operations by a factor of k, where k is the run-length of the repeated value. This means that if the value 42 repeats 1000 times, the system can process those 1000 rows in one operation, rather than individually matching each row.
+3. **How the Join is Optimized:**
+    * Compressed Column (C1): Let’s say this column has many repeated values like "42", and its run-length is 1000.
+    * Uncompressed Column (C2): This column has individual values, and each row needs to be matched against the values in C1.
+    * In an optimized join, the system first looks at the compressed column C1 and directly applies the operation based on the run-length (e.g., if “42” appears 1000 times, it performs the operation on these 1000 rows in a single step).
+    * It can then match the corresponding rows in the uncompressed column C2 more efficiently without needing to scan each row in C1 individually.
+
+### Example: Compression-Aware Join Optimization
+Consider the following columns
+
+| Column A (Compressed with RLE) |	Column B (Uncompressed) |
+|-----|-----|
+| (42, 1000)	| 10 |
+| (42, 1000)	| 20 |
+| (42, 1000)	| 30 | 
+
+Now, assume you want to join Column A with Column B on a condition. Without compression-aware optimization, you'd have to iterate through each of the 1000 occurrences of 42 in Column A and match it with values in Column B. However, using RLE-based optimization:
+
+1. The database directly sees that 42 repeats 1000 times.
+2. Instead of processing each match individually, the system optimizes the join by considering all the occurrences of 42 in one operation, thus reducing the number of operations by a factor of 1000.

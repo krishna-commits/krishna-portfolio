@@ -1,0 +1,84 @@
+---
+title: "Lesson 3.6: Manage tuning profiles"
+description:
+date: "2024-04-04"
+parent: "Chapter 3: Operate running systems"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 6
+completed: true
+---
+
+#### Install the Required Package
+```bash 
+[root@server ~]# rpm -q tuned
+tuned-2.21.0-1.el9.noarch
+[root@server ~]# yum -y install tuned 
+
+# Start and enable the tuned service
+[root@server ~]# systemctl start tuned 
+[root@server ~]# systemctl enable tuned 
+[root@server ~]# systemctl status tuned
+● tuned.service - Dynamic System Tuning Daemon
+     Loaded: loaded (/usr/lib/systemd/system/tuned.service; enabled; preset: enabled)
+     Active: active (running) since Mon 2024-09-30 07:36:15 +0545; 15s ago
+       Docs: man:tuned(8)
+             man:tuned.conf(5)
+             man:tuned-adm(8)
+   Main PID: 8662 (tuned)
+      Tasks: 4 (limit: 22585)
+     Memory: 13.8M
+        CPU: 218ms
+     CGroup: /system.slice/tuned.service
+             └─8662 /usr/bin/python3 -Es /usr/sbin/tuned -l -P
+
+Sep 30 07:36:15 server systemd[1]: Starting Dynamic System Tuning Daemon...
+Sep 30 07:36:15 server systemd[1]: Started Dynamic System Tuning Daemon.
+```
+
+#### Listing the available tuning profiles 
+```bash 
+[root@server ~]# tuned-adm list 
+Available profiles:
+- accelerator-performance     - Throughput performance based tuning with disabled higher latency STOP states
+- aws                         - Optimize for aws ec2 instances
+- balanced                    - General non-specialized tuned profile
+- balanced-battery            - Balanced profile biased towards power savings changes for battery
+- desktop                     - Optimize for the desktop use-case
+- hpc-compute                 - Optimize for HPC compute workloads
+- intel-sst                   - Configure for Intel Speed Select Base Frequency
+- latency-performance         - Optimize for deterministic performance at the cost of increased power consumption
+- network-latency             - Optimize for deterministic performance at the cost of increased power consumption, focused on low latency network performance
+- network-throughput          - Optimize for streaming network throughput, generally only necessary on older CPUs or 40G+ networks
+- optimize-serial-console     - Optimize for serial console use.
+- powersave                   - Optimize for low power consumption
+- throughput-performance      - Broadly applicable tuning that provides excellent performance across a variety of common server workloads
+- virtual-guest               - Optimize for running inside a virtual guest
+- virtual-host                - Optimize for running KVM guests
+Current active profile: virtual-guest
+```
+
+#### List the currently active tuning profile
+```bash
+[root@server ~]# tuned-adm active
+Current active profile: virtual-guest
+```
+
+#### Change/Switch the Tuning Profile 
+```bash 
+[root@server ~]# tuned-adm profile hpc-compute 
+[root@server ~]# tuned-adm active 
+Current active profile: hpc-compute
+```
+
+#### Recommend the suitable profile for the system 
+```bash 
+[root@server ~]# tuned-adm recommend 
+virtual-guest
+```
+
+#### Switch to the recommended profile 
+```bash 
+[root@server ~]# tuned-adm profile virtual-guest 
+[root@server ~]# tuned-adm active 
+Current active profile: virtual-guest
+```

@@ -1,0 +1,66 @@
+---
+title: "Kubernetes Everywhere: Lessons Learned From Going Multi-Cloud - Niko Smeds, Grafana Labs"
+description: CNCF [Cloud Native Computing Foundation]
+parent: Conference Highlights
+grand_parent: Service and Cloud Computing
+order: 2
+completed: true
+---
+
+## Why Opt for Multi-Cloud?
+
+* **Increased Regional Coverage:**
+    * Access to unique locations not available on a single provider.
+    * Grafana's synthetic monitoring product needed diverse deployment locations.
+
+* **Avoid Vendor Lock-In:**
+    * Flexibility to shift workloads based on cost, performance, or stability.
+
+* **Customer Preferences:**
+    * Latency, data sovereignty, and vendor discounts influence cloud selection.
+    
+## Grafana's Cloud Expansion Project
+* **Transition from GCP to AWS:**
+    * Majority of services were on GCP with some presence on other providers.
+    * Established foundational resources like AWS organizations, VPCs, IAM policies, and Kubernetes clusters.
+
+* **Networking Setup:**
+    * Connected clusters across providers using managed VPNs.
+    * Ensured private IP ranges for internal communications.
+
+* **Managed Kubernetes for Efficiency:**
+    * Easier to maintain, leveraging provider expertise.
+    * Installed essential workloads (e.g., Prometheus, Grafana, Flux) before product deployment.
+
+## Key Lessons Learned
+* **Cloud Providers Are Similar But Not the Same:**
+    * Services vary between providers; adapting configurations is necessary.
+        * Examples:
+            * GCP VPCs are global resources, AWS VPCs are regional.
+            * GCP supports larger subnets (up to /8), AWS maxes at /16.
+            * Object storage rate limits and managed load balancers differ.
+
+* **Expect Iterative Planning:**
+    * Initial plans are likely to fail; iteration is critical.
+    * Use infrastructure as code (e.g., Terraform) and version control for:
+        * Peer reviews, live project tracking, and historical documentation.
+
+* **Prepare for Documentation Overload:**
+    * Multi-cloud projects involve extensive documentation ("documentation hell").
+    * Practical learning occurs during implementation, not just planning.
+
+* **Plan for Unexpected Issues:**
+    * Bugs and unforeseen challenges are inevitable.
+    * Flexibility and quick iterations are key to progress.
+
+* **Tailored Approaches Per Provider:**
+    * Each provider's specifics (e.g., networking, IP allocation) impact the implementation.
+    * Refactor plans to avoid resource conflicts (e.g., overlapping private IP ranges).
+
+## Additional Recommendations
+* Start Small: Begin with proof of concept (POC) clusters to test configurations.
+* Focus on Dependencies: Avoid inter-provider dependencies to minimize cascading failures.
+* Understand Scale: Define expected cluster sizes and capacity requirements upfront.
+* Leverage Team Collaboration: Utilize tools like Git for shared learning and troubleshooting.
+
+By recognizing and addressing these nuances, organizations can build robust multi-cloud infrastructures while minimizing disruption and inefficiencies.

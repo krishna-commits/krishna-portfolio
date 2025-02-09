@@ -1,0 +1,46 @@
+---
+title: "Lesson 3.2: Boot systems into different targets manually"
+description:
+date: "2024-04-04"
+parent: "Chapter 3: Operate running systems"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 2
+completed: true
+---
+
+## Changing Default Boot Mode
+
+### View the default target of system 
+```bash 
+# If it is currently in graphical mode
+[root@sanjeeb ~]# systemctl get-default 
+graphical.target
+
+# If it is currently in command line mode
+[root@sanjeeb ~]# systemctl get-default 
+multi-user.target
+```
+
+### To change the target of system 
+```bash
+# Set to multi-user (CLI)
+[root@sanjeeb ~]# systemctl set-default multi-user.target
+Removed "/etc/systemd/system/default.target".
+Created symlink /etc/systemd/system/default.target → /usr/lib/systemd/system/multi-user.target.
+[root@sanjeeb ~]# systemctl get-default 
+multi-user.target
+
+# Set to graphical (GUI)
+[root@sanjeeb ~]# systemctl set-default graphical.target 
+Removed "/etc/systemd/system/default.target".
+Created symlink /etc/systemd/system/default.target → /usr/lib/systemd/system/graphical.target.
+[root@sanjeeb ~]# systemctl get-default 
+graphical.target
+```
+
+### How to change manually into a different runlevel target`isolate`
+```bash
+[root@sanjeeb ~]# systemctl isolate multi-user.target
+
+[root@sanjeeb ~]# systemctl isolate graphical.target
+```

@@ -1,0 +1,97 @@
+---
+title: "Lesson 8.1: Create, delete, and modify local user accounts"
+description:
+date: "2024-04-04"
+parent: "Chapter 8: Manage users and groups"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 1
+completed: true
+---
+
+## Important Files 
+### User  
+- User Entries : `/etc/passwd`
+- Format : 
+- To add user : `useradd <username>`
+- To add password : `passwd <password>`
+- Files Containing default parameters while adding user : `/etc/default/useradd`
+- Another File Containing default parameters while adding user : `/etc/login.defs`
+---
+# Creating Local User
+### Creating Users using Non default parameters
+`useradd [option] <username>`
+Options 
+- Comment : `-c`
+- Home Dir : `-d`
+- Expiry Date : `-e`
+- Primary Group : `-g`
+- Secondary Group : `-G`
+- UID : `-u`
+- Shell : `-s`
+
+#### Example of creating a user with options 
+```bash
+[root@sanjeeb ~]# useradd -c "John Doe, Kathmandu" -d /var/john -e 2024-10-30 -g staff -G admin,hr -s /bin/sh -u 1019 john 
+
+[root@sanjeeb ~]# grep john /etc/passwd
+john:x:1019:1003:John Doe, Kathmandu:/var/john:/bin/sh
+
+[root@sanjeeb ~]# groups john 
+john : staff admin hr
+
+[root@sanjeeb ~]# chage -l john 
+Last password change					: Sep 26, 2024
+Password expires					: never
+Password inactive					: never
+Account expires						: Oct 30, 2024
+Minimum number of days between password change		: 0
+Maximum number of days between password change		: 99999
+Number of days of warning before password expires	: 7
+
+# To change the Minimum number of days between password change
+# Maximum number of days between password change
+# Number of days of warning before password expires
+
+chage -m 1 -M 30 -W 3 <username>
+```
+
+---
+# Modifying Local User
+#### Example of modifying a user with options 
+```bash
+[root@sanjeeb ~]# usermod -c "John Doe, Nepal" john 
+[root@sanjeeb ~]# grep john  /etc/passwd
+john:x:1019:1003:John Doe, Nepal:/var/john:/bin/sh
+
+[root@sanjeeb ~]# usermod -e 2024-12-30 john 
+[root@sanjeeb ~]# chage -l john 
+Last password change					: Sep 26, 2024
+Password expires					: never
+Password inactive					: never
+Account expires						: Dec 30, 2024
+Minimum number of days between password change		: 0
+Maximum number of days between password change		: 99999
+Number of days of warning before password expires	: 7
+```
+---
+# Deleting Local User
+### Deleting user without effecting it's files/dir
+```bash
+[root@sanjeeb /]# userdel hanuman 
+[root@sanjeeb /]# ls /home/
+bharat  boss  hanuman  laxman  ram  sanjeeb
+[root@sanjeeb /]# ls /var/spool/mail/
+bharat  boss  hanuman  laxman  ram  root  rpc  salesman1  sanjeeb
+[root@sanjeeb /]# 
+```
+### Deleting user removing all related files/dir
+```bash 
+[root@sanjeeb /]# userdel -r ram 
+[root@sanjeeb /]# ls /home 
+bharat  boss  hanuman  laxman  sanjeeb
+[root@sanjeeb /]# ls /var/spool/mail 
+bharat  boss  hanuman  laxman  root  rpc  salesman1  sanjeeb
+[root@sanjeeb /]# grep ram /etc/group
+```
+
+

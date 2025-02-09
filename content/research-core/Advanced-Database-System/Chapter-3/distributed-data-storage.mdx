@@ -1,0 +1,95 @@
+---
+title: Distributed Data Storage
+description:
+parent: Distributed Database System
+grand_parent : Advanced Database System
+order: 2
+completed: true
+---
+## Data fragmentation
+Data fragmentation in a distributed database system refers to dividing a database into smaller, more manageable parts, called fragments. These fragments are stored across different sites or nodes in the system. Fragmentation is designed to improve data distribution, reduce query time, enhance parallel processing, and localize data to regions where it's frequently accessed. Data fragmentation is generally done in two main ways: horizontal fragmentation and vertical fragmentation.
+
+## Horizontal fragmentation 
+Horizontal fragmentation  divides a table into subsets of rows (tuples) based on a specified condition. Each fragment contains rows that match a particular criterion. Horizontal fragmentation is beneficial when different sites or regions mainly need access to a subset of the table's rows, based on geographic or business criteria. For example, in a large multinational company, it makes sense to store only local employee records at each country’s regional database.
+
+## Vertical Fragmentation
+Vertical fragmentation divides a table into subsets of columns (attributes), creating fragments that contain different attributes of the same rows. Each fragment usually contains the primary key (or an identifier) to allow joining the fragments when reconstructing the original table. Vertical fragmentation is useful when different applications or sites need only specific columns of a table rather than the entire dataset.
+
+## Advantages of data fragmentation
+Here are the advantages of data fragmentation in a distributed database system, with a focus on horizontal and vertical fragmentation.
+
+1. **Horizontal Fragmentation**
+    * **Parallel Processing:** Horizontal fragmentation allows parallel processing on different fragments, as each fragment represents a subset of rows that can be processed independently. This parallelism can lead to faster query response times and greater system efficiency.
+    * **Scalability:** It supports scalability by allowing more data to be distributed across multiple sites or servers. As data volume grows, new sites can be added, and fragments can be allocated to them without impacting existing data organization.
+
+2. **Vertical Fragmentation**
+    * **Localized Data Access:** Vertical fragmentation allows a relation to be split based on attributes and assigns these attributes to sites where they are most frequently accessed. This minimizes data transfer across sites and improves query performance by reducing the need to access unneeded attributes.
+    * **Efficient Joins:** The inclusion of a tuple-id (or unique identifier) in each vertical fragment enables efficient joins when reconstructing the original table. The tuple-id acts as a link between fragments, allowing them to be joined quickly and accurately if a query requires a complete record.
+
+## Data Replication
+Data Replication in a distributed database system involves storing copies of a relation or fragment of a relation at multiple sites. Replication can be full (where the entire relation is stored at each site) or partial (where fragments are stored redundantly across select sites). In a fully redundant database, each site contains a copy of the entire database, ensuring availability and reducing data transfer costs but also introducing complexity. Here’s a breakdown of its advantages and disadvantages:
+
+### Advantages of Data Replication
+* **Availability:** Replication improves availability since data is stored in multiple locations. If one site fails, the data remains accessible from other sites, minimizing downtime and improving system reliability.
+* **Parallelism:** Queries can be distributed across multiple nodes holding replicas of the data, enabling parallel processing. This reduces the time for query execution and optimizes resource use.
+* **Reduced Data Transfer:** Local access to replicas minimizes the need to transfer data across sites, which can reduce network latency and bandwidth usage for read operations.
+
+### Disadvantages of Data Replication
+* **Data Consistency:** The biggest challenge with replication is maintaining data consistency across replicas. Each update must be applied to all replicas to ensure data integrity, which becomes complex in a distributed environment.
+* **Increased Cost of Updates:** Every time there is an update to a relation, each replica of that relation must be updated, which can be costly in terms of processing and network resources, especially in systems with many replicas.
+* **Increased Complexity of Concurrency Control:** Handling concurrent updates across replicas is more challenging. Without careful concurrency control, concurrent modifications can lead to inconsistencies among replicas, requiring mechanisms to detect and resolve conflicts.
+
+## Data Transparency 
+Data Transparency in a distributed database system refers to the system’s ability to hide certain details of data storage and distribution from the user. This ensures that users interact with the database as if it were centralized, even though it might be distributed across multiple sites. Here are the main types of transparency:
+### Types of Data Transparency
+* **Fragmentation Transparency**
+    * Fragmentation transparency ensures that users do not need to know whether data is split across multiple fragments.
+    * For instance, if a table is split into horizontal or vertical fragments stored in different locations, the system integrates these fragments behind the scenes so that users can query the table as if it were whole.
+* **Replication Transparency**
+    * With replication transparency, users are unaware of any replication of data across multiple sites.
+    * The system manages multiple copies of data and ensures consistency between replicas, allowing users to interact with the data without needing to know how many copies exist or where they are located.
+* **Location Transparency**
+    * Location transparency allows users to access data without knowing the physical location of the data within the network.
+    * Regardless of where the data is stored, users can query it as if it were in a single, centralized location, with the system managing the retrieval of data from the correct sites.
+
+## Naming Data 
+Naming Data in distributed database systems is essential for preventing conflicts that arise when different data items have the same name across various sites. A consistent naming strategy ensures that each data item is identifiable across the entire system, even if it is distributed across multiple locations.
+
+To maintain efficient and conflict-free naming, the following principles are applied:
+
+* **Assign a System-Wide Unique Name**
+    * Each data item is given a unique identifier across the system to prevent naming conflicts.
+    * This unique name allows any user or process to reference the data item unambiguously, regardless of where it is stored.
+* **Efficient Location Lookup**
+    * The system should be able to find the physical location of data items quickly.
+    * Efficient lookup mechanisms are crucial to ensure fast data access and query processing in distributed environments. This may involve indexing or mapping systems that help locate data across sites.
+* **Transparent Location Changes**
+    * It should be possible to move data items between sites without affecting how users or applications access the data.
+    * The system manages these location changes in the background, maintaining transparency for users and ensuring that applications can still reference the data by its unique name without needing to know its new location.
+
+## Name Server
+In a Centralized Naming Scheme with a Name Server, a single server is designated to manage the names of all data items within a distributed database system. This approach centralizes the responsibility for name management, offering simplicity in terms of maintaining unique identifiers across the system.
+* The name server is responsible for assigning and managing all data item names across the distributed network.
+* Each site that contains data maintains records only for its local data items.
+* When a site needs to locate a non-local data item, it consults the name server, which provides the necessary location details.
+### Disadvantages of the Centralized Name Server
+1. Performance Bottleneck:
+* Since all sites rely on the name server for locating non-local data, it can become overwhelmed, particularly in large systems with frequent data access across multiple sites.
+* This reliance on a single server can lead to slowdowns, as every query to locate data outside of a site must pass through the name server.
+2. Single Point of Failure:
+* If the name server goes down, the entire system may be unable to locate data items not stored locally, leading to a failure in data access across sites.
+* This makes the name server a critical vulnerability in the system's reliability, as any malfunction directly impacts the availability of data.
+
+
+### Use of Alias
+Aliases provide an alternative approach to naming data in distributed systems, addressing some of the issues of a centralized scheme.
+1. **Adding Site Identifiers:**
+    * One approach to identifying data items across different sites is by appending a site identifier to the name (e.g., site17.account).
+    * However, this approach does not achieve network transparency, as users must be aware of where data is located.
+2. **Aliases as a Solution:**
+    * Instead of using physical identifiers, the system can create a set of aliases (or alternate names) for data items.
+    * Each site stores a mapping of these aliases, allowing the system to access data without exposing its actual location.
+3. **Benefits of Aliases:**
+    * Location Transparency: Users can access data without needing to know its physical location in the network, achieving true network transparency.
+    * Flexibility: If data is moved to a different site, the alias remains the same, so the user’s access is unaffected.
+    * Decentralization: Each site maintains its mapping of aliases, avoiding the need for a centralized name server and reducing the risk of a single point of failure.

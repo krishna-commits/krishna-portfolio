@@ -1,0 +1,57 @@
+---
+title: "Lesson 2.4: Processing output of shell commands within a script"
+description:
+date: "2024-04-04"
+parent: "Chapter 2: Create simple shell scripts"
+grand_parent : "Redhat Enterprise Linux 9 - EX200 RHCSA"
+order: 4
+completed: true
+---
+
+### Example 1: Changing the permission of folders which do not have permission 755 to 755 
+```bash /drwxr-xr-x/
+#Viewing the initial permission
+[sanjeeb@server Script]$ ls folder/ -lh 
+total 0
+drwxrwxrwx. 2 sanjeeb sanjeeb 6 Apr  7 10:41 d1
+drwxrwxrwx. 2 sanjeeb sanjeeb 6 Apr  7 10:41 d2
+drwxr-xr-x. 2 sanjeeb sanjeeb 6 Apr  7 10:41 d3
+
+#Running the script
+[sanjeeb@server Script]$ ./script4.sh 
+Enter the directory
+/folder/
+changing ./folder/d1 permission to 755
+changing ./folder/d2 permission to 755
+
+#Viewing the final permission
+[sanjeeb@server Script]$ ls folder/ -lh 
+total 0
+drwxr-xr-x. 2 sanjeeb sanjeeb 6 Apr  7 10:41 d1
+drwxr-xr-x. 2 sanjeeb sanjeeb 6 Apr  7 10:41 d2
+drwxr-xr-x. 2 sanjeeb sanjeeb 6 Apr  7 10:41 d3
+
+```
+### Example 2: Create a shell script called delusers.sh such that when it execute, it removes the last 2 users.
+```bash
+[root@server Script]# tail -2 /etc/passwd
+ram:x:1003:1004::/home/ram:/bin/bash
+laxman:x:1004:1005::/home/laxman:/bin/bash
+
+[root@server Script]# cat delusers.sh 
+#!/bin/bash
+
+for i in $(tail -2 /etc/passwd | cut -f 1 -d :)
+do
+	userdel -r $i
+	echo "Student $userdel deleted successfully !"
+done
+
+[root@server Script]# ./delusers.sh 
+Student  deleted successfully !
+Student  deleted successfully !
+
+[root@server Script]# tail -2 /etc/passwd
+apache:x:48:48:Apache:/usr/share/httpd:/sbin/nologin
+nginx:x:979:978:Nginx web server:/var/lib/nginx:/sbin/nologin
+```

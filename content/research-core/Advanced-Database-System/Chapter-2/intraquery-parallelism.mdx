@@ -1,0 +1,82 @@
+---
+title: Intraquery Parallelism
+description:
+parent: Parallel Databases
+grand_parent : Advanced Database System
+order: 8
+completed: true
+---
+
+Intraquery Parallelism refers to the execution of a **single query in parallel across multiple processors**. This approach is particularly beneficial for accelerating long-running, resource-intensive queries, such as those involving large datasets. By dividing the tasks associated with a single query, intraquery parallelism significantly reduces query execution time, making it valuable in high-performance and large-scale database systems.
+
+There are two main types of intraquery parallelism:
+1. Intraoperation Parallelism
+2. Interoperation Parallelism
+
+## Intraoperation Parallelism
+Intraoperation parallelism involves parallelizing individual operations within a single query, such as sorting, selection, and joins. This approach is most effective when there is a large number of data entries (tuples) relative to the number of operations, as it allows the workload for each operation to be distributed across multiple processors.
+
+**Key Examples:**
+* **Selection:** A query may require retrieving specific rows based on certain conditions (e.g., WHERE Age > 30). If there are millions of records, a parallel scan can be employed where different processors scan different parts of the table simultaneously, significantly speeding up the selection process.
+* **Sorting:** Sorting is a computation-heavy operation, especially with large datasets. In intraoperation parallelism, a large dataset can be split into smaller chunks that are sorted independently across multiple processors. The sorted chunks are then merged to form a single sorted dataset.
+* **Join Operations:** Join operations, such as equi-joins or hash joins, are some of the most intensive database operations. For a join between two large tables, the operation can be divided across processors where each processor joins a portion of the data. For instance, a hash join can partition data from both tables into chunks and then join those chunks in parallel.
+
+**When Intraoperation Parallelism is Useful:**
+
+This form of parallelism is particularly beneficial when:
+
+* The number of tuples (rows) is much larger than the number of operations to be performed.
+* The operations are compute-intensive and involve scanning or manipulating large datasets.
+
+```sql
+-- Suppose we have a query that involves sorting and filtering a large dataset
+SELECT * 
+FROM Orders
+WHERE OrderDate > '2023-01-01'
+ORDER BY OrderAmount DESC;
+```
+In this case, the database can:
+
+* Use multiple processors to scan the Orders table in parallel, each applying the WHERE OrderDate > '2023-01-01' condition to their respective portions.
+* Each processor sorts its result subset by OrderAmount.
+* Finally, a merge operation brings together the sorted subsets to return a single, ordered result set.
+
+## Interoperation Parallelism
+Interoperation parallelism executes different operations of a query simultaneously. This type of parallelism allows for independent operations within a query plan (i.e., different steps required to complete the query) to be processed in parallel.
+
+**Key Examples:**
+Consider a query with multiple operations, such as a WHERE clause (filtering), a JOIN operation, and an AGGREGATE function (e.g., SUM, COUNT):
+
+* **Selection and Join:** The selection operation can filter rows concurrently while the join operation matches data from different tables.
+* **Join and Aggregation:** After filtering, the join and aggregation can be processed simultaneously if they don’t depend on each other.
+
+**When Interoperation Parallelism is Useful:**
+
+This form of parallelism is most effective when:
+* The query has multiple independent steps, allowing them to run in parallel without dependencies.
+* Different stages of the query plan can be executed independently and simultaneously.
+
+```sql
+-- Suppose we have a complex query with a join, selection, and aggregation
+SELECT c.CustomerID, COUNT(o.OrderID) AS OrderCount
+FROM Customers c
+JOIN Orders o ON c.CustomerID = o.CustomerID
+WHERE c.City = 'New York'
+GROUP BY c.CustomerID;
+```
+In this case:
+
+* The WHERE c.City = 'New York' selection could be processed in parallel across different processors scanning the Customers table.
+* While selection is happening, another processor could begin working on the join condition (Customers.CustomerID = Orders.CustomerID) in parallel.
+* Another processor could calculate the count of OrderID for each customer in parallel once it has the joined data.
+
+### Comparison of Intraoperation and Interoperation Parallelism
+
+| Feature               | Intraoperation Parallelism                       | Interoperation Parallelism                        |
+|-----------------------|--------------------------------------------------|--------------------------------------------------|
+| **Goal**              | Parallelize each individual operation           | Execute different operations in parallel         |
+| **Optimal Scenario**  | High number of tuples, fewer operations         | Multiple independent operations in query plan    |
+| **Benefit**           | Reduces time for data-intensive operations      | Shortens time for complex queries with many steps|
+| **Example Operations**| Sorting, selection, joins                       | Selection + join, join + aggregation             |
+
+Intraoperation parallelism generally provides better performance for operations on very large tables with minimal interdependencies. Interoperation parallelism, on the other hand, is ideal for complex queries with multiple distinct operations.
