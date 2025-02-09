@@ -38,13 +38,13 @@ export const siteConfig = {
   // education
   
   education: [
-    // {
-    //   organization: 'Harbin Institute of Technology, Shenzhen',
-    //   course: '哈爾濱工業大學, Master in Computer Science & Information',
-    //   university: `China's University Union`,
-    //   time: '2017-2021',
-    //   imageUrl: '/hit_logo.png',
-    // },
+    {
+      organization: 'Upon Request',
+      course: 'Upon Request',
+      university: `Upon Request`,
+      time: 'Upon Request',
+      imageUrl: 'Upon Request',
+    },
     // {
     //   organization: 'Deerwalk Institiute of Technology',
     //   course: 'BSC. Computer Science & technology',
@@ -217,14 +217,14 @@ export const siteConfig = {
 
   // WORK EXPERIENCE
   work_experience: [
-    // {
-    //   organization: 'Offix Services Pvt. Ltd.',
-    //   course: 'Software Developer',
-    //   role: 'Co-Founder / Executive Chairman',
-    //   time: '2018-Present',
-    //   imageUrl: '/offix.png',
-    //   url: 'https://offix.services'
-    // },
+    {
+      organization: 'Upon Request.',
+      course: 'Upon Request',
+      role: 'Upon Request',
+      time: 'Upon Request',
+      imageUrl: 'Upon Request',
+      url: 'Upon Request'
+    },
     // {
     //   organization: 'Nepal News Bank',
     //   course: 'Web Developer',
