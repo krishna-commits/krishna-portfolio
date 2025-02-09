@@ -52,7 +52,7 @@ export default function CertificationList() {
                   </Link>
                 </div>
                 <p className="truncate text-xs leading-5 dark:text-slate-500">{item.issuedby}</p>
-                <p className="text-xs font-light leading-6 dark:text-slate-300">{item.time}</p>
+                {/* <p className="text-xs font-light leading-6 dark:text-slate-300">{item.time}</p> */}
               </div>
             </div>
           </li>
