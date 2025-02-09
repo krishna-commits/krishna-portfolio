@@ -69,14 +69,14 @@ export const siteConfig = {
     // },
   ],
 
-  // certification
-  certification: [
-    // {
-    //   title: 'AWS Knowledge: Architecting',
-    //   issuedby: 'Amazon Web Services Training and Certification- Coursera',
-    //   imageURL: 'https://images.credly.com/size/680x680/images/519a6dba-f145-4c1a-85a2-1d173d6898d9/image.png',
-    //   link: 'https://www.credly.com/badges/3030abd1-c596-4f7d-a4d1-d590c9720e3d/public_url',
-    //   },
+  // // certification
+  // certification: [
+  //   {
+  //     title: 'AWS Knowledge: Architecting',
+  //     issuedby: 'Amazon Web Services Training and Certification- Coursera',
+  //     imageURL: 'https://images.credly.com/size/680x680/images/519a6dba-f145-4c1a-85a2-1d173d6898d9/image.png',
+  //     link: 'https://www.credly.com/badges/3030abd1-c596-4f7d-a4d1-d590c9720e3d/public_url',
+  //     },
     // {
     //   title: "Okta Certified Professional",
     //   issueby: "Okta",
@@ -255,7 +255,7 @@ export const siteConfig = {
     //   link: 'https://www.coursera.org/account/accomplishments/certificate/2RYDVHREDUND',
     //   time: '2023',
     // },
-  ],
+  // ],
 
   // WORK EXPERIENCE
   work_experience: [

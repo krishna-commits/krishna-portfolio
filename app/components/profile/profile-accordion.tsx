@@ -50,7 +50,7 @@ import TechnologyList from "./technology-list"
           <div className="flex justify-between items-center space-x-3 text-sm">
             <div className="flex items-center">
             <FileBadge className="mr-2 h-4 w-4" />
-            <span>License & Certification</span>
+            <span>Liscense & Certification</span>
             </div>
               <Badge variant="outline">19</Badge>
           </div>
