@@ -26,8 +26,8 @@ const navItems = {
   '/mantras': {
     name: 'Mantras',
   },
-  '/skill-lab': {
-    name: 'Skill Lab',
+  '/projects': {
+    name: 'Projects',
   },
   '/contact': {
     name: 'Contact',

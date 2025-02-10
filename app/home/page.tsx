@@ -8,7 +8,7 @@ export default function HomePage() {
       <div className="mt-3 md:mt-0 mb-12 md:mb-12  ">
         
         <h1 className={cn(
-          "dark:text-foreground text-cyan-900 font-serif text-2xl md:text-4xl",
+          "dark:text-foreground text-blue-900 font-serif text-2xl md:text-4xl",
         )}>{siteConfig.home.title}</h1>
         <p className="mt-3 md:mt-5 md:mr-6 text-md tracking-tight text-muted-foreground  dark:text-muted-foreground font-serif md:text-md text-justify">
           {siteConfig.home.description}

@@ -1,0 +1,1025 @@
+---
+title: "Preparation Set 2"
+description:
+date: "2024-04-04"
+parent: "Exam Preparation"
+grand_parent : "Redhat Enterprise Linux 9 - EX294K RHCE"
+order: 2
+completed: true
+---
+
+### Instructions
+* 1. You will be provided with the root password. 
+* 2. You need to use the hostname , if told in the instructions.
+
+## Q1: Install and configure ansible in the control node 
+* **a. Install the required packages** 
+* **b. Create a static inventory file /home/devops/ansible/inventory so that:**
+    * i. Node1 is the member of dev host group 
+    * ii. Node2 is the member of test host group    
+    * iii. Node3 is the member of prod host group 
+    * iv. Node4 is the member of balancer host group 
+* **c. The prod group is a member of the webservers host group**
+* **d. Create a configuration file called /home/devops/ansible/ansible.cfg so that:**
+    * i. The host inventory file is /home/devops/ansible/inventory
+    * ii. The default content collection directory is /home/devops/ansible/collection
+    * iii. The default role directory is /home/devops/ansible/roles 
+
+```shell
+[root@ansible-server ~]# cat /etc/hosts 
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+192.168.208.181		node1
+192.168.208.182		node2
+192.168.208.183		node3
+192.168.208.184		node4
+
+# Package Installation
+[devops@ansible-server ~]$ sudo yum -y install ansible-core
+[devops@ansible-server ~]$ sudo yum -y install epel-release
+[devops@ansible-server ~]$ sudo yum -y install ansible
+
+# Setup indentation
+[devops@ansible-server ~]$  cat .vimrc
+autocmd	FileType yaml setlocal ai ts=2 sw=2 et
+
+# Viewing hosts 
+[devops@ansible-server ansible]$ ansible -i /home/devops/ansible/inventory all --list-hosts
+  hosts (4):
+    node1
+    node2
+    node4
+    node3
+
+# ansible.cfg config
+[devops@ansible-server ansible]$ cat ansible.cfg 
+[defaults]
+inventory = /home/devops/ansible/inventory
+roles_path = /home/devops/ansible/roles
+collection_path = /home/devops/ansible/collection
+remote_user = devops
+
+[privilege_escalation]
+become=true
+
+[devops@ansible-server ~]# sudo echo "export ANSIBLE_CONFIG=/home/devops/ansible/ansible.cfg" >>.bashrc
+[devops@ansible-server ~]# . .bashrc
+[devops@ansible-server ~]# echo $ANSIBLE_CONFIG
+/home/devops/ansible/ansible.cfg
+
+[devops@ansible-server ~]$ ansible --version 
+ansible [core 2.14.18]
+  config file = /home/devops/ansible/ansible.cfg
+  configured module search path = ['/home/devops/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
+  ansible python module location = /usr/lib/python3.9/site-packages/ansible
+  ansible collection location = /home/devops/.ansible/collections:/usr/share/ansible/collections
+  executable location = /usr/bin/ansible
+  python version = 3.9.18 (main, Sep  7 2023, 00:00:00) [GCC 11.4.1 20230605 (Red Hat 11.4.1-2)] (/usr/bin/python3)
+  jinja version = 3.1.2
+  libyaml = True
+
+# Create ssh access to all 
+[devops@ansible-server ~]$ ssh devops@node1
+[devops@ansible-server ~]$ ssh devops@node2
+[devops@ansible-server ~]$ ssh devops@node3
+[devops@ansible-server ~]$ ssh devops@node4
+
+# Check with the help of ansible if every node is communicating or not 
+[devops@ansible-server ~]$ ansible -m ping all 
+node1 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+node3 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+node4 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+node2 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+```
+
+---
+
+## Q2: Create and run an ansible ad-hoc command. As a system adminstrator you need to install software on managed hosts
+* a. Create a shell script called yum-repo.sh that runs ansible ad-hoc command to create yum repositories on each of the managed nodes as per the following details:
+* b. Note: You need to create 2 repos (BaseOS and AppStream) in the managed nodes.
+
+#### BaseOS:
+* name: BaseOs
+* baseurl:
+* description: BaseOS Repo
+* gpgcheck: yes
+* enabled: yes
+* key: 
+
+#### AppStream:
+* name: AppStream
+* baseurl:
+* description: AppStream Repo
+* gpgcheck: yes
+* enabled: yes
+* key: 
+
+#### Method I : Using ad-hoc command
+```shell
+# Check if baseos and appstream are enabled or not using ansible ad-hoc command
+[devops@ansible-server ansible]$ ansible all -m command -a 'dnf repolist all' 
+
+[devops@ansible-server ansible]$ vim yum-repo.sh 
+[devops@ansible-server ansible]$ cat yum-repo.sh 
+#!/bin/bash
+ansible all -m yum_repository -a 'file=external.repo name=BaseOS description="Base OS Repo" baseurl=http://192.168.208.100/softwares/BaseOS/ gpgcheck=yes gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial enabled=yes state=present' -b
+
+ansible all -m yum_repository -a 'file=external.repo name=AppStream description="AppStream Repo" baseurl=http://192.168.208.100/softwares/AppStream/ gpgcheck=yes gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial enabled=yes state=present' -b
+
+[devops@ansible-server ansible]$ chmod +x yum-repo.sh 
+[devops@ansible-server ansible]$ ./yum-repo.sh 
+
+[devops@ansible-server ansible]$ ansible all -m command -a 'ls /etc/yum.repos.d/'
+node1 | CHANGED | rc=0 >>
+centos-addons.repo
+centos.repo
+external.repo.repo
+node4 | CHANGED | rc=0 >>
+centos-addons.repo
+centos.repo
+external.repo.repo
+node2 | CHANGED | rc=0 >>
+centos-addons.repo
+centos.repo
+external.repo.repo
+node3 | CHANGED | rc=0 >>
+centos-addons.repo
+centos.repo
+external.repo.repo
+```
+
+#### Method II: Using playbook method
+```shell
+[devops@ansible-server ansible]$ cat yumrepo.yml 
+- name: Playbook to configure baseos and appstream repo
+  hosts: all 
+  tasks:
+  - name: Add baseos repository
+    ansible.builtin.yum_repository:
+      name: BaseOS
+      description: Base OS repo
+      baseurl: http://192.168.208.100/softwares/BaseOS
+      gpgcheck: yes
+      enabled: yes 
+      file: external_repos
+      gpgkey: http://192.168.208.100/softwares/RPM-GPG-KEY-centosofficial
+
+  - name: Add appstream repository
+    ansible.builtin.yum_repository:
+      name: AppStream
+      description: Appstream repo
+      baseurl: http://192.168.208.100/softwares/AppStream
+      gpgcheck: yes
+      enabled: yes 
+      file: external_repos
+      gpgkey: http://192.168.208.100/softwares/RPM-GPG-KEY-centosofficial
+
+  - name: Import a key from a url
+    ansible.builtin.rpm_key:
+      state: present
+      key: http://192.168.208.100/softwares/RPM-GPG-KEY-centosofficial
+```
+
+
+## Q3: Create a playbook called /home/devops/ansible/packages.yml that:
+* Install the php and mariadb packages in the host in the dev, test and prod host groups only. 
+* Install the RPM development tools package group on hosts in the dev host group only 
+* Update all package to the latest version on hosts in the dev hosts group only. 
+
+```shell
+[devops@ansible-server ansible]$ cat packages.yml 
+- name: Playbook to install packages 
+  hosts: all 
+  tasks:  
+  - name: Install packages
+    ansible.builtin.yum:
+      name: "{{ item }}" 
+      state: latest
+    loop:
+    - php 
+    - mariadb 
+    when: inventory_hostname in groups['dev'] or inventory_hostname in groups['test'] or inventory_hostname in groups['prod']
+
+  - name: Install the rpm development group package 
+    ansible.builtin.yum:
+      name: "@RPM Development Tools"
+      state: latest
+    when: inventory_hostname in groups['dev']
+
+  - name: Upgrade all packages in dev host group
+    ansible.builtin.yum:
+      name: '*'
+      state: latest
+    when: inventory_hostname in groups['dev']
+
+
+[devops@ansible-server ansible]$ ansible-playbook --syntax-check packages.yml 
+```
+
+## Q4: Install the RHEL system roles package and create a playbook called /home/devops/ansible/timesync.yml that: 
+* Runs on all managed host
+* Use the timesync role
+* Configure the role to use the timeserver 
+* Configure the role to set the iburst parameter as enabled
+
+```shell
+# Install RHEL System Roles
+[devops@ansible-server ansible]$ sudo yum install rhel-system-roles -y 
+
+[devops@ansible-server ansible]$ cat timesync.yml 
+- name: Manage timesync with 3 servers
+  hosts: all
+  vars:
+    timesync_ntp_servers:
+      - hostname: time.google.com
+        iburst: true
+  roles:
+    - /usr/share/ansible/roles/rhel-system-roles.timesync
+
+[devops@ansible-server ansible]$ ansible-playbook --syntax-check timesync.yml 
+
+playbook: timesync.yml
+[devops@ansible-server ansible]$ ansible-playbook timesync.yml 
+```
+
+## Q5: Create a role in apache in /home/devops/ansible/roles with the following requirement
+* The httpd package should be installed, httpd service should be enabled on boot, and started. 
+* The firewall is enabled and running with a rule to allow access to the webserver.
+* A template file index.html.j2 exists(you have to create this file) and is used to create the file /var/www/html/index.html with the following output: Welcome to hostname on ipaddress, where hostname is the fully qualified domain name of the managed node and the ipaddress is the ipaddress of the managed node.
+
+```shell
+# ansible-galaxy collection install ansible.posix 
+# Init roles named apache
+[devops@ansible-server roles]$ ansible-galaxy init apache
+- Role apache was created successfully
+[devops@ansible-server roles]$ ls
+apache
+
+# ---------------------------------------------------------
+
+[devops@ansible-server apache]$ ls
+apache-role.yml  defaults  files  handlers  meta  README.md  tasks  templates  tests  vars
+[devops@ansible-server apache]$ cat apache-role.yml 
+- name: Apache Roles Playbook
+  hosts: dev
+  roles:
+  - role: /home/devops/ansible/roles/apache
+
+# ---------------------------------------------------------
+
+[devops@ansible-server templates]$ pwd
+/home/devops/ansible/roles/apache/templates
+[devops@ansible-server templates]$ vim index.html.j2 
+[devops@ansible-server templates]$ cat index.html.j2 
+Welcome to {{ ansible_facts['hostname'] }} on {{ ansible_facts['default_ipv4']['address'] }}
+
+# ---------------------------------------------------------
+
+[devops@ansible-server apache]$ cd vars/
+[devops@ansible-server vars]$ ls
+main.yml
+[devops@ansible-server vars]$ cat main.yml 
+pkgs: 
+  - httpd
+  - firewalld
+
+svcs: 
+  - httpd
+  - firewalld
+
+firewall_svcs: 
+  - http
+  - https
+
+# ---------------------------------------------------------
+
+[devops@ansible-server apache]$ cd tasks/
+[devops@ansible-server tasks]$ ls
+main.yml
+[devops@ansible-server tasks]$ cat main.yml 
+- name: Install the latest version of Apache
+  ansible.builtin.yum:
+    name: "{{ item }}"
+    state: latest
+  loop: "{{ pkgs }}"
+
+- name: Start service httpd, if not started
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  loop: "{{ svcs }}"
+
+- name: Template index.html.j2 
+  ansible.builtin.template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+
+- name: Add Services in firewall rules
+  ansible.posix.firewalld:
+    service: "{{ item }}"
+    permanent: true
+    state: enabled
+    immediate: true
+  loop: "{{ firewall_svcs }}"
+
+```
+
+## Q6: Use Ansible galaxy with the requirement file /home/devops/ansible/roles/requirements.yml to download and install roles to /home/admin/ansible/roles from the following URLs:
+* http://192.168.208.181/downloads/role1.tar.gz . The name of this role should be role1.
+* http://192.168.208.181/downloads/role2.tar.gz . The name of this role should be role2.
+
+```shell
+[devops@ansible-server ansible]$ cat roles/requirements.yml 
+- src: http://192.168.208.181/downloads/role1.tar.gz
+  name: role1
+
+- src: http://192.168.208.181/downloads/role2.tar.gz
+  name: role2
+
+[devops@ansible-server ansible]$ ansible-galaxy role install -r roles/requirements.yml --force 
+Starting galaxy role install process
+- downloading role from http://192.168.208.181/downloads/role1.tar.gz
+- extracting role1 to /home/devops/ansible/roles/role1
+- role1 was installed successfully
+- downloading role from http://192.168.208.181/downloads/role2.tar.gz
+- extracting role2 to /home/devops/ansible/roles/role2
+- role2 was installed successfully
+[devops@ansible-server ansible]$ cd roles/
+[devops@ansible-server roles]$ ls
+apache  requirements.yml  role1  role2
+```
+
+## Q7: Create a playbook called role1.yml as per the following details.
+* The playbook contains a play that runs on hosts in the balancers group and uses the role1 role present in your machine.
+```shell
+[devops@ansible-server ansible]$ vim role1.yml
+[devops@ansible-server ansible]$ cat role1.yml 
+- name: play for balancers group 
+  hosts: balancers
+  roles:
+  - /home/devops/ansible/roles/role1
+
+[devops@ansible-server ansible]$ ansible-playbook role1.yml 
+```
+
+## Q8: Create a playbook called test.yml as per the following details:
+* The playbook runs on the managed nodes in the test host group. 
+* Create directory /webtest with the group ownership webtest and having the regular permission rwx for the owner and group, and rx for the others.
+* Apply the special group permission: set group ID
+* Symbollically link /var/www/html/webtest to /webtest directory. 
+* Create the file /webtest/index.html with a single line of text that reads :Testing.
+
+```shell
+ [devops@ansible-server ansible]$ cat test.yml 
+- name: To run test in test group
+  hosts: test
+  tasks:
+  - name: Create group "webtest"
+    ansible.builtin.group:
+      name: webtest
+      state: present
+
+  - name: Create a /webtest directory if it does not exist
+    ansible.builtin.file:
+      path: /webtest
+      state: directory
+      mode: '2775'
+      owner: apache
+      group: webtest
+
+  - name: Create a symbolic link
+    ansible.builtin.file:
+      src: /webtest
+      dest: /var/www/html/webtest
+      state: link
+
+  - name: Add a line to a file if the file does not exist, without passing regexp
+    ansible.builtin.lineinfile:
+      path: /webtest/index.html
+      line: Testing
+      create: yes
+
+[devops@ansible-server ansible]$ 
+[devops@ansible-server ansible]$ ansible test -m command -a 'ls -lh /webtest'
+node2 | CHANGED | rc=0 >>
+total 4.0K
+-rw-r--r--. 1 root root 8 Jan 30 19:45 index.html
+[devops@ansible-server ansible]$ ansible test -m command -a 'ls -ld /webtest'
+node2 | CHANGED | rc=0 >>
+drwxrwsr-x. 2 apache webtest 24 Jan 30 19:45 /webtest
+[devops@ansible-server ansible]$ ansible test -m command -a 'cat /webtest/index.html'
+node2 | CHANGED | rc=0 >>
+Testing
+[devops@ansible-server ansible]$ curl host4
+^C
+[devops@ansible-server ansible]$ curl 192.168.208.184/role1/index.html
+<h1>This is a web server (role1) !</h1>
+```
+
+## Q9: Create an ansible vault to store user password with the following conditions:
+* The name of the vault is vault.yml
+* The vault contains two variables dev_pass with value as redhat and mgr_pass with value as linux respectively. 
+* The password to encrypt and decrypt the vault is devops
+* The password is stored in the file /home/devops/ansible/password.txt file. 
+
+```shell
+# Creating password.txt file 
+[devops@ansible-server ansible]$ vim password.txt
+[devops@ansible-server ansible]$ cat password.txt 
+devops
+
+# Creating vault file
+[devops@ansible-server ansible]$ ansible-vault create --vault-password-file=/home/devops/ansible/password.txt vault.yml
+
+# Viewing vault file
+[devops@ansible-server ansible]$ ansible-vault view vault.yml 
+Vault password: 
+dev_pass: redhat
+mgr_pass: linux
+
+```
+
+## Q10: Generate host files: 
+* Download an initial template file called hosts.j2 from the below URL: http://192.168.208.100/content/hosts.j2 to /home/devops/ansible/directory. Complete the template so that it can be used to generate a file with a line for each inventory host in the same format as /etc/hosts.
+* Create a playbook called gen_hosts.yml that uses this template to generate the file /etc/myhosts on hosts in the dev host group
+* When completed, the file /etc/myhosts on hosts in the dev host group should have a line for each managed host:
+```shell
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+192.168.208.181		node1
+192.168.208.182		node2
+192.168.208.183		node3
+192.168.208.184		node4
+```
+```shell
+# Downloading hosts.j2 file 
+[devops@ansible-server ansible]$ wget http://192.168.208.100/content/hosts.j2
+--2025-01-31 08:30:10--  http://192.168.208.100/content/hosts.j2
+Connecting to 192.168.208.100:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 160
+Saving to: ‘hosts.j2’
+
+hosts.j2                   100%[=======================================>]     160  --.-KB/s    in 0s      
+
+2025-01-31 08:30:10 (17.8 MB/s) - ‘hosts.j2’ saved [160/160]
+
+[devops@ansible-server ansible]$ cat hosts.j2 
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+{% for x in groups['all'] %}
+{{ hostvars[x]['ansible_facts']['default_ipv4']['address'] }} {{ hostvars[x]['ansible_facts']['fqdn'] }} {{ hostvars[x]['ansible_facts']['hostname']  }}
+{% endfor %}
+
+
+[devops@ansible-server ansible]$ cat gen_hosts.yml 
+- name: Hosts file playbook
+  hosts: all
+  tasks:
+  - name: Template a hosts.j2 file
+    ansible.builtin.template:
+      src: /home/devops/ansible/hosts.j2
+      dest: /etc/myhosts
+[devops@ansible-server ansible]$ 
+[devops@ansible-server ansible]$ ansible-playbook gen_hosts.yml 
+ 
+# Check 
+[devops@ansible-server ansible]$ ansible dev -m command -a 'cat /etc/myhosts'
+node1 | CHANGED | rc=0 >>
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+192.168.208.150 node1 node1
+192.168.208.151 node2 node2
+192.168.208.153 node4 node4
+192.168.208.152 node3 node3
+```
+
+## Q11: Create a playbook called hwreport.yml that produces an output file called /root/hwreport.txt on all the managed nodes with following information
+* Inventory Hostname
+* Total Memory in MB
+* BIOS Version
+#### Each line of the output file contains a single key-value pair.
+
+```shell
+# View the names
+[devops@ansible-server ansible]$ ansible dev -m setup -a 'filter=*fqdn*'
+node1 | SUCCESS => {
+    "ansible_facts": {
+        "ansible_fqdn": "node1",
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false
+}
+[devops@ansible-server ansible]$ ansible dev -m setup -a 'filter=*memtotal*'
+node1 | SUCCESS => {
+    "ansible_facts": {
+        "ansible_memtotal_mb": 3585,
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false
+}
+[devops@ansible-server ansible]$ ansible dev -m setup -a 'filter=*bios*'
+node1 | SUCCESS => {
+    "ansible_facts": {
+        "ansible_bios_date": "05/22/2023",
+        "ansible_bios_vendor": "VMware, Inc.",
+        "ansible_bios_version": "VMW201.00V.21805430.BA64.2305221830",
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false
+}
+
+# Write the template file
+[devops@ansible-server ansible]$ cat hwreport.j2 
+Inventory Hostname: {{ ansible_facts['fqdn'] }} 
+Total Memory in MB: {{ ansible_facts['memtotal_mb'] }}
+BIOS Version: {{ ansible_facts['bios_version'] }}
+
+# Make a playbook
+[devops@ansible-server ansible]$ cat hwreport.yml 
+- name: Template a hwreport.j2 file
+  hosts: all
+  become: true
+  tasks:
+  - name: Template a hwreport.j2 file to /root/hwreport.txt
+    ansible.builtin.template:
+      src: /home/devops/ansible/hwreport.j2
+      dest: /root/hwreport.txt
+[devops@ansible-server ansible]$ ansible-playbook --syntax-check hwreport.yml 
+
+playbook: hwreport.yml
+[devops@ansible-server ansible]$ ansible-playbook hwreport.yml
+
+# Check
+[devops@ansible-server ansible]$ ansible all -m command -a 'cat /root/hwreport.txt'
+node1 | CHANGED | rc=0 >>
+Inventory Hostname: node1 
+Total Memory in MB: 3585
+BIOS Version: VMW201.00V.21805430.BA64.2305221830
+node3 | CHANGED | rc=0 >>
+Inventory Hostname: node3 
+Total Memory in MB: 3585
+BIOS Version: VMW201.00V.21805430.BA64.2305221830
+node4 | CHANGED | rc=0 >>
+Inventory Hostname: node4 
+Total Memory in MB: 3585
+BIOS Version: VMW201.00V.21805430.BA64.2305221830
+node2 | CHANGED | rc=0 >>
+Inventory Hostname: node2 
+Total Memory in MB: 3582
+BIOS Version: VMW201.00V.21805430.BA64.2305221830
+```
+
+## Q12: Create a playbook called /home/devops/ansible/issue.yml as per the following requirements
+* The playbook runs on all inventory hosts
+* The playbook replaces the contents of /etc/issue with a single line of text as: 
+    * On host in the dev host group, the line reads: Development
+    * On host in the test host group, the line reads: Test
+    * On host in the prod host group, the line reads: Production
+
+```shell
+[devops@ansible-server ansible]$ cat issue.yml 
+- name: Playbook to replace content in the /etc/issue file
+  hosts: all 
+  tasks:
+  - name: Copy file issue in dev
+    ansible.builtin.copy:
+      content: "Development\n"
+      dest: /etc/issue
+    when: inventory_hostname in groups['dev']
+  
+  - name: Copy file issue in test
+    ansible.builtin.copy:
+      content: "Test\n"
+      dest: /etc/issue
+    when: inventory_hostname in groups['test']
+
+  - name: Copy file issue prod
+    ansible.builtin.copy:
+      content: "Production\n"
+      dest: /etc/issue
+    when: inventory_hostname in groups['prod']
+
+[devops@ansible-server ansible]$ ansible-playbook issue.yml
+
+# Check
+[devops@ansible-server ansible]$ ansible all -m command -a 'cat /etc/issue'
+node1 | CHANGED | rc=0 >>
+Development
+node3 | CHANGED | rc=0 >>
+Production
+node2 | CHANGED | rc=0 >>
+Test
+node4 | CHANGED | rc=0 >>
+\S
+Kernel \r on an \m
+```
+
+## Q13: Rekey an existing ansible vault as per the following condition: 
+* Use the vault.yml file that you have created earlier
+* Set the new vault password as ansible 
+* The vault remains in an encrypted state with the new password 
+
+```shell
+[devops@ansible-server ansible]$ ansible-vault rekey --ask-vault-pass vault.yml
+Vault password: 
+New Vault password: 
+Confirm New Vault password: 
+Rekey successful
+
+[devops@ansible-server ansible]$ ansible-vault view vault.yml 
+Vault password: 
+dev_pass: redhat
+mgr_pass: linux
+```
+
+## Q14: 14. Create user accounts. A list of users to be created can be found in the file called user_list.yml which you should download from "http://192.168.208.100/content/user_list.yml" and save to /home/devops/ansible/ directory. Using the password vault created elsewhere in this exam, create a playbook called create_user.yml that creates user accounts as follows:
+* Users with a job description of developer should be created on managed nodes in the dev and test host groups assigned the password from the dev_pass variable and is a member of supplementary group **devops**.
+* Users with a job description of manager should be created on managed nodes in the prod host group
+assigned the password from the mgr_pass variable and is a member of supplementary group opsmgr.
+* Passwords should use the SHA512 hash format. Your playbook should work using the vault password file created elsewhere in this exam.
+
+```shell
+# Download user file
+[devops@ansible-server ansible]$ wget http://192.168.208.100/content/user_list.yml
+
+[devops@ansible-server ansible]$ cat user_list.yml 
+users:
+  - name: krishna
+    job: developer
+    uid: 3000
+  - name: ribik
+    job: manager
+    uid: 3001
+  - name: anjit 
+    job: developer
+    uid: 3002
+
+# Create playbook
+[devops@ansible-server ansible]$ cat create_user.yml 
+- name: Playbook to create user
+  hosts: dev,test 
+  vars_files:
+    - /home/devops/ansible/user_list.yml
+    - /home/devops/ansible/vault.yml
+  tasks:
+    - name: Create devops group
+      ansible.builtin.group:
+        name: devops
+        state: present
+
+    - name: create user with developer profile
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        uid: "{{ item.uid }}"
+        group: devops
+        password: "{{ dev_pass | password_hash('sha512') }}"
+      when: item.job == "developer"
+      loop: "{{ users }}"
+
+- name: Playbook to create user
+  hosts: prod 
+  vars_files:
+    - /home/devops/ansible/user_list.yml
+    - /home/devops/ansible/vault.yml
+  tasks:
+    - name: Create opsmgr group
+      ansible.builtin.group:
+        name: opsmgr
+        state: present
+
+    - name: create user with manager profile
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        uid: "{{ item.uid }}"
+        group: opsmgr
+        password: "{{ mgr_pass | password_hash('sha512') }}"
+      when: item.job == "manager"
+      loop: "{{ users }}"
+
+
+[devops@ansible-server ansible]$ vim create_user.yml
+[devops@ansible-server ansible]$ ansible-playbook create_user.yml --vault-password-file password.txt 
+```
+
+## Q15: Configure Cron Jobs: Create /home/devops/ansible/cron.yml playbook as per the following requirement
+* This playbook runs on all managed nodes in the hostgroup
+* Configure cronjob, which runs every 2 minutes and executes the following command: logger "EX294 exam in progress" and runs as user natasha
+
+```shell
+[devops@ansible-server ansible]$ vim cron.yml
+[devops@ansible-server ansible]$ cat cron.yml 
+- name: Configure cron 
+  hosts: all 
+  tasks:
+  - name: Add the user 'natasha' 
+    ansible.builtin.user:
+      name: natasha
+
+  - name: scheduling cron
+    ansible.builtin.cron:
+      name: "cron for the user natasha"
+      minute: "*/2"
+      job: 'logger "EX294 exam in progress"'
+      user: natasha
+
+
+[devops@ansible-server ansible]$ ansible-playbook --syntax-check cron.yml 
+
+playbook: cron.yml
+[devops@ansible-server ansible]$ ansible-playbook cron.yml 
+
+# Check
+[devops@ansible-server ansible]$ ansible all -m command -a 'tail -1 /etc/passwd'  
+node4 | CHANGED | rc=0 >>
+natasha:x:1002:1002::/home/natasha:/bin/bash
+node1 | CHANGED | rc=0 >>
+natasha:x:3003:3003::/home/natasha:/bin/bash
+node3 | CHANGED | rc=0 >>
+natasha:x:3002:3002::/home/natasha:/bin/bash
+node2 | CHANGED | rc=0 >>
+natasha:x:3003:3003::/home/natasha:/bin/bash
+
+[devops@ansible-server ansible]$ ansible all -m command -a 'crontab -l -u natasha'  
+node3 | CHANGED | rc=0 >>
+#Ansible: cron for the user natasha
+*/2 * * * * logger "EX294 exam in progress"
+node1 | CHANGED | rc=0 >>
+#Ansible: cron for the user natasha
+*/2 * * * * logger "EX294 exam in progress"
+node4 | CHANGED | rc=0 >>
+#Ansible: cron for the user natasha
+*/2 * * * * logger "EX294 exam in progress"
+node2 | CHANGED | rc=0 >>
+#Ansible: cron for the user natasha
+*/2 * * * * logger "EX294 exam in progress"
+```
+
+## Q16: Create & use a logical volume: Create a playbook called /home/devops/ansible/lvm.yml that runs on all the managed nodes and does the following:
+* Creates a logical volume with the following requirements:
+    * The logical volume is created in the research volume group.
+    * The logical volume name is data.
+    * The logical volume size is 1200 Mib.
+    * Format the logical volume with the ext file-system. 
+    * if the requested logical volume size cannot be created, the error message "could not create logical volume of that size" should be displayed and size 800 MiB should be used instead.
+    * if the volume research does not exist, the error message "volume group does not exist" should be displayed.
+    * Don't mount the logical volume in any way.
+
+```shell
+# For using lvol module you have to install 
+# ansible-galaxy collection install community.general
+# [devops@control ansible]$ ansible-doc debug
+# [devops@control ansible]$ ansible-doc lvol 
+# [devops@control ansible]$ ansible testservers -m setup -a 'filter=*ansible_lvm*'
+
+[devops@ansible-server ansible]$ vim lvm.yml
+[devops@ansible-server ansible]$ cat lvm.yml 
+- name: Playbook to create lvm
+  hosts: all 
+  tasks:
+  - name: checking details
+    block:
+      - name: Check research VG, if not present then print error message
+        ansible.builtin.debug:
+          msg: "volume group does not exist"
+        when: ansible_lvm.vgs.research is not defined
+      - name: Create a logical volume of 1200Mib called data in research VG
+        community.general.lvol:
+          vg: research
+          lv: data
+          size: 1200
+        when: ansible_lvm.vgs.research is defined 
+    rescue:
+      - name: If the requested LV size is not sufficient, then print 
+        ansible.builtin.debug:
+          msg: "Could not create LV of that size"
+        when: ansible_lvm.vgs.research is defined
+      - name: Create a logical volume of 800Mib called data in research VG
+        community.general.lvol:
+          vg: research
+          lv: data
+          size: 800
+        when: ansible_lvm.vgs.research is defined
+    always:
+      - name: Format filesystem
+        community.general.filesystem:
+          fstype: ext4
+          dev: /dev/research/data
+        when: ansible_lvm.vgs.research is defined
+      
+[devops@ansible-server ansible]$ ansible-playbook --syntax-check lvm.yml 
+[devops@ansible-server ansible]$ ansible-playbook lvm.yml 
+```
+
+## Q17: Create and use partitions: Create /home/devops/ansible/partition.yml , which will create partitions on all the managed nodes.
+* After vdb creating a 1200M primary partition, partition number 1 and format it into ext4 filesystem.
+* On the prod group to permanently mount the partition to /srv directory. 
+* If there is not enough disk space, give prompt information "Could not create partition of that size" and create a 800M partition
+* If vdb does not exist, a prompt message will be given "the disk does not exist".
+
+```shell
+# [devops@ansible-server ansible]$ ansible dev -m setup -a 'filter=*devices*'
+# [devops@ansible-server ansible]$ ansible-doc filesystem
+# [devops@ansible-server ansible]$ ansible-doc parted
+
+[devops@ansible-server ansible]$ cat partition.yml 
+- name: partition playbook
+  hosts: all 
+  tasks: 
+    - name: Checking block storage availability
+      block:
+        - name: if vdb does not exist , display prompt message
+          ansible.builtin.debug:
+            msg: "The disk does not exist"
+          when: "'vdb' not in ansible_devices"
+        - name: Create a 1200MiB new ext4 primary partition
+          community.general.parted:
+            device: /dev/vdb
+            number: 1
+            state: present
+            part_end: 1200MiB
+          when: "'vdb' in ansible_devices"
+      rescue:
+        - name: if there is not enough disk space
+          ansible.builtin.debug:
+            msg: "Could not create partition of that size"
+          when: "'vdb1' not in ansible_devices.vdb"
+        - name: Create a 800MiB new ext4 primary partition
+          community.general.parted:
+            device: /dev/vdb
+            number: 1
+            state: present
+            part_end: 800MiB
+      always:
+        - name: Create a ext4 filesystem on /dev/vdb1
+          community.general.filesystem:
+            fstype: ext4
+            dev: /dev/vdb1
+          when: "'vdb' in ansible_devices"
+        - name: Mounting the file system
+          ansible.posix.mount:
+            path: /srv
+            src: /dev/vdb1
+            fstype: ext4
+            state: mounted
+          when: "'prod' in group_names"
+
+[devops@ansible-server ansible]$ ansible-playbook --syntax-check partition.yml
+[devops@ansible-server ansible]$ ansible-playbook partition.yml 
+```
+
+## Q18: Using a selinux role create a selinux.yml playbook with the following conditions:
+* Configure on all managed hosts to set the default selinux mode as permissive.
+* Verify the selinux mode on all the nodes using ansible ad-hoc command.
+* Create another copy of the selinux.yml playbook with the name as selinux2.yml and make changes there in it to configure the selinux default mode as enforcing for all the managed nodes.
+* Execute the selinux2.yml playbook using ansible navigator.
+* Verify the selinux mode on all the node machines
+
+```shell
+[devops@ansible-server ansible]$ ansible-galaxy install linux-system-roles.selinux
+
+devops@ansible-server ansible]$ vim selinux.yml
+[devops@ansible-server ansible]$ cat selinux.yml 
+- name: playbook for selinux
+  hosts: all
+  vars:
+    - selinux_state: permissive
+  roles:
+    - linux-system-roles.selinux
+
+# Check
+[devops@ansible-server ansible]$ ansible all -m command -a 'sestatus' 
+node3 | CHANGED | rc=0 >>
+SELinux status:                 enabled
+SELinuxfs mount:                /sys/fs/selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   enforcing
+Mode from config file:          enforcing
+Policy MLS status:              enabled
+Policy deny_unknown status:     allowed
+Memory protection checking:     actual (secure)
+Max kernel policy version:      33
+node1 | CHANGED | rc=0 >>
+SELinux status:                 enabled
+SELinuxfs mount:                /sys/fs/selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   enforcing
+Mode from config file:          enforcing
+Policy MLS status:              enabled
+Policy deny_unknown status:     allowed
+Memory protection checking:     actual (secure)
+Max kernel policy version:      33
+node2 | CHANGED | rc=0 >>
+SELinux status:                 enabled
+SELinuxfs mount:                /sys/fs/selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   enforcing
+Mode from config file:          enforcing
+Policy MLS status:              enabled
+Policy deny_unknown status:     allowed
+Memory protection checking:     actual (secure)
+Max kernel policy version:      33
+node4 | CHANGED | rc=0 >>
+SELinux status:                 enabled
+SELinuxfs mount:                /sys/fs/selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   enforcing
+Mode from config file:          enforcing
+Policy MLS status:              enabled
+Policy deny_unknown status:     allowed
+Memory protection checking:     actual (secure)
+Max kernel policy version:      33
+
+[devops@ansible-server ansible]$ ansible-playbook selinux.yml 
+
+# Check
+[devops@ansible-server ansible]$ ansible all -m command -a 'sestatus' 
+node3 | CHANGED | rc=0 >>
+SELinux status:                 enabled
+SELinuxfs mount:                /sys/fs/selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   permissive
+Mode from config file:          permissive
+Policy MLS status:              enabled
+Policy deny_unknown status:     allowed
+Memory protection checking:     actual (secure)
+Max kernel policy version:      33
+node1 | CHANGED | rc=0 >>
+SELinux status:                 enabled
+SELinuxfs mount:                /sys/fs/selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   permissive
+Mode from config file:          permissive
+Policy MLS status:              enabled
+Policy deny_unknown status:     allowed
+Memory protection checking:     actual (secure)
+Max kernel policy version:      33
+node2 | CHANGED | rc=0 >>
+SELinux status:                 enabled
+SELinuxfs mount:                /sys/fs/selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   permissive
+Mode from config file:          permissive
+Policy MLS status:              enabled
+Policy deny_unknown status:     allowed
+Memory protection checking:     actual (secure)
+Max kernel policy version:      33
+node4 | CHANGED | rc=0 >>
+SELinux status:                 enabled
+SELinuxfs mount:                /sys/fs/selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   permissive
+Mode from config file:          permissive
+Policy MLS status:              enabled
+Policy deny_unknown status:     allowed
+Memory protection checking:     actual (secure)
+Max kernel policy version:      33
+
+
+[devops@ansible-server ansible]$ cp selinux.yml selinux2.yml
+[devops@ansible-server ansible]$ cat selinux2.yml 
+- name: playbook for selinux
+  hosts: all
+  vars:
+    - selinux_state: enforcing
+  roles:
+    - linux-system-roles.selinux
+
+[devops@ansible-server ansible]$ ansible-navigator run -m stdout selinux2.yml 
+```

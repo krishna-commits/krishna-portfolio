@@ -1,0 +1,91 @@
+---
+title: "Lesson 4.1: Managing variables"
+description:
+parent: "Chapter 4: Managing Variable and Facts"
+grand_parent : "Redhat Enterprise Linux 9 - EX294K RHCE"
+order: 1
+completed: false
+---
+
+## What are Ansible Variables?
+Ansible variables allow you to store values that can be dynamically referenced within playbooks, roles, and templates. They help in making automation flexible, reusable, and easier to manage by avoiding hardcoded values.
+
+### Types of Ansible Variables
+* Playbook Variables: Defined inside a playbook under the vars section.
+* Inventory Variables: Assigned to hosts or groups in the inventory file.
+* Role Variables: Defined inside vars/main.yml within a role.
+* Facts (System Variables): Auto-discovered by Ansible (e.g., ansible_facts['fqdn']).
+* Extra Variables (-e or --extra-vars): Passed at runtime for overriding values.
+
+### Why Use Variables in Ansible?
+* Scalability – Allows automation across multiple servers without modifying playbooks.
+* Reusability – Eliminates redundancy and makes roles reusable.
+* Dynamic Configurations – Adapts based on system facts and input parameters.
+* Simplifies Playbooks – Reduces complexity by centralizing values in variables.
+
+## Creating an Ansible Role to Deploy and Configure Apache Web Server
+In this task, we create an Ansible role for Apache in /home/devops/ansible/roles/apache to automate the installation and configuration of the httpd web server on managed hosts. The role ensures:
+* Apache (httpd) is installed, enabled on boot, and started.
+* Firewall rules are configured to allow web traffic.
+* A custom index page is deployed using a Jinja2 template (index.html.j2).
+* The index page dynamically displays the hostname and IP address of the managed node in the format:
+```Welcome to <hostname> on <ipaddress>```
+This role automates Apache setup, ensuring a consistent and reliable deployment across multiple servers.
+
+```shell
+[devops@ansible-server roles]$ ansible-galaxy init apache
+[devops@ansible-server apache]$ ls
+defaults  files  handlers  meta  README.md  tasks  templates  tests  vars
+
+# Templates
+[devops@ansible-server apache]$ cd templates/
+[devops@ansible-server templates]$ cat index.html.j2 
+Welcome to {{ ansible_facts['fqdn'] }} on {{ ansible_facts['default_ipv4']['address'] }}
+
+# Vars
+[devops@ansible-server apache]$ cd vars/
+[devops@ansible-server vars]$ cat main.yml 
+pkgs:
+  - httpd
+  - firewalld
+svcs:
+  - httpd
+  - firewalld
+firewall_svcs:
+  - http
+
+# Tasks
+[devops@ansible-server apache]$ cd tasks/
+[devops@ansible-server tasks]$ cat main.yml 
+- name: Install the latest version of packages
+  ansible.builtin.yum:
+    name: "{{ item }}"
+    state: latest
+  loop: "{{ pkgs }}"
+
+- name: Start services, if not started
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  loop: "{{ svcs }}"
+
+- name: Template a file to /var/www/html
+  ansible.builtin.template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+
+- name: permit traffic in default zone for http service
+  ansible.posix.firewalld:
+    service: "{{ item }}"
+    permanent: true
+    state: enabled
+  loop: "{{ firewall_svcs }}"
+
+# Playbook
+[devops@ansible-server ansible]$ cat apache-role.yml 
+- name: Apache role playbook
+  hosts: dev
+  roles:
+  - /home/devops/ansible/roles/apache
+```

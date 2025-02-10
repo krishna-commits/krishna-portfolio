@@ -1,0 +1,55 @@
+---
+title: "Lesson 2.1: Building an Ansible Inventory"
+description:
+parent: "Chapter 2: Deploying Ansible"
+grand_parent : "Redhat Enterprise Linux 9 - EX294K RHCE"
+order: 1
+completed: true
+---
+
+### Creating Inventory File 
+- Contains IP-Address/Hostname of the Managed Host Machines, on which action has to be taken.
+```bash 
+# Creating Playbook directory
+[devops@serverA ~]$ mkdir -p /home/devops/playbooks
+[devops@serverA ~]$ ls
+playbooks
+[devops@serverA ~]$ cd /home/devops/playbooks/
+
+# Creating Inventory File 
+
+# METHOD I : Defining only ipaddress or hostname 
+[devops@serverA playbooks]$ vim inventory
+[devops@serverA playbooks]$ cat inventory
+192.168.208.102
+192.168.208.103
+192.168.208.104
+
+# METHOD II : Making Groups 
+[devops@serverA playbooks]$ vim inventory
+[devops@serverA playbooks]$ cat inventory
+[devservers]
+192.168.208.102
+192.168.208.103
+[testservers]
+192.168.208.104
+
+# METHOD III : Making Functions to bundle group
+[devops@serverA playbooks]$ vim inventory
+[devops@serverA playbooks]$ cat inventory
+[devservers]
+192.168.208.102
+192.168.208.103
+
+[testservers]
+192.168.208.104
+sanjeeb.example.com
+
+[testweb:children]
+testservers
+devservers
+
+[devtest:children]
+devservers
+testservers
+```

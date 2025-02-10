@@ -12,11 +12,11 @@ export const siteConfig = {
     linkedIn: "https://www.linkedin.com/in/krishna-neupane-50082091/"
   },
   bio: " DevSecOps Engineer| DevOps Enthusiast | Cybersecurity Learner | Aspiring Researcher",
-  talks_about: "#devOps, #DevSecOps #clientside, #CyberSecurity #cloudcomputing #saas #iaas #nlp #microservices #serverless #headless #edgenetwork",
+  talks_about: "#DevOps, #DevSecOps, #clientside, #CyberSecurity, #Learner, #Researcher, #edgenetwork",
   profile_image: "https://images.credly.com/images/86e90568-98cc-447b-9302-047eee9a883b/standard_DSC_7859_2x2_.JPG",
   home: {
-    title: "DevSecOps Engineer| DevOps Enthusiast | Cybersecurity Learner | Aspiring Researcher | Entrepreneur",
-    description: `Welcome to my digital corner of dreams!
+    title: "Welcome to my digital corner of dreams!",
+    description: `
           Results-driven DevSecOps professional with a robust background in system and network administration. 
           I am enthusiastic about addressing complex technical challenges, automating tasks, and fostering collaborative team dynamics. 
           My unwavering commitment to problem-solving extends to contributing valuable insights to the data security and privacy landscape. 

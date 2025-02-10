@@ -18,6 +18,7 @@ const themeProviders = {
   'research-core':NoSideBarThemeProvider,
   'mantras':NoSideBarThemeProvider,
   'skill-lab':NoSideBarThemeProvider,
+  'projects':NoSideBarThemeProvider,
   '*': PortfolioThemeProvider,
 };
 

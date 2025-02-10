@@ -122,29 +122,91 @@ export const ResearchCore = defineDocumentType(() => ({
 
 export const Mantras = defineDocumentType(() => ({
   name: "Mantras",
-  filePathPattern: `mantras/**/*.mdx`, // Type of file to parse (every mdx in the blog subfolder)
+  filePathPattern: `mantras/**/*.mdx`, // Type of file to parse (every mdx in the ResearchCore subfolder)
   contentType: 'mdx',
   fields: {
     title: {
       type: "string",
-      description: "The title of the quote post",
+      description: "The title of the blog post",
       required: true,
     },
-    philosopher: {
+    date: {
+      type: "date",
+      description: "The date of the blog post",
+      required: false,
+    },
+    description: {
       type: "string",
-      description: "The Philosopher of the quote post",
+      description: "The description of the blog post",
+      required: false,
+    },
+    parent: {
+      type: "string",
+      description: "The parent of the blog post",
+      required: false,
+    },
+    grand_parent: {
+      type: "string",
+      description: "The grand parent of the blog post",
       required: false,
     },
     order: {
       type: "number",
-      description: "The order of the quote post",
+      description: "The order of the blog post",
       required: false,
-    }
+    },
+    completed: {
+      type: "boolean",
+      description: "Denotes weather the note is completed",
+      required: false,
+    },
   },
   computedFields: {
     url: {
       type: "string",
-      resolve: (post) => `/mantras/${post._raw.flattenedPath}`,
+      resolve: (mantras) => `/${mantras._raw.flattenedPath}`,
+    },
+    slug: {
+      type: "string",
+      resolve: (doc) => `/${doc._raw.flattenedPath}`,
+    },
+    slugAsParams: {
+      type: "string",
+      resolve: (doc) => doc._raw.flattenedPath.split("/").slice(1).join("/"),
+    },
+  },
+}));
+
+export const Projects = defineDocumentType(() => ({
+  name: "Mantras",
+  filePathPattern: `projects/**/*.mdx`, // Type of file to parse (every mdx in the ResearchCore subfolder)
+  contentType: 'mdx',
+  fields: {
+    title: {
+      type: "string",
+      description: "The title of the blog post",
+      required: true,
+    },
+    date: {
+      type: "date",
+      description: "The date of the blog post",
+      required: false,
+    },
+    description: {
+      type: "string",
+      description: "The description of the blog post",
+      required: false,
+    },
+    order: {
+      type: "number",
+      description: "The order of the blog post",
+      required: false,
+    },
+  },
+  computedFields: {
+    url: {
+      type: "string",
+      resolve: (mantras) => `/${mantras._raw.flattenedPath}`,
     },
     slug: {
       type: "string",
@@ -207,7 +269,7 @@ export const SkillLab = defineDocumentType(() => ({
 // Create source
 export default makeSource({
   contentDirPath: "./content", // Source directory where the content is located
-  documentTypes: [BlogPost, ResearchCore,Mantras, SkillLab],
+  documentTypes: [BlogPost, ResearchCore,Mantras, SkillLab, Projects],
   mdx: {
     remarkPlugins: [remarkGfm, 
     ],
