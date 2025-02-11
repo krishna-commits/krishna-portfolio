@@ -3,10 +3,23 @@ import { Button } from "app/theme/components/ui/button";
 import { siteConfig } from "config/site";
 import Link from "next/link";
 
+export interface WorkExperienceItem {
+  imageUrl: string;
+  organization: string;
+  time: string;
+  role: string;
+  url: string;
+  course: string; // used as a unique key in the component
+}
+
+export interface SiteConfig {
+  work_experience: WorkExperienceItem[];
+}
+
 export default function ExperienceList() {
     return (
       <ul role="list">
-        {siteConfig.work_experience.map((item, index) => (
+        { siteConfig.work_experience.length !== 0 && siteConfig.work_experience.map((item: WorkExperienceItem, index: number) => (
           <div key={item.course}>
             <li className={`flex justify-between gap-x-4 py-3 ${index === siteConfig.work_experience.length - 1 ? '' : 'border-b'}`}>
               <div className="flex min-w-0 gap-x-5">

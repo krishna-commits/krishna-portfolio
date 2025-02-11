@@ -3,11 +3,22 @@ import { Button } from "app/theme/components/ui/button";
 import { siteConfig } from "config/site";
 import Link from "next/link";
 
+export interface EducationItem {
+  imageUrl: string;
+  organization: string;
+  time: string;
+  course: string;
+  university: string;
+}
 
-export default function EducationList() {
+export interface SiteConfig {
+  education: EducationItem[];
+}
+
+export default function EducationList(): JSX.Element {
     return (
       <ul role="list">
-        {siteConfig.education.length !== 0 && siteConfig.education.map((item, index) => (
+        {siteConfig.education.length !== 0 &&  siteConfig.education.map((item: EducationItem, index: number) => (
           <div key={index}>
             <li className={`flex justify-between gap-x-4 py-3 ${index === siteConfig.education.length - 1 ? '' : 'border-b'}`}>
               <div className="flex min-w-0 w-full space-x-4 justify-center items-center">
