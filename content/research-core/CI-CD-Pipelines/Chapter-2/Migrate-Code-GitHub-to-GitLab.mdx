@@ -1,0 +1,60 @@
+---
+title: "Migrate Code from GitHub to GitLab"
+description:
+parent: "Chapter 2: Automatic Pipeline To Kubernetes"
+grand_parent : "CI/CD Pipelines"
+order: 1
+---
+
+![](https://cdn-images-1.medium.com/max/300/1*kzgFtWMBfLnh3PNcBQQJZw.jpeg)
+_Migrate Code from GitHub to GitLab_
+
+For this, I am using **“Project”** as an example, directory or repository names vary depending on the one you are using
+
+1. Your project directory
+
+```
+cd Project/
+```
+
+2. Check the remote origin values, which are GitHub URLs.
+
+```
+git remote -v
+```
+
+3. Fetch all of the remote branches and tags:
+
+```
+git fetch origin
+```
+
+4. Update remote URL from GitHub to GitLab
+
+```
+git remote set-url origin git@gitlab.com:krishna-commits/Project.git
+```
+
+5. Push all to the origin, i.e. GitLab URL
+
+```
+git push origin --all
+```
+
+6. Final checks
+
+```
+git remote -v
+
+git branch -a
+```
+
+Video Resources (GitLab GUI to import project is now working)  
+ [https://www.youtube.com/watch?v=RviEqHe-Fzk](https://www.youtube.com/watch?v=RviEqHe-Fzk)
+
+
+
+ ---
+Follow me on : [Medium](https://medium.com/@neupane.krishna33)
+[Linkedin](https://www.linkedin.com/in/krishna-neupane-50082091/)
+[Researchgate](https://www.researchgate.net/profile/Krishna-Neupane)
