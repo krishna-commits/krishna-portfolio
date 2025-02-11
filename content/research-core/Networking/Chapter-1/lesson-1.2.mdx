@@ -1,0 +1,99 @@
+---
+title: "OSI MODEL"
+description:
+parent: "Chapter 1:Networking"
+grand_parent : "Networking"
+order: 1
+---
+
+#  OSI MODEL
+
+**The OSI Model** is a conceptual framework that defines how data is transmitted between devices on a network. 
+
+## Contents
+
+This cheatsheet provides information about each layer of the OSI Model, including:
+- number of layer;
+- name;
+- function;
+- type of data processed;
+- common protocols and standards.
+
+![OSI-Model Cheatsheet](https://user-images.githubusercontent.com/119814239/224482500-51d8a238-b547-4ed4-94fb-8b70b14c1198.png)
+
+#### Layer 1: Physical
+
+- **Function**: Transmits raw bit streams over a physical medium.
+- **Components**: Cables, fibers, physical network interfaces, hubs, repeaters.
+- **Role**: Defines physical and electrical specifications of devices and media.
+
+
+#### Layer 2: Data Link
+
+
+- **Function**: Manages node-to-node data transfer and error handling.
+- **Sublayers**: Media Access Control (MAC), Logical Link Control (LLC).
+- **Components**: Switches, bridges, network interface cards (NICs).
+- **Protocols**: Ethernet, PPP, Switching, ARP.
+
+
+#### Layer 3: Network
+
+
+- **Function**: Manages device addressing, tracks the location of devices, and determines the best way to move data.
+- **Components**: Routers, layer 3 switches.
+- **Protocols**: IP, ICMP, IPSec, IGMP, OSPF, BGP.
+
+
+#### Layer 4: Transport
+
+
+- **Function**: Provides reliable data transfer across a network.
+- **Characteristics**: TCP (connection-oriented) and UDP (connectionless).
+- **Role**: Manages end-to-end message delivery, error recovery, and flow control.
+
+
+#### Layer 5: Session
+
+
+- **Function**: Manages sessions or connections between applications.
+- **Role**: Establishes, manages, and terminates connections between applications.
+- **Protocols**: NetBIOS, SMB, RPC, PPTP.
+
+
+#### Layer 6: Presentation
+
+
+- **Function**: Translates data between the application layer and the network.
+- **Role**: Data encryption, decryption, compression, and translation.
+- **Examples**: SSL, TLS, MIME, ASCII, EBCDIC, JPEG, MPEG.
+
+
+#### Layer 7: Application
+
+
+- **Function**: Closest to the end user. Interacts with software applications that implement a communicating component.
+- **Role**: HTTP, FTP, SMTP, DNS, Telnet, SNMP, and more.
+- **Characteristics**: Serves as the window for users and application processes to access network services.
+
+
+#### Understanding the OSI Model
+
+
+- **Data Encapsulation**: Each layer adds its own header (or trailer) to the data as it passes through.
+- **Data Flow**: Data flows down the layers on the sending end and up the layers on the receiving end.
+- **Layer Interaction**: Each layer on the sending device communicates with its corresponding layer on the receiving device.
+
+
+#### Practical Applications
+
+
+- **Troubleshooting**: Helps in isolating network issues by layer.
+- **Network Design**: Guides the design and understanding of network architectures.
+- **Protocol Implementation**: Assists in understanding and implementing network protocols.
+
+
+---
+Follow me on : [Medium](https://medium.com/@neupane.krishna33)
+[Linkedin](https://www.linkedin.com/in/krishna-neupane-50082091/)
+[Researchgate](https://www.researchgate.net/profile/Krishna-Neupane)

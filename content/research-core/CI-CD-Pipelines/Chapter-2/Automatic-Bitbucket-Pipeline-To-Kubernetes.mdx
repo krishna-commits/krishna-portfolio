@@ -1,0 +1,504 @@
+---
+title: "Automatic Bitbucket Pipeline-To-Kubernetes"
+description:
+parent: "Chapter 2: Automatic Pipeline To Kubernetes"
+grand_parent : "CI/CD Pipelines"
+order: 2
+---
+
+![](https://cdn-images-1.medium.com/max/1024/1*OE2Oyb1Go9uQZyB-zLG4FQ.png)
+_Architecture Diagram_
+
+Automating the deployment process from Bitbucket Pipelines to Kubernetes involves setting up a continuous integration/continuous deployment (CI/CD) pipeline. Below is a general guide on how you can achieve this using Bitbucket Pipelines and Kubernetes. This example assumes you are using AWS EKS for your Kubernetes cluster, but you can adjust the steps according to your specific setup.
+
+**Prerequisites:**  
+1. **Bitbucket Repository:**  
+ Make sure you have your project hosted on Bitbucket.
+
+**2. Kubernetes Cluster:**  
+Set up your Kubernetes cluster. This example assumes you are using AWS EKS.
+
+[Code Link: https://github.com/krishna-commits/automation-bitbucket-to-kubernetes-deployment](https://github.com/krishna-commits/automation-bitbucket-to-kubernetes-deployment)
+
+### **Folder Structure:**
+
+![](https://cdn-images-1.medium.com/max/305/1*Hpevn2Eqwol18eMHiOI2lw.png)
+_Folder Structure_
+
+### Step-by-Step Guide:
+
+1. **Configure Kubernetes Credentials in Bitbucket:**  
+Set up environment variables in your Bitbucket repository settings (Settings > Repository settings > Pipeline > Repository settings).
+
+```
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+AWS_DEFAULT_REGION
+EKS_CLUSTER_NAME
+ACCOUNT_ID
+#Add other variable 
+```
+
+**2. Define Bitbucket Pipelines:**  
+Set up your Bitbucket Pipelines configuration (bitbucket-pipelines.yml). Below is a simple example using Docker and Kubernetes for deployment:
+
+```
+image: atlassian/pipelines-awscli
+clone:
+  depth: full
+options:
+  size: 2x
+pipelines:
+  branches:
+    '*':
+      - step:
+          name: Deploy to ECR and Selection to Branch
+          services:
+            - docker
+          script:
+            - echo $BITBUCKET_BRANCH
+            - apk add --no-cache yq
+            - DOMAIN=$(yq eval ".branches[\"$BITBUCKET_BRANCH\"]" k8s/staging/branch_domain_mapping.yml)
+            - echo $DOMAIN
+            - |
+              if ["$BITBUCKET_BRANCH" != "production"]; then
+                  export AWS_ACCOUNT_ID=$ACCOUNT_ID
+                  export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+                  export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+                  export AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
+                  export K8S_CLUSTER=$K8S_CLUSTER
+                else
+                  export AWS_ACCOUNT_ID=$ACCOUNT_ID_PROD
+                  export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_PROD
+                  export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_PROD
+                  export AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION_PROD
+                  export K8S_CLUSTER=$K8S_CLUSTER_PROD
+                fi
+            - export APP=$(echo $BITBUCKET_REPO_FULL_NAME-$BITBUCKET_BRANCH | awk -F'/' '{print tolower($2)}')
+            - export BITBUCKET_COMMIT_SHORT=$(echo $BITBUCKET_COMMIT | cut -c1-7)
+            - export IMAGE_TAG=$BITBUCKET_COMMIT_SHORT 
+            - export DOCKER_REPO=$(echo "$APP" | tr '[:upper:]' '[:lower:]') 
+            - export IMAGE_URL=$(echo $ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$DOCKER_REPO:$IMAGE_TAG | awk -F'/' '{print tolower($2)}')
+            - pip install --upgrade awscli    
+            - |
+              repository_exists=$(aws ecr describe-repositories --repository-names $APP --region $AWS_DEFAULT_REGION --output json | jq -r '.repositories | length')
+
+              if [-z "$repository_exists"]; then
+                # ECR repository does not exist, create it
+                echo "Creating ECR repository: $APP"
+                aws ecr create-repository --repository-name $APP --region $AWS_DEFAULT_REGION --image-tag-mutability IMMUTABLE
+              fi
+            - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+            - IMAGE_URL=$ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$DOCKER_REPO:$IMAGE_TAG
+            - docker build -t "$IMAGE_URL" .
+            - docker tag "$IMAGE_URL" "$IMAGE_URL"
+            - docker push "$IMAGE_URL"
+          variables:
+            IMAGE_URL: $ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$DOCKER_REPO:$IMAGE_TAG
+            DOMAIN: $DOMAIN
+      - step:
+          name: Deploy to Kubernetes
+          script:
+            - wget -O kubectl "https://dl.k8s.io/release/$(wget -qO- https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+            - chmod +x kubectl  
+            - mv kubectl /usr/local/bin/ 
+            - kubectl version --client  
+            - apk add --no-cache yq
+            - DOMAIN=$(yq eval ".branches[\"$BITBUCKET_BRANCH\"]" k8s/staging/branch_domain_mapping.yml)
+            - export ACCOUNT_ID=$ACCOUNT_ID
+            - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+            - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+            - export AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
+            - export K8S_CLUSTER=$K8S_CLUSTER
+            - export BITBUCKET_COMMIT_SHORT=$(echo $BITBUCKET_COMMIT | cut -c1-7)
+            - export IMAGE_TAG=$BITBUCKET_COMMIT_SHORT 
+            - echo $IMAGE_TAG
+            - export DOMAIN=$DOMAIN
+            - aws configure set aws_access_key_id "${AWS_ACCESS_KEY_ID}"
+            - aws configure set aws_secret_access_key "${AWS_SECRET_ACCESS_KEY}"
+            - aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $K8S_CLUSTER
+            - export APP=$(echo $BITBUCKET_REPO_FULL_NAME-$BITBUCKET_BRANCH | awk -F'/' '{print tolower($2)}')
+            - export DOCKER_REPO=$(echo "$APP" | tr '[:upper:]' '[:lower:]') 
+            - |
+              namespace_exists=$(kubectl get namespace "$APP" --ignore-not-found=true -o jsonpath='{.metadata.name}')
+
+              if [-z "$namespace_exists"]; then
+                # Namespace does not exist, create it
+                echo "Creating Kubernetes namespace: $APP"
+                kubectl create namespace "$APP"
+              fi
+
+            - export IMAGE_URL="$ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$DOCKER_REPO:$IMAGE_TAG"
+            - sed -i 's/{{APP}}/'"$APP"'/g' k8s/staging/deployment.yaml
+            - sed -i 's~{{IMAGE_URL}}~'"$IMAGE_URL"'~' k8s/staging/deployment.yaml
+            - sed -i 's/{{DOMAIN}}/'"$DOMAIN"'/g' k8s/staging/deployment.yaml
+            - cat k8s/staging/deployment.yaml 
+            - |
+              if ! kubectl get deployment "${APP}-deployment" --namespace="${APP}" &> /dev/null; then
+                echo "Deploying initial Kubernetes resources..."
+                kubectl apply -f k8s/staging/deployment.yaml --namespace="${APP}"
+              else
+                echo "Restarting deployment..."
+                kubectl apply -f k8s/staging/deployment.yaml --namespace="${APP}"
+                kubectl rollout restart deployment "${APP}-deployment" --namespace="${APP}"
+              fi
+            - echo $DOMAIN
+definitions:
+  services:
+    docker:
+      memory: 7168
+```
+
+This pipeline builds and pushes a Docker image to ECR, then deploys the Kubernetes manifests in the k8s/ directory.
+
+**3. cert-manager:  
+_Note: If you don’t have a certificate you can use this step. This Cert-Manager is Code for the Kubernetes Cluster, If you have already Cert-manager installed on the Kubernetes Cluster, Skip this point 3._**
+
+Cert-manager is a **Kubernetes tool** that issues certificates from various certificate providers, including Let’s Encrypt.
+
+**To install cert-manager using helm:**
+
+**Step 1: Install the Custom Resource Definition resources.**
+
+```
+$ kubectl apply --validate=false \-f https://github.com/jetstack/cert-manager/releases/download/v1.5.3/cert-manager.yaml
+```
+
+**_Note: Currently I am using 1.5.3 Version of Jetstack cert manager_**
+
+Step 2: Create a namespace for cert-manager
+
+```
+$ kubectl create ns cert-manager
+```
+
+Step 3. Add the Jetstack Helm repository and update your local Helm chart repo cache.
+
+```
+$ helm repo add jetstack https://charts.jetstack.io
+$ helm repo update
+```
+
+Step 4. Install the cert-manager Helm chart
+
+```
+$ helm install cert-manager --namespace cert-manager --version v1.5.3 jetstack/cert-manager
+```
+
+Now verify the installation:
+
+```
+$ kubectl get pods --namespace cert-manager
+NAME                                       
+cert-manager-66b6d6bf59-tmlgw
+cert-manager-cainjector-856d4df858-z4k5s
+cert-manager-webhook-5fd7d458f7-zwbnc
+```
+
+The certificates provided by Let’s Encrypt are valid for 90 days at no charge, and you can renewal at any time.
+
+The certificate generation and renewal can be automated using cert-bot and cert-manager (for k8's).
+
+**4. Kubernetes Manifests:**
+
+Organize Kubernetes deployment manifests (k8s/). Adjust these files based on your application and requirements.  
+_In this Deployment.yaml file it Contain Deployment, Service, Certificate Issuer and Ingress. You can make the different file for different Kind._
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{APP}}-deployment
+  labels:
+    app: {{APP}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{APP}}
+  template:
+    metadata:
+      labels:
+        app: {{APP}}
+    spec:
+      containers:
+        - name: {{APP}}
+          image: {{IMAGE_URL}}
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{APP}}-service
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+  selector:
+    app: {{APP}}
+  type: ClusterIP
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: neupane.krishna33@gmail.com
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+      - http01:
+          ingress:
+            class: nginx
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{APP}}-ingress
+  labels:
+    app: {{APP}}
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    kubernetes.io/ingress.class: nginx
+spec:
+  tls:
+    - hosts:
+        - {{DOMAIN}}
+      secretName: {{APP}}-tls
+  rules:
+    - host: {{DOMAIN}}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{APP}}-service
+                port:
+                  number: 80
+```
+
+**Note** : Provide a valid email address. You will receive **email notifications** on certificate renewals.
+
+**Breakdown the above code:**
+
+Below set of YAML manifests is designed to deploy an application to Kubernetes, expose it via a **Service** , configure **TLS** using Let’s Encrypt through **cert-manager** , and define Ingress rules for routing traffic.  
+**Deployment and Service:**  
+Defines the deployment of your application with one replica and a corresponding service.  
+**Cert-Manager Issuer:**  
+Configures the issuer for Let’s Encrypt to obtain TLS certificates.  
+**Ingress:**  
+Specifies the Ingress resource with TLS configuration, rules for routing, and annotations for the cert-manager and Ingress class.
+
+**Deployment**
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{APP}}-deployment
+  labels:
+    app: {{APP}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{APP}}
+  template:
+    metadata:
+      labels:
+        app: {{APP}}
+    spec:
+      containers:
+        - name: {{APP}}
+          image: {{IMAGE_URL}}
+          ports:
+            - containerPort: 80
+
+##what each line does:
+
+apiVersion and kind:
+Specifies the API version and kind of the Kubernetes resource. In this case, it's a Deployment in the apps/v1 API version.
+
+metadata:
+name: The name of the Deployment is set to {{APP}}-deployment.
+labels: Labels are used to identify and organize resources. The app label is set to {{APP}}.
+
+spec:
+replicas: Defines the desired number of replicas for the pods managed by this Deployment. In this case, it's set to 1.
+selector: Specifies how the Deployment identifies which pods to manage. It matches pods with the app: {{APP}} label.
+template: Describes the pod template used to create new pods.
+metadata: Specifies labels for the pods.
+spec: Defines the pod specification, including the container.
+containers: Describes the containers within the pod.
+name: The name of the container is set to {{APP}}.
+image: Specifies the Docker image for the container, set to {{IMAGE_URL}}.
+ports: Specifies the ports the container exposes.
+```
+
+**Service:**
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{APP}}-service
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+  selector:
+    app: {{APP}}
+  type: ClusterIP
+
+##what each line does:
+apiVersion and kind:
+Specifies the API version and kind of the Kubernetes resource. In this case, it's a Service in the v1 API version.
+
+metadata:
+name: The name of the Service is set to {{APP}}-service.
+
+spec:
+ports: Defines the ports that the Service exposes.
+name: The name of the port is set to http.
+protocol: Specifies the protocol as TCP.
+port: The port on which the Service is exposed externally is set to 80.
+targetPort: Specifies the port to which traffic is forwarded, set to 80.
+selector: Matches pods with the app: {{APP}} label.
+type: Specifies the type of Service. In this case, it's set to ClusterIP.
+```
+
+#### Cert-Manager Issuer:
+
+```
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: neupane.krishna33@gmail.com
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+      - http01:
+          ingress:
+            class: nginx
+
+##what each line does:
+
+apiVersion and kind:
+Specifies the API version and kind of the Kubernetes resource. In this case, it's an Issuer in the cert-manager.io/v1 API version.
+
+metadata:
+name: The name of the Issuer is set to letsencrypt-prod.
+
+spec:
+acme: Configures the issuer for the ACME protocol used by Let's Encrypt.
+server: The ACME server URL.
+email: The email address for the Let's Encrypt account.
+privateKeySecretRef: The secret that contains the private key.
+solvers: Configures the challenges used for validation. In this case, it's HTTP01.
+```
+
+### Ingress:
+
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{APP}}-ingress
+  labels:
+    app: {{APP}}
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    kubernetes.io/ingress.class: nginx
+spec:
+  tls:
+    - hosts:
+        - {{DOMAIN}}
+      secretName: {{APP}}-tls
+  rules:
+    - host: {{DOMAIN}}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{APP}}-service
+                port:
+                  number: 80
+
+##what each line does:
+
+apiVersion and kind:
+Specifies the API version and kind of the Kubernetes resource. In this case, it's an Ingress in the networking.k8s.io/v1 API version.
+
+metadata:
+name: The name of the Ingress is set to {{APP}}-ingress.
+labels: Labels are used to identify and organize resources. The app label is set to {{APP}}.
+
+annotations:
+Annotations provide additional configuration. In this case:
+cert-manager.io/cluster-issuer: Specifies the cluster issuer for TLS certificates.
+kubernetes.io/ingress.class: Specifies the Ingress class.
+
+spec:
+tls: Configures TLS for the Ingress.
+hosts: Specifies the hosts for which TLS certificates should be issued.
+secretName: Specifies the name of the secret where the TLS certificate is stored.
+rules: Defines routing rules based on the host.
+host: Specifies the domain for which the Ingress rules apply.
+http: Configures HTTP routing rules.
+paths: Defines paths and their corresponding backends.
+path: Specifies the path for the rule.
+backend: Specifies the backend service.
+```
+
+**5. Branch wise Domain Mapping:**  
+Currently, Here i used static way to map domain using bitbucket branches , but we can passed the values using the dynamic ways
+
+**branch\_domain\_mapping.yml**
+
+```
+branches:
+  master: neupanekrishna.com.np
+  dev: neupanekrishna.com.np
+  staging: neupanekrishna.com.np
+  production: neupanekrishna.com.np
+  feature_branch_1: custom1
+  feature_branch_2: custom2
+  # ... add mappings for all branches
+
+##what each line does:
+
+branches:: This is the key indicating the start of the branch mappings section.
+
+master: neupanekrishna.com.np: For the master branch, the associated domain is set to neupanekrishna.com.np. This means that when you are on the master branch, the pipeline will deploy to the domain neupanekrishna.com.np.
+dev: neupanekrishna.com.np: Similarly, for the dev branch, the associated domain is set to neupanekrishna.com.np.
+staging: neupanekrishna.com.np: The staging branch also maps to the same domain.
+production: neupanekrishna.com.np: The production branch maps to the same domain.
+feature_branch_1: custom1: For the feature_branch_1 branch, the associated domain is set to custom1. This allows you to have a different domain for this specific feature branch.
+feature_branch_2: custom2: Similarly, for the feature_branch_2 branch, the associated domain is set to custom2.
+```
+
+**6. Execute pipelines:**  
+Push changes to your repository, and Bitbucket Pipelines will automatically trigger the pipeline. Monitor the pipeline execution in the Bitbucket Pipelines dashboard.
+
+
+
+---
+Follow me on : [Medium](https://medium.com/@neupane.krishna33)
+[Linkedin](https://www.linkedin.com/in/krishna-neupane-50082091/)
+[Researchgate](https://www.researchgate.net/profile/Krishna-Neupane)

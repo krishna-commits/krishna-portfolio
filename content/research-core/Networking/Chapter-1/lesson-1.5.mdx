@@ -1,0 +1,73 @@
+---
+title: "DHCP (Dynamic Host Configuration Protocol)"
+description: This cheatsheet provides a details of Dhcp.
+parent: "Chapter 1:Networking"
+grand_parent : "Networking"
+order: 2
+---
+
+### What is DHCP ?
+Dynamic Host Configuration Protocol (DHCP) is a network management protocol used to automatically assign IP addresses to devices on a network. DHCP operates on the client-server model, where a DHCP server manages a pool of IP addresses and configuration parameters like default gateway, domain name, and time servers. When a device connects to a network, the DHCP client sends a broadcast query to request necessary information, and the DHCP server responds with specific details or a new IP address based on policies set by administrators.
+
+### How to configure dhcp on a router
+To configure DHCP on a router, follow these general steps:
+
+    1. Access Router Settings: Log into the router's admin page and open the settings page.
+    2. Locate DHCP Settings: Find and open the DHCP settings within the router's configuration.
+    3. Enable DHCP Server: Enable the DHCP server functionality on the router.
+    4. Save Settings: Save the changes made to enable DHCP on the router.
+
+These steps are essential to configure a router to use Dynamic Host Configuration Protocol (DHCP), which automatically assigns device-specific IP addresses to devices on the network, preventing IP address conflicts.
+
+### DHCP: Remembering the Four Steps
+Discover - Client broadcasts a message to discover a DHCP server
+Offer - DHCP servers offer an IP address
+Request - Client selects an offer and formally requests to use the IP
+Acknowledge - The Server formally allocates the IP (and options) to the client
+
+
+###  Components of DHCP
+
+The main components of DHCP include:
+
+   #### DHCP Server
+    
+    DHCP Server is basically a server that holds IP Addresses and other information related to configuration.
+
+#### DHCP Client
+    It is basically a device that receives configuration information from the server. It can be a mobile, laptop, computer, or any other electronic device that requires a connection.
+    
+####    DHCP Relay
+DHCP relays basically work as a communication channel between DHCP Client and Server. 
+
+#### IP Address Pool
+It is the pool or container of IP Addresses possessed by the DHCP Server. It has a range of addresses that can be allocated to devices.
+
+#### Subnets
+Subnets are smaller portions of the IP network partitioned to keep networks under control. 
+
+#### Lease
+It is simply the time that how long the information received from the server is valid, in case of expiration of the lease, the tenant must have to re-assign the lease.
+    
+#### DNS Servers
+DHCP servers can also provide DNS (Domain Name System) server information to DHCP clients, allowing them to resolve domain names to IP addresses.
+
+#### Default Gateway
+DHCP servers can also provide information about the default gateway, which is the device that packets are sent to when the destination is outside the local network.
+    
+####    Options
+DHCP servers can provide additional configuration options to clients, such as the subnet mask, domain name, and time server information.
+
+#### Renewal
+DHCP clients can request to renew their lease before it expires to ensure that they continue to have a valid IP address and configuration information.
+#### Failover
+DHCP servers can be configured for failover, where two servers work together to provide redundancy and ensure that clients can always obtain an IP address and configuration information, even if one server goes down.
+#### Dynamic Updates
+DHCP servers can also be configured to dynamically update DNS records with the IP address of DHCP clients, allowing for easier management of network resources.
+#### Audit Logging
+DHCP servers can keep audit logs of all DHCP transactions, providing administrators with visibility into which devices are using which IP addresses and when leases are being assigned or renewed.
+
+---
+Follow me on : [Medium](https://medium.com/@neupane.krishna33)
+[Linkedin](https://www.linkedin.com/in/krishna-neupane-50082091/)
+[Researchgate](https://www.researchgate.net/profile/Krishna-Neupane)
