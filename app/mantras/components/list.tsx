@@ -1,9 +1,9 @@
 import { Separator } from 'app/theme/components/ui/separator';
 import Link from 'next/link';
-import { allMantrass } from ".contentlayer/generated"
+import { allMantras } from ".contentlayer/generated"
 
 const MantrasList = () => {
-  const sortedItems = allMantrass.sort(function (a: any, b: any) { return a.order - b.order });
+  const sortedItems = allMantras.sort(function (a: any, b: any) { return a.order - b.order });
 
   return (
     <div className="grid gap-5 ">

@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import { allMantrass } from ".contentlayer/generated"
+import { allMantras } from ".contentlayer/generated"
 
 const NavigationList = () => {
-  const sortedItems = allMantrass.sort(function(a:any, b:any){return a.order - b.order});
+  const sortedItems = allMantras.sort(function(a:any, b:any){return a.order - b.order});
   
   return (
     <nav className="grid gap-2 text-sm text-muted-foreground sticky top-20 overflow-scroll h-[86vh] no-scrollbar">
