@@ -9,7 +9,7 @@ import {
     BreadcrumbSeparator,
 } from "app/theme/components/ui/breadcrumb"
 
-export default function ResearchCoreBreadcrumb() {
+export default function MantrasBreadcrumb() {
     const pathname = usePathname();
     const segments = pathname.split('/').filter(segment => segment !== '');
     return (

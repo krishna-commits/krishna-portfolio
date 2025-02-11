@@ -1,5 +1,7 @@
 import { Badge } from "app/theme/components/ui/badge"
+import { Button } from "app/theme/components/ui/button";
 import { siteConfig } from "config/site";
+import Link from "next/link";
 
 export default function ExperienceList() {
     return (
@@ -21,6 +23,12 @@ export default function ExperienceList() {
             </li>
           </div>
         ))}
+        {
+          siteConfig.work_experience.length == 0 &&
+          <Button variant="outline" className="text-slate-600 w-full" asChild>
+          <Link href="/contact">Available Upon Request</Link>
+        </Button>
+        }
       </ul>
     );
   }

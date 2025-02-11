@@ -164,7 +164,7 @@ export const Mantras = defineDocumentType(() => ({
   computedFields: {
     url: {
       type: "string",
-      resolve: (mantras) => `/${mantras._raw.flattenedPath}`,
+      resolve: (researchcore) => `/${researchcore._raw.flattenedPath}`,
     },
     slug: {
       type: "string",
@@ -177,8 +177,10 @@ export const Mantras = defineDocumentType(() => ({
   },
 }));
 
+
+
 export const Projects = defineDocumentType(() => ({
-  name: "Mantras",
+  name: "Projects",
   filePathPattern: `projects/**/*.mdx`, // Type of file to parse (every mdx in the ResearchCore subfolder)
   contentType: 'mdx',
   fields: {
@@ -187,11 +189,6 @@ export const Projects = defineDocumentType(() => ({
       description: "The title of the blog post",
       required: true,
     },
-    date: {
-      type: "date",
-      description: "The date of the blog post",
-      required: false,
-    },
     description: {
       type: "string",
       description: "The description of the blog post",
@@ -202,6 +199,12 @@ export const Projects = defineDocumentType(() => ({
       description: "The order of the blog post",
       required: false,
     },
+    link: {
+      type: "string",
+      description: "The link of the blog post",
+      required: false,
+    },
+
   },
   computedFields: {
     url: {
@@ -219,57 +222,11 @@ export const Projects = defineDocumentType(() => ({
   },
 }));
 
-export const SkillLab = defineDocumentType(() => ({
-  name: "Skills",
-  filePathPattern: `skill-lab/**/*.mdx`, // Type of file to parse (every mdx in the researchcore subfolder)
-  contentType: 'mdx',
-  fields: {
-    title: {
-      type: "string",
-      description: "The title of the blog post",
-      required: true,
-    },
-    description: {
-      type: "string",
-      description: "The description of the blog post",
-      required: false,
-    },
-    order: {
-      type: "number",
-      description: "The order of the blog post",
-      required: false,
-    },
-    content: {
-      type: "json", // This is important
-      description: "Content for the Skill Lab section",
-      required: false,
-    },
-    parent: {
-      type: "boolean", // This is important
-      description: "Content for the Skill Lab section",
-      required: false,
-    },
-  },
-  computedFields: {
-    url: {
-      type: "string",
-      resolve: (skilllab) => `/${skilllab._raw.flattenedPath}`,
-    },
-    slug: {
-      type: "string",
-      resolve: (doc) => `/${doc._raw.flattenedPath}`,
-    },
-    slugAsParams: {
-      type: "string",
-      resolve: (doc) => doc._raw.flattenedPath.split("/").slice(1).join("/"),
-    },
-  },
-}));
 
 // Create source
 export default makeSource({
   contentDirPath: "./content", // Source directory where the content is located
-  documentTypes: [BlogPost, ResearchCore,Mantras, SkillLab, Projects],
+  documentTypes: [BlogPost, ResearchCore,Mantras, Projects],
   mdx: {
     remarkPlugins: [remarkGfm, 
     ],

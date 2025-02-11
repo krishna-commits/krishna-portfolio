@@ -22,7 +22,7 @@ import TechnologyList from "./technology-list"
               <BookText className="mr-2 h-4 w-4" />
               <span>Education</span>
             </div>
-              <Badge variant="outline">3</Badge>
+              {/* <Badge variant="outline">3</Badge> */}
           </div>
         </AccordionTrigger>
 
@@ -38,7 +38,7 @@ import TechnologyList from "./technology-list"
             <Briefcase className="mr-2 h-4 w-4" />
             <span>Work Experience</span>
             </div>
-              <Badge variant="outline">2</Badge>
+              {/* <Badge variant="outline">2</Badge> */}
           </div>
         </AccordionTrigger>
           <AccordionContent>
@@ -52,7 +52,7 @@ import TechnologyList from "./technology-list"
             <FileBadge className="mr-2 h-4 w-4" />
             <span>Liscense & Certification</span>
             </div>
-              <Badge variant="outline">19</Badge>
+              {/* <Badge variant="outline">19</Badge> */}
           </div>
         </AccordionTrigger>
           <AccordionContent>
@@ -66,7 +66,7 @@ import TechnologyList from "./technology-list"
             <Code  className="mr-2 h-4 w-4" />
             <span>Technology Stack</span>
             </div>
-              <Badge variant="outline">40</Badge>
+              {/* <Badge variant="outline">40</Badge> */}
           </div>
         </AccordionTrigger>
           <AccordionContent>

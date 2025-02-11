@@ -6,9 +6,12 @@ import GithubLanguages from "./github/github-languages";
 import GithubContributors from "./github/github-contributors";
 import moment from 'moment'
 import { Icons } from "app/theme/components/theme/icons";
+import Link from "next/link";
 export default function Page() {
 
     const { repo, repoLoading, repoError, repoValidating, repoEmpty } = useGetGithubRepos();
+
+    console.log(repo)
 
     if (repoLoading) {
         return (
@@ -65,7 +68,10 @@ export default function Page() {
                                 <div className="flex justify-between space-x-2 text-lg mb-4 dark:text-slate-300 sm:text-2xl items-center">
                                     <div className="flex space-x-2 justify-center items-center">
                                     <Icons.gitHub className="h-5 w-5 fill-current" />
+                      
+                                        <Link href={repoItem.html_url}>
                                     <h5 className="hover:underline font-mono font-semibold text-sm">{repoItem.name}</h5>
+                                    </Link>
                                     </div>
                                     <p className="text-xs font-serif text-muted-foreground mb-3">Published at {moment(repoItem.updated_at).format("MMM Do YY")} @ github</p>
                                 </div>

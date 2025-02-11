@@ -7,7 +7,7 @@ import {
   SidebarTrigger,
 } from "app/theme/components/ui/sidebar"
 import AppSidebar from "../components/app-sidebar"
-import ResearchCoreBreadcrumb from "../components/breadcrumb"
+import MantrasBreadcrumb from "../components/breadcrumb"
 import { usePathname } from 'next/navigation'
 
 export default function Layout({ children }) {
@@ -22,7 +22,7 @@ export default function Layout({ children }) {
         <header className="flex h-10 shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
-          <ResearchCoreBreadcrumb />
+          <MantrasBreadcrumb />
         </header>
         {children}
       </SidebarInset>

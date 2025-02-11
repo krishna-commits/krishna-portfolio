@@ -14,40 +14,6 @@ export default function HomePage() {
           {siteConfig.home.description}
         </p>
       </div>
-
-
-      {/* <div className="hidden sm:mb-8 sm:flex ">
-        <div className="relative rounded-full px-3 py-1 text-sm leading-6 text-slate-800 dark:text-slate-400 ring-1 ring-slate-500 ">
-          {siteConfig.home.chip.label}
-          <a href={siteConfig.home.chip.url} className="font-semibold text-cyan-600">
-            <span className="absolute inset-0" aria-hidden="true" />
-            {siteConfig.home.chip.link} <span aria-hidden="true">&rarr;</span>
-          </a>
-        </div>
-      </div> */}
-
-
-      {/* <div className="">
-      <h3 className={cn(
-          "dark:text-foreground text-cyan-900 font-serif text-2xl",
-        )}>Builds</h3>
-      </div>
-      <div className="flex space-x-4">
-        <div className=" border rounded-sm">
-        <img className="flex-none rounded-sm h-10" src={'company/dottrade.png'} alt="" />
-        </div>
-        <div className=" border rounded-sm">
-        <img className="flex-none rounded-sm h-10" src={'company/dot.png'} alt="" />
-        </div>
-        <div className=" border rounded-sm">
-        <img className="flex-none rounded-sm h-10" src={'company/inatale.png'} alt="" />
-        </div>
-        <div className=" border rounded-sm">
-        <img className="flex-none rounded-sm h-10" src={'company/offix.png'} alt="" />
-        </div>
-      </div> */}
-
-
     </div>
 
 

@@ -19,15 +19,15 @@ import {
     SidebarMenuSub,
     SidebarRail,
 } from "app/theme/components/ui/sidebar"
-import { allResearchCores, ResearchCore } from "contentlayer/generated"
+import { allMantras, Mantras } from "contentlayer/generated"
 import Link from "next/link"
 import { cn } from "app/theme/lib/utils"
 
 
 export default function AppSidebar({ firstSegment,lastSegment,...props }:{ firstSegment: string ; lastSegment: string} &  React.ComponentProps<typeof Sidebar>) {
 
-      const sortedItems = allResearchCores
-      .filter((researchcore: ResearchCore) => researchcore.url.includes(firstSegment))
+      const sortedItems = allMantras
+      .filter((Mantras: Mantras) => Mantras.url.includes(firstSegment))
       .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
     return (

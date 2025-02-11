@@ -38,13 +38,6 @@ export const siteConfig = {
   // education
   
   education: [
-    {
-      organization: 'Upon Request',
-      course: 'Upon Request',
-      university: `Upon Request`,
-      time: 'Upon Request',
-      imageUrl: 'Upon Request',
-    },
     // {
     //   organization: 'Deerwalk Institiute of Technology',
     //   course: 'BSC. Computer Science & technology',
@@ -217,14 +210,6 @@ export const siteConfig = {
 
   // WORK EXPERIENCE
   work_experience: [
-    {
-      organization: 'Upon Request.',
-      course: 'Upon Request',
-      role: 'Upon Request',
-      time: 'Upon Request',
-      imageUrl: 'Upon Request',
-      url: 'Upon Request'
-    },
     // {
     //   organization: 'Nepal News Bank',
     //   course: 'Web Developer',

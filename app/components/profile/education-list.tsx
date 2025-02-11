@@ -1,11 +1,13 @@
 import { Badge } from "app/theme/components/ui/badge"
+import { Button } from "app/theme/components/ui/button";
 import { siteConfig } from "config/site";
+import Link from "next/link";
 
 
 export default function EducationList() {
     return (
       <ul role="list">
-        {siteConfig.education.map((item, index) => (
+        {siteConfig.education.length !== 0 && siteConfig.education.map((item, index) => (
           <div key={index}>
             <li className={`flex justify-between gap-x-4 py-3 ${index === siteConfig.education.length - 1 ? '' : 'border-b'}`}>
               <div className="flex min-w-0 w-full space-x-4 justify-center items-center">
@@ -21,6 +23,12 @@ export default function EducationList() {
             </li>
           </div>
         ))}
+        {
+          siteConfig.education.length == 0 &&
+          <Button variant="outline" className="text-slate-600 w-full" asChild>
+          <Link href="/contact">Available Upon Request</Link>
+        </Button>
+        }
       </ul>
     );
   }
