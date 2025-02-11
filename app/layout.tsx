@@ -64,7 +64,7 @@ export default function RootLayout({
             <SpeedInsights />
           </div>
         </ThemeProvider>
-        {/* <Copyright /> */}
+        <Copyright />
       </body>
     </html>
   );

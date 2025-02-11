@@ -11,7 +11,6 @@ export default function Page() {
 
     const { repo, repoLoading, repoError, repoValidating, repoEmpty } = useGetGithubRepos();
 
-    console.log(repo)
 
     if (repoLoading) {
         return (
