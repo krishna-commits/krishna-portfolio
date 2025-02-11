@@ -80,6 +80,22 @@ export function SiteHeader() {
                 <span className="sr-only">orcid</span>
               </div>
             </Link>
+
+            <Link
+              href={siteConfig.links.medium}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <div
+                className={buttonVariants({
+                  size: "icon",
+                  variant: "ghost",
+                })}
+              >
+                <Icons.medium className="h-4 w-4 fill-current" />
+                <span className="sr-only">medium</span>
+              </div>
+            </Link>
            
             <Link
               href={siteConfig.links.linkedIn}

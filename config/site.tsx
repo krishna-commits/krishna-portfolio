@@ -9,7 +9,8 @@ export const siteConfig = {
     researchgate: "https://www.researchgate.net/profile/Krishna-Neupane",
     instagram: "https://www.instagram.com/krishnasoulcode/",
     github: "https://github.com/krishna-commits",
-    linkedIn: "https://www.linkedin.com/in/krishna-neupane-50082091/"
+    linkedIn: "https://www.linkedin.com/in/krishna-neupane-50082091/",
+    medium: "https://medium.com/@neupane.krishna33/"
   },
   bio: " DevSecOps Engineer| DevOps Enthusiast | Cybersecurity Learner | Aspiring Researcher",
   talks_about: "#DevOps, #DevSecOps, #clientside, #CyberSecurity, #Learner, #Researcher, #edgenetwork",
