@@ -1,0 +1,159 @@
+---
+title: "Cron"
+description:
+parent: "Chapter 1: Scripting"
+grand_parent : "Scripting"
+order: 1
+---
+
+### Format
+
+```
+Min  Hour Day  Mon  Weekday
+```
+```
+*    *    *    *    *  command to be executed
+
+┬    ┬    ┬    ┬    ┬
+│    │    │    │    └─  Weekday  (0=Sun .. 6=Sat)
+│    │    │    └──────  Month    (1..12)
+│    │    └───────────  Day      (1..31)
+│    └────────────────  Hour     (0..23)
+└─────────────────────  Minute   (0..59)
+```
+
+### Operators
+
+<table class="border-t border-b">
+  <thead class="pt-3 text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 ">
+    <tr>
+      <th class="pt-2">Operator</th>
+      <th class="pt-2">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>*</td>
+      <td>All values</td>
+    </tr>
+    <tr>
+      <td>,</td>
+      <td>Separate individual values</td>
+    </tr>
+    <tr>
+      <td>-</td>
+      <td>A range of values</td>
+    </tr>
+    <tr>
+      <td>/</td>
+      <td>Divide a value into steps</td>
+    </tr>
+  </tbody>
+</table>
+
+
+### Special strings
+
+<table class="border-t border-b">
+  <thead class="pt-3 text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 ">
+    <tr>
+      <th class="pt-2">String</th>
+      <th class="pt-2">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>@reboot</td>
+      <td>every reboot</td>
+    </tr>
+    <tr>
+      <td>@hourly</td>
+      <td>once every hour - same as `0 * * * *`</td>
+    </tr>
+    <tr>
+      <td>@daily</td>
+      <td>once every day - same as `0 0 * * *`</td>
+    </tr>
+    <tr>
+      <td>@midnight</td>
+      <td>once every midnight - same as `@daily`</td>
+    </tr>
+    <tr>
+      <td>@weekly</td>
+      <td>once every week - same as `0 0 * * 0`</td>
+    </tr>
+    <tr>
+      <td>@monthly</td>
+      <td>once every month - same as `0 0 1 * *`</td>
+    </tr>
+    <tr>
+      <td>@yearly</td>
+      <td>once every year - same as `0 0 1 1 *`</td>
+    </tr>
+  </tbody>
+</table>
+
+
+### Examples
+
+<table class="border-t border-b">
+  <thead class="pt-3 text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 ">
+    <tr >
+      <th class="pt-2">Command</th>
+      <th class="pt-2">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0 * * * *</td>
+      <td>Every hour</td>
+    </tr>
+    <tr>
+      <td>*/15 * * * *</td>
+      <td>Every 15 mins</td>
+    </tr>
+    <tr>
+      <td>0 */2 * * *</td>
+      <td>Every 2 hours</td>
+    </tr>
+    <tr>
+      <td>0 18 * * 0-6</td>
+      <td>Every week Mon-Sat at 6pm</td>
+    </tr>
+    <tr>
+      <td>10 2 * * 6,7</td>
+      <td>Every Sat and Sun on 2:10am</td>
+    </tr>
+    <tr>
+      <td>0 0 * * 0</td>
+      <td>Every Sunday midnight</td>
+    </tr>
+  </tbody>
+</table>
+
+
+## Crontab
+
+
+### Adding tasks easily
+```bash
+echo "@reboot echo hi" | crontab
+```
+### Open in editor - optional for another user
+```bash
+crontab -e [-u user]
+```
+### List tasks - optional for another user
+```bash
+crontab -l [-u user]
+```
+### Delete crontab file - optional for another user
+```bash
+crontab -r [-u user]
+```
+
+
+---
+Follow me on : [Medium](https://medium.com/@neupane.krishna33)
+[Linkedin](https://www.linkedin.com/in/krishna-neupane-50082091/)
+[Researchgate](https://www.researchgate.net/profile/Krishna-Neupane)

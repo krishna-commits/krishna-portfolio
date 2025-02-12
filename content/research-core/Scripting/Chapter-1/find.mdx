@@ -1,0 +1,81 @@
+---
+title: "find-command"
+description:
+parent: "Chapter 1: Scripting"
+grand_parent : "Scripting"
+order: 1
+---
+
+# find
+
+> search for files in a directory hierarchy
+
+## Basic syntax
+
+```bash
+$ find [OPTIONS..] [path...] [expression]
+```
+
+##### Basic Examples
+
+```bash
+$ find -name "query"   # case sensitive
+$ find -iname "query"  # ignore the case of the query
+$ find -not -name "not_query"  # avoid a query
+```
+
+##### Finding By File types
+
+```bash
+$ find -type [descriptor] [query]
+```
+
+Basic descriptors:
+
+- f: regular file
+- d: directory
+- l: symbolic link
+- c: character devices
+- b: block devices
+
+## Options
+
+<table class="border-t border-b">
+<thead class="pt-3 text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 ">
+    <tr >
+      <th class="pt-2">Options</th>
+      <th class="pt-2">Use</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>-name [pattern]</td>
+      <td>Base of file name matches shell pattern. The  metacharacters (`*`,  `?`,  and  `[]`\) match a `.` at the start of the base name.      </td>
+    </tr>
+    <tr>
+      <td>-i</td>
+      <td>ignore case</td>
+    </tr>
+    <tr>
+      <td>-type</td>
+      <td>type of file (f\|d\|l\|c\|b\)</td>
+    </tr>
+    <tr>
+      <td>-size</td>
+      <td>filter by size (c\|k\|M\|G\|b\)</td>
+    </tr>
+    <tr>
+      <td>-perm</td>
+      <td>filter by permissions</td>
+    </tr>
+    <tr>
+      <td>-L</td>
+      <td>Follow symbolic links</td>
+    </tr>
+  </tbody>
+</table>
+
+---
+Follow me on : [Medium](https://medium.com/@neupane.krishna33)
+[Linkedin](https://www.linkedin.com/in/krishna-neupane-50082091/)
+[Researchgate](https://www.researchgate.net/profile/Krishna-Neupane)

@@ -1,0 +1,117 @@
+---
+title: "Ansible"
+description:
+parent: "Chapter 1: Scripting"
+grand_parent : "Scripting"
+order: 1
+---
+
+![](https://access.redhat.com/sites/default/files/images/image3_14.png)
+
+## Getting started
+
+### Hosts
+```
+    $ sudo mkdir /etc/ansible
+    $ sudo vim /etc/ansible/hosts
+
+    [example]
+    192.0.2.101
+    192.0.2.102
+```
+### Running a playbook
+```
+    $ ansible-playbook playbook.yml
+```
+## Playbook files
+
+### Tasks
+```
+    - hosts: all
+      user: root
+      sudo: no
+      vars:
+        aaa: bbb
+      tasks:
+        - ...
+      handlers:
+        - ...
+```
+### Includes
+```
+    tasks:
+      - include: db.yml
+    handlers:
+      - include: db.yml user=timmy
+```
+### Handlers
+```
+    handlers:
+      - name: start apache2
+        action: service name=apache2 state=started
+
+    tasks:
+      - name: install apache
+        action: apt pkg=apache2 state=latest
+        notify:
+          - start apache2
+```
+### Vars
+```
+    - host: lol
+      vars_files:
+        - vars.yml
+      vars:
+        project_root: /etc/xyz
+      tasks:
+        - name: Create the SSH directory.
+          file: state=directory path=${project_root}/home/.ssh/
+          only_if: "$vm == 0"
+```
+### Roles
+```
+    - host: xxx
+      roles:
+        - db
+        - { role:ruby, sudo_user:$user }
+        - web
+
+    # Uses:
+    # roles/db/tasks/*.yml
+    # roles/db/handlers/*.yml
+```
+### Task: Failures
+```
+    - name: my task
+      command: ...
+      register: result
+      failed_when: "'FAILED' in result.stderr"
+
+      ignore_errors: yes
+
+      changed_when: "result.rc != 2"
+```
+### Env vars
+```
+    vars:
+      local_home: "{{ lookup('env','HOME') }}"
+```
+### Structure
+```
+    roles/
+      common/
+        tasks/
+        handlers/
+        files/              # 'copy' will refer to this
+        templates/          # 'template' will refer to this
+        meta/               # Role dependencies here
+        vars/
+        defaults/
+          main.yml
+```
+
+For More please Visit [Ansible Documentation](https://www.ansible.com/)
+---
+Follow me on : [Medium](https://medium.com/@neupane.krishna33)
+[Linkedin](https://www.linkedin.com/in/krishna-neupane-50082091/)
+[Researchgate](https://www.researchgate.net/profile/Krishna-Neupane)
