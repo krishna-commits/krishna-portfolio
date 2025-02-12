@@ -106,14 +106,13 @@ export const siteConfig = {
       link: 'https://coursera.org/share/1f259ec9c0dec77e5f94337b0b0524ec',
       time: 'March 7, 2019',
     },
-    // {
-    //   title: 'AWS Educate Getting Started with Storage',
-    //   issuedby: 'Amazon Web Services Training and Certification',
-    //   role: 'Co-Founder / CEO',
-    //   imageURL: 'https://images.credly.com/size/680x680/images/5bf37709-4b69-4cdc-9edc-af7b3370d427/image.png',
-    //   link: 'https://www.credly.com/badges/784824fc-fbe9-4e79-864c-df3113dc339b/public_url',
-    //   time: '2023',
-    // },
+    {
+      title: 'OCNA Wireless',
+      issuedby: 'TP-Link',
+      imageURL: 'https://yqymybxe5e8jynd2.public.blob.vercel-storage.com/Screenshot%202025-02-12%20163630-PeslQUE3NEUp5l54dRf4giot0Mued6.jpg',
+      link: 'https://training.tp-link.com/pdfjs-2.2.228-dist/web/viewer.html?file=%2Fapi%2Fattachment%2FprfPreview%3FattachId%3D53509',
+      time: 'Feb 12, 2025',
+    },
     // {
     //   title: 'Networking Basics',
     //   issuedby: 'Cisco',
