@@ -16,7 +16,7 @@ export const siteConfig = {
   talks_about: "#DevOps, #DevSecOps, #clientside, #CyberSecurity, #Learner, #Researcher, #edgenetwork",
   profile_image: "https://images.credly.com/images/86e90568-98cc-447b-9302-047eee9a883b/standard_DSC_7859_2x2_.JPG",
   home: {
-    title: "Welcome to my digital corner of dreams!",
+    title: "Welcome to My Digital Corner of Dreams!",
     description: `
           Results-driven DevSecOps professional with a robust background in system and network administration. 
           I am enthusiastic about addressing complex technical challenges, automating tasks, and fostering collaborative team dynamics. 
@@ -218,30 +218,30 @@ export const siteConfig = {
 
   //  TECHNOLOGY STACK
   technology_stack: [
-    {
-      name: 'ReactJS',
-      imageUrl: '/react-logo.png',
-    },
-    {
-      name: 'NodeJS',
-      imageUrl: '/node-logo.png',
-    },
-    {
-      name: 'Vanilla JS',
-      imageUrl: '/javascript-logo.webp',
-    },
-    {
-      name: 'React Native',
-      imageUrl: '/react-logo.png',
-    },
-    {
-      name: 'NextJS',
-      imageUrl: '/nextjs-logo.png',
-    },
-    {
-      name: 'Typescript',
-      imageUrl: '/ts-logo.svg',
-    },
+    // {
+    //   name: 'ReactJS',
+    //   imageUrl: '/react-logo.png',
+    // },
+    // {
+    //   name: 'NodeJS',
+    //   imageUrl: '/node-logo.png',
+    // },
+    // {
+    //   name: 'Vanilla JS',
+    //   imageUrl: '/javascript-logo.webp',
+    // },
+    // {
+    //   name: 'React Native',
+    //   imageUrl: '/react-logo.png',
+    // },
+    // {
+    //   name: 'NextJS',
+    //   imageUrl: '/nextjs-logo.png',
+    // },
+    // {
+    //   name: 'Typescript',
+    //   imageUrl: '/ts-logo.svg',
+    // },
     {
       name: 'Python',
       imageUrl: '/python-logo.png',
@@ -255,12 +255,12 @@ export const siteConfig = {
       imageUrl: '/fastapi-logo.svg',
     },
     {
-      name: 'C++',
-      imageUrl: '/c-logo.png',
+      name: 'Devops',
+      imageUrl: '/agile.png',
     },
     {
-      name: 'Firebase',
-      imageUrl: '/firebase-logo.png',
+      name: 'azure',
+      imageUrl: '/azure.png',
     },
     {
       name: 'Redis',
@@ -279,8 +279,8 @@ export const siteConfig = {
       imageUrl: '/vercel-logo.png',
     },
     {
-      name: 'Upstash',
-      imageUrl: '/upstash-logo.png',
+      name: 'GoogleCloud',
+      imageUrl: '/google_cloud.png',
     },
     {
       name: 'CPanel',

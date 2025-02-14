@@ -34,7 +34,7 @@ export function SiteHeader() {
               </div>
             </Link>
             <Link
-              href={siteConfig.links.instagram}
+              href={siteConfig.links.researchgate}
               target="_blank"
               rel="noreferrer"
             >
@@ -66,7 +66,7 @@ export function SiteHeader() {
             </Link>
 
             <Link
-              href={siteConfig.links.instagram}
+              href={siteConfig.links.orcid}
               target="_blank"
               rel="noreferrer"
             >
