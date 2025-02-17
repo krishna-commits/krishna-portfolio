@@ -7,6 +7,11 @@ import { Navbar } from "./nav"
 import { siteConfig } from "config/site"
 import { Icons } from "app/theme/components/theme/icons"
 import { ThemeToggle } from "./theme-toggle"
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "app/theme/components/ui/sidebar"
 
 export function SiteHeader() {
   return (
@@ -113,6 +118,7 @@ export function SiteHeader() {
               </div>
             </Link>
             <ThemeToggle />
+            <SidebarTrigger className="-mr-1 ml-auto rotate-180 md:hidden" />
           </nav>
         </div>
       </div>

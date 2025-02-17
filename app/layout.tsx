@@ -10,6 +10,12 @@ import { PortfolioThemeProvider } from './layouts/portfolio-layout';
 import { usePathname } from 'next/navigation'
 import { NoSideBarThemeProvider } from './layouts/blog-layout';
 import Copyright from './components/footer/copyright';
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "app/theme/components/ui/sidebar"
+import { AppSidebar } from './components/sidebar/sidebar';
 
 const themeProviders = {
   'blog': NoSideBarThemeProvider,
@@ -44,25 +50,23 @@ export default function RootLayout({
 
     >
       <body>
-        <ThemeProvider
+      <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <SiteHeader />
-          {/* <Stroke /> */}
-          <div className="relative isolate">
-            {/* <Gradient /> */}
-          
-
-            <ThemeProviderComponent>
+          <SidebarProvider>
+            <SidebarInset>
+              <SiteHeader />
+              <ThemeProviderComponent>
                 {children}
-            </ThemeProviderComponent>
-
-            <Analytics />
-            <SpeedInsights />
-          </div>
+              </ThemeProviderComponent>
+            </SidebarInset>
+            <AppSidebar side="right"/>
+          </SidebarProvider>
+          <Analytics />
+          <SpeedInsights />
         </ThemeProvider>
         <Copyright />
       </body>
