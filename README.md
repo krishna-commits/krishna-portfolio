@@ -1,5 +1,5 @@
-# Owner : Sanjeeb K C
-# Domain : https://sanjeebkc.com.np
+# Owner : Krishna Neupane
+# Domain : https://krishnaneupane.com
 
 # Tech Stack
 - **Framework**: [Next.js](https://nextjs.org/)
