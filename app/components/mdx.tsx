@@ -7,9 +7,9 @@ import mermaid from 'mermaid';
 interface CopyButtonProps {
   text: string;
 }
-interface PreProps {
-  children: any;
-  raw: any;
+interface PreProps extends React.HTMLAttributes<HTMLPreElement> {
+  children?: any;
+  raw?: any;
 }
 
 const CopyButton = ({ text }: CopyButtonProps) => {

@@ -240,11 +240,6 @@ export default function ImageUploadPage() {
                               Copy
                             </button>
                           </div>
-                          {upload.blob.size && (
-                            <div className="text-xs text-slate-500 dark:text-slate-400">
-                              Size: {(upload.blob.size / 1024).toFixed(2)} KB
-                            </div>
-                          )}
                           <div className="mt-2">
                             <img
                               src={upload.blob.url}

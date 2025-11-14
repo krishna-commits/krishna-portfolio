@@ -3,18 +3,34 @@
 import { cn } from 'app/theme/lib/utils'
 import { motion } from 'framer-motion'
 
-export function SkeletonLoader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+interface SkeletonLoaderProps {
+	className?: string;
+	style?: React.CSSProperties;
+	children?: React.ReactNode;
+	id?: string;
+	title?: string;
+	role?: string;
+	'aria-label'?: string;
+}
+
+export function SkeletonLoader({ className, style, children, id, title, role, 'aria-label': ariaLabel }: SkeletonLoaderProps) {
 	return (
 		<motion.div
 			className={cn(
 				"animate-pulse bg-slate-200 dark:bg-slate-800 rounded",
 				className
 			)}
+			style={style}
 			initial={{ opacity: 0 }}
 			animate={{ opacity: 1 }}
 			transition={{ duration: 0.3 }}
-			{...props}
-		/>
+			id={id}
+			title={title}
+			role={role}
+			aria-label={ariaLabel}
+		>
+			{children}
+		</motion.div>
 	)
 }
 

@@ -42,7 +42,7 @@ export function Swipeable({
 		return () => window.removeEventListener('resize', checkMobile)
 	}, [])
 
-	const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+	const handleDragEnd = (_: any, info: PanInfo) => {
 		if (!enabled || !isMobile) {
 			x.set(0)
 			y.set(0)
@@ -230,7 +230,7 @@ export function HapticFeedback({
 			setIsMobile(
 				window.innerWidth < 768 || 
 				'ontouchstart' in window ||
-				(navigator.maxTouchPoints && navigator.maxTouchPoints > 0)
+				!!(navigator.maxTouchPoints && navigator.maxTouchPoints > 0)
 			)
 		}
 		checkMobile()
