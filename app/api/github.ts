@@ -33,7 +33,7 @@ export function useGetGithubRepos() {
       return memoizedValue;
 }
 
-export function useGetGithubRepoLanguages({ uid }) {
+export function useGetGithubRepoLanguages({ uid }: { uid: string }) {
   const URL = `https://api.github.com/repos/${uid}/languages`;
   const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
   const languageEmpty = data === undefined || data === null || Object.keys(data).length === 0;
@@ -50,7 +50,7 @@ export function useGetGithubRepoLanguages({ uid }) {
   return memoizedValue;
 }
 
-export function useGetGithubRepoContributors({ uid }) {
+export function useGetGithubRepoContributors({ uid }: { uid: string }) {
   const URL = `https://api.github.com/repos/${uid}/contributors`;
   const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
   const contributorsEmpty = data === undefined || data === null ;
@@ -68,8 +68,8 @@ export function useGetGithubRepoContributors({ uid }) {
 }
 
 
-export function useGetMDXFile(url) {
-  const { data, error } = useSWR(url, async (url) => {
+export function useGetMDXFile(url: string) {
+  const { data, error } = useSWR(url, async (url: string) => {
     const response = await fetch(url);
     const mdxContent = await response.text();
     return mdxContent;

@@ -1,6 +1,6 @@
 import { useGetGithubRepoContributors } from 'app/api/github'; 
 
-function GithubContributors({ repoName }) {
+function GithubContributors({ repoName }: { repoName: string }) {
   const { contributors, contributorsLoading, contributorsError, contributorsValidating, contributorsEmpty } = useGetGithubRepoContributors({ uid: repoName });
 
   return (
@@ -9,7 +9,7 @@ function GithubContributors({ repoName }) {
         <p>Loading...</p>
       ) : (
         <div className="flex gap-3">
-          {!contributorsEmpty && contributors.map(([user]) => (
+          {!contributorsEmpty && contributors.map((user: any) => (
             <p className="text-sm dark:text-slate-600 text-slate-900" key={user.id}>
               # {user.login}
             </p>

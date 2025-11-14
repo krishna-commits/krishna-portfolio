@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo, ReactNode } from 'react'
+import { useState, useEffect, useMemo, ReactNode, useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { Clock, Share2, BookOpen, ChevronDown, ChevronUp, X } from 'lucide-react'
 import { cn } from 'app/theme/lib/utils'
@@ -11,10 +11,7 @@ interface ReadingProgressProps {
 }
 
 export function ReadingProgress({ targetId = 'blog-content' }: ReadingProgressProps) {
-	const { scrollYProgress } = useScroll({
-		target: typeof document !== 'undefined' ? document.getElementById(targetId) : undefined,
-		offset: ['start end', 'end start']
-	})
+	const { scrollYProgress } = useScroll()
 
 	const width = useTransform(scrollYProgress, [0, 1], ['0%', '100%'])
 

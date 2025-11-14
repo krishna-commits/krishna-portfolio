@@ -105,7 +105,6 @@ export function CustomCursor() {
 					y: cursorYSpring,
 					translateX: '-50%',
 					translateY: '-50%',
-					transition: { type: 'spring', damping: 25, stiffness: 300, delay: 0.02 }
 				}}
 			/>
 

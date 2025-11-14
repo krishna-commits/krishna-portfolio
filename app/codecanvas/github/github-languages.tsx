@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useGetGithubRepoLanguages } from 'app/api/github'; // Replace with the correct path
 
-function GithubLanguages({ repoName }) {
+function GithubLanguages({ repoName }: { repoName: string }) {
   const { language, languageLoading, languageError, languageValidating, languageEmpty } = useGetGithubRepoLanguages({ uid: repoName });
 
   return (
