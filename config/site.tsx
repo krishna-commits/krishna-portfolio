@@ -1,5 +1,3 @@
-import { title } from "process"
-
 export const siteConfig = {
   name: "Krishna Neupane",
   title: "कृष्ण",
@@ -12,17 +10,17 @@ export const siteConfig = {
     linkedIn: "https://www.linkedin.com/in/krishna-neupane-50082091/",
     medium: "https://medium.com/@neupane.krishna33/"
   },
-  bio: " DevSecOps Engineer| DevOps Enthusiast | Cybersecurity Learner | Aspiring Researcher",
+  bio: "Senior DevSecOps Engineer | Cybersecurity Expert | Security Researcher",
   talks_about: "#DevOps, #DevSecOps, #clientside, #CyberSecurity, #Learner, #Researcher, #edgenetwork",
-  profile_image: "https://images.credly.com/images/86e90568-98cc-447b-9302-047eee9a883b/standard_DSC_7859_2x2_.JPG",
+  profile_image: "/photo.jpg",
   home: {
-    title: "Welcome to My Digital Corner of Dreams!",
+    title: "Building Secure, Scalable Systems | DevSecOps & Cybersecurity Expert",
     description: `
-          Results-driven DevSecOps professional with a robust background in system and network administration. 
-          I am enthusiastic about addressing complex technical challenges, automating tasks, and fostering collaborative team dynamics. 
-          My unwavering commitment to problem-solving extends to contributing valuable insights to the data security and privacy landscape. 
-          With a focus on identifying and mitigating digital assets, securing information systems, and enhancing overall cybersecurity measures, 
-          I am eager to excel as a dedicated, research-oriented professional in the field.
+          Senior DevSecOps Engineer with 6+ years securing cloud infrastructure and automating security into CI/CD pipelines. 
+          I design security-first architectures, build automated threat detection systems, and implement defense-in-depth strategies 
+          for multi-cloud environments. My expertise spans infrastructure security, container hardening, vulnerability management, 
+          and incident response. I combine hands-on security engineering with research-driven approaches to solve complex 
+          cybersecurity challenges.
       `,
     chip: {
       label: "Open to Work. ",
@@ -39,27 +37,61 @@ export const siteConfig = {
   // education
   
   education: [
-    // {
-    //   organization: 'Deerwalk Institiute of Technology',
-    //   course: 'BSC. Computer Science & technology',
-    //   university: 'Tribhuvan University',
-    //   time: '2017-2021',
-    //   imageUrl: '/deerwalk.png',
-    // },
-    // {
-    //   organization: 'Trinity International College',
-    //   course: 'Grade XI & XII',
-    //   university: 'National Examinations Board',
-    //   time: '2015-2017',
-    //   imageUrl: '/trinity.png',
-    // },
-    // {
-    //   organization: 'Galaxy Public School',
-    //   course: 'Grade X',
-    //   university: 'School Leaving Certificate Examination',
-    //   time: '2008-2015',
-    //   imageUrl: '/galaxy.png',
-    // },
+    {
+      organization: 'Islington College, London Metropolitan University',
+      course: 'Information Technology and Applied Security, MSc',
+      university: 'London Metropolitan University',
+      time: '09/2023',
+      thesis: 'Continuous Automation with DevOps practices for Threat Detection',
+      modules: [
+        'Security Auditing and Penetration Testing',
+        'Hardening Network Infrastructure',
+        'Digital Forensics',
+        'Work Related Learning',
+        'Software Project Management',
+        'Cyber Security Management',
+        'MSc Project'
+      ],
+    },
+    {
+      organization: 'Islington College, London Metropolitan University',
+      course: 'Computer Networking and IT Security, BSc',
+      university: 'London Metropolitan University',
+      time: '09/2018',
+      thesis: 'Wireless Hotspot: Current and Future Challenges',
+      modules: [
+        'Ethical Hacking',
+        'Projects',
+        'Communications Networks',
+        'Digital Crime Investigation',
+        'Network Security (CISCO)'
+      ],
+    },
+  ],
+
+  // volunteering
+  volunteering: [
+    {
+      organization: 'Rotaract Club of Jawalakhel',
+      role: 'Secretary',
+      time: 'Jun 2019 - Present',
+      duration: '6 yrs 6 mos',
+      type: 'Social Services',
+    },
+    {
+      organization: 'Leo club of Samakhusi',
+      role: 'General member',
+      time: 'Sep 2018 - Present',
+      duration: '7 yrs 3 mos',
+      type: 'Social Services',
+    },
+    {
+      organization: 'Bishweshwor Sushila Foundation',
+      role: 'Program Manager',
+      time: 'Sep 2015 - Present',
+      duration: '10 yrs 3 mos',
+      type: 'Education',
+    },
   ],
 
   // // certification
@@ -100,11 +132,32 @@ export const siteConfig = {
       time: 'May 18, 2020',
     },
     {
+      title: 'AWS Cloud Practitioner Essentials',
+      issuedby: 'Amazon Web Services - Coursera',
+      imageURL: 'https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://coursera.s3.amazonaws.com/media/coursera-rebrand-logo-square.png?auto=format%2Ccompress&dpr=1',
+      link: 'https://coursera.org/share/441ebe7f4375dad116e886a7cd335768',
+      time: 'January 3, 2024',
+    },
+    {
+      title: 'Foundations of Cybersecurity',
+      issuedby: 'Google - Coursera',
+      imageURL: 'https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://coursera.s3.amazonaws.com/media/coursera-rebrand-logo-square.png?auto=format%2Ccompress&dpr=1',
+      link: 'https://coursera.org/share/0dd9cd5c12b0ee2ffb13457f47ecaff0',
+      time: 'June 9, 2024',
+    },
+    {
       title: 'Google Cloud Fundamentals: Core Infrastructure',
-      issuedby: 'coursera',
+      issuedby: 'Coursera',
       imageURL: 'https://yqymybxe5e8jynd2.public.blob.vercel-storage.com/Screenshot%202025-02-11%20143806-rEovEDofvnawjDGSA0HlIaFAnllJ4Q.jpg',
       link: 'https://coursera.org/share/1f259ec9c0dec77e5f94337b0b0524ec',
       time: 'March 7, 2019',
+    },
+    {
+      title: 'Usable Security',
+      issuedby: 'University of Maryland, College Park - Coursera',
+      imageURL: 'https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://coursera.s3.amazonaws.com/media/coursera-rebrand-logo-square.png?auto=format%2Ccompress&dpr=1',
+      link: 'https://coursera.org/share/db9c1dc7cd3d92630cb306e429779f1f',
+      time: 'March 14, 2020',
     },
     {
       title: 'OCNA Wireless',
@@ -216,76 +269,69 @@ export const siteConfig = {
     // }
   ],
 
+  // LINKEDIN RECOMMENDATIONS
+  linkedin_recommendations: [
+    {
+      name: "Diwash Bhatta",
+      title: "Network/System Engineer | DevOps Learner",
+      company: "Vianet Communications Ltd",
+      text: "I've had the pleasure of working closely with Krishna Neupane at Vianet Communications Ltd, where we both contribute to designing and maintaining complex network and system solutions for corporate clients. Krishna stands out as a highly skilled and reliable professional in the areas of DevSecOps, cloud infrastructure, and cybersecurity. His ability to blend deep technical knowledge with practical execution is impressive. I've seen him successfully lead automation initiatives, troubleshoot critical production issues, and implement secure CI/CD pipelines that significantly improved deployment efficiency and security posture. What I admire most about Krishna is his curiosity and constant drive to learn. Whether it's adopting new tools, diving into research, or sharing insights with the team, he's always ahead of the curve. His collaborative nature and willingness to support others make him a strong team player and a dependable colleague. I highly recommend Krishna for any opportunity that values technical excellence, adaptability, and a proactive mindset. He's truly an asset to any engineering or DevSecOps team.",
+      date: "July 7, 2025",
+    },
+    {
+      name: "Dipendra Chaudhary",
+      title: "AWS Community Builder | AWS Certified DevOps Engineer Professional | DevOps Engineer | Platform Engineer | Cloud Engineer",
+      company: "Park City Pvt. Ltd.",
+      text: "I had the pleasure of working under Krishna Neupane during my time as a System Administrator at Park City Pvt. Ltd. in 2019. Krishna was not only a knowledgeable and dependable senior but also a great mentor. His guidance and support helped me grow both technically and professionally. He has a strong grasp of system infrastructure and a calm, solution-oriented approach to challenges. Any team would be lucky to have him!",
+      date: "April 10, 2025",
+    },
+    {
+      name: "Sanjay Hona",
+      title: "Driving DevOps Efficiency | Kubernetes, AWS, Azure, Terraform | CI/CD & Infrastructure As Code | Building scalable, secure systems | Continuous Learner and learning GitOps | Gitlab Community Contributor",
+      company: "BeyondID",
+      text: "I highly recommend Krishna for his exceptional DevOps expertise, collaborative approach, and proficiency in tools like Docker, Ansible, GitLab, and DevSecOps. During our time at BeyondID, he consistently demonstrated a strong command of these technologies while fostering a positive team environment. Krishna's dedication and technical skills, coupled with his commitment to security practices, make him a valuable asset to any organization.",
+      date: "April 4, 2024",
+    },
+    {
+      name: "Sanjeeb K C",
+      title: "RHCE | RHCSA | RSM | DevOps",
+      company: "",
+      text: "I had the pleasure of collaborating with Mr. Krishna Neupane on the DotTrade project, where his expertise in DevOps architecture and AWS Cloud proved indispensable. His innovative solutions seamlessly integrated an ERP system with e-commerce and supply chain management, showcasing a deep understanding of technology and solution architecture. Krishna is a collaborative and communicative professional who sets a high standard for excellence. I highly recommend him for his outstanding contributions.",
+      date: "December 4, 2023",
+    },
+    {
+      name: "Bikash Bhandari",
+      title: "DevOps Advocate | System Engineer",
+      company: "",
+      text: "Krishna is an individual with good communication skills and an individual who is willing to learn new technologies. I have mentored Krishna for few DevOps Projects. His curiosity in technologies will lead him towards what he is looking upto as a career path. Krishna gains highest recommendation in his Network and Security skills and his interest in DevOps.",
+      date: "January 7, 2021",
+    },
+    {
+      name: "Sandip Lamichhane",
+      title: "Project Manager | Information Technology | Education",
+      company: "",
+      text: "I always had a good impression of krishna, such a talented and skilled professional. I never heard a word no from him to new challenges, instead, he enjoys doing things differently with some research and sophisticated approach. He is a person of quality work, focus and one of a passionate individual who gets thrilled to learn new skills and keep up to date with the technological trend. I wish him the best for his future endeavors.",
+      date: "March 7, 2020",
+    }
+  ],
+
   //  TECHNOLOGY STACK
   technology_stack: [
-    // {
-    //   name: 'ReactJS',
-    //   imageUrl: '/react-logo.png',
-    // },
-    // {
-    //   name: 'NodeJS',
-    //   imageUrl: '/node-logo.png',
-    // },
-    // {
-    //   name: 'Vanilla JS',
-    //   imageUrl: '/javascript-logo.webp',
-    // },
-    // {
-    //   name: 'React Native',
-    //   imageUrl: '/react-logo.png',
-    // },
-    // {
-    //   name: 'NextJS',
-    //   imageUrl: '/nextjs-logo.png',
-    // },
-    // {
-    //   name: 'Typescript',
-    //   imageUrl: '/ts-logo.svg',
-    // },
+    // Scripting
     {
       name: 'Python',
       imageUrl: '/python-logo.png',
     },
     {
-      name: 'Django',
-      imageUrl: '/django-logo.png',
+      name: 'Bash',
+      imageUrl: 'https://cdn.simpleicons.org/gnubash/4EAA25',
     },
+    // Version Control
     {
-      name: 'FastAPI',
-      imageUrl: '/fastapi-logo.svg',
+      name: 'Git',
+      imageUrl: '/git-logo.png',
     },
-    {
-      name: 'Devops',
-      imageUrl: '/agile.png',
-    },
-    {
-      name: 'azure',
-      imageUrl: '/azure.png',
-    },
-    {
-      name: 'Redis',
-      imageUrl: '/redis-logo.svg',
-    },
-    {
-      name: 'MySQL',
-      imageUrl: '/mysql-logo.svg',
-    },
-    {
-      name: 'PostgreSQL',
-      imageUrl: '/postgres-logo.png',
-    },
-    {
-      name: 'Vercel',
-      imageUrl: '/vercel-logo.png',
-    },
-    {
-      name: 'GoogleCloud',
-      imageUrl: '/google_cloud.png',
-    },
-    {
-      name: 'CPanel',
-      imageUrl: '/cpanel-logo.svg',
-    },
+    // Containerization and Orchestration
     {
       name: 'Docker',
       imageUrl: '/docker-logo.png',
@@ -295,101 +341,240 @@ export const siteConfig = {
       imageUrl: '/kubernetes-logo.png',
     },
     {
-      name: 'CentOS',
-      imageUrl: '/centos-logo.png',
+      name: 'Helm Chart',
+      imageUrl: '/helm-logo.png',
     },
     {
-      name: 'RHEL',
-      imageUrl: '/redhat-logo.png',
+      name: 'AWS ECS',
+      imageUrl: '/aws-logo.png',
     },
     {
-      name: 'MacOS',
-      imageUrl: '/macos-logo.png',
+      name: 'Azure Container Apps',
+      imageUrl: '/azure.png',
+    },
+    // Cloud Platforms
+    {
+      name: 'Amazon Web Services',
+      imageUrl: '/aws-logo.png',
     },
     {
-      name: 'Ubuntu',
-      imageUrl: '/ubuntu-logo.png',
+      name: 'Azure Services',
+      imageUrl: '/azure.png',
     },
     {
-      name: 'Apache',
-      imageUrl: '/apache-logo.png',
+      name: 'Google Cloud Platform',
+      imageUrl: '/google_cloud.png',
     },
     {
-      name: 'Nginx',
-      imageUrl: '/nginx-logo.svg',
+      name: 'Heroku',
+      imageUrl: 'https://cdn.simpleicons.org/heroku/430098',
+    },
+    // Database Management
+    {
+      name: 'MySQL',
+      imageUrl: '/mysql-logo.svg',
     },
     {
-      name: 'Tomcat',
-      imageUrl: '/tomcat-logo.png',
+      name: 'PostgreSQL',
+      imageUrl: '/postgres-logo.png',
     },
     {
-      name: 'Maven',
-      imageUrl: '/maven-logo.png',
+      name: 'MongoDB',
+      imageUrl: 'https://cdn.simpleicons.org/mongodb/47A248',
     },
     {
-      name: 'Git',
-      imageUrl: '/git-logo.png',
-    }
-    ,
+      name: 'Dynamo DB',
+      imageUrl: '/aws-logo.png',
+    },
     {
-      name: 'Github',
+      name: 'RDS',
+      imageUrl: '/aws-logo.png',
+    },
+    // Security Tools and Practices
+    {
+      name: 'Sonarcloud',
+      imageUrl: 'https://cdn.simpleicons.org/sonarsource/F3702A',
+    },
+    {
+      name: 'Sonarqube',
+      imageUrl: 'https://cdn.simpleicons.org/sonarsource/4E9BCD',
+    },
+    {
+      name: '1passsword',
+      imageUrl: 'https://cdn.simpleicons.org/1password/0094F5',
+    },
+    {
+      name: 'Vault',
+      imageUrl: 'https://cdn.simpleicons.org/hashicorp/000000',
+    },
+    {
+      name: 'Cloudflare',
+      imageUrl: 'https://cdn.simpleicons.org/cloudflare/F38020',
+    },
+    // Ci/Cd Code Repository
+    {
+      name: 'Github Action',
       imageUrl: '/github-logo-1.png',
-    }
-    ,
-    {
-      name: 'Gitlab',
-      imageUrl: '/gitlab-logo.svg',
-    }
-    ,
-    {
-      name: 'Bitbucket',
-      imageUrl: '/bitbucket-logo.svg',
-    }
-    ,
+    },
     {
       name: 'Jenkins',
       imageUrl: '/jenkins-logo.svg',
-    }
-    ,
+    },
     {
-      name: 'Ansible',
-      imageUrl: '/ansible-logo-1.png',
-    }
-    ,
+      name: 'Gitlab pipelines',
+      imageUrl: '/gitlab-logo.svg',
+    },
     {
-      name: 'Openshift',
-      imageUrl: '/openshift-logo.png',
-    }
-    ,
+      name: 'Bitbucket Pipelines',
+      imageUrl: '/bitbucket-logo.svg',
+    },
+    {
+      name: 'AWS CodeBuild',
+      imageUrl: '/aws-logo.png',
+    },
+    {
+      name: 'AWS Codepipeline',
+      imageUrl: '/aws-logo.png',
+    },
+    // Infranstracture as Code (IAC)
     {
       name: 'Terraform',
       imageUrl: '/terraform-logo.svg',
-    }
-    ,
+    },
     {
-      name: 'Jira',
-      imageUrl: '/jira-logo.svg',
-    }
-    ,
+      name: 'Terragrunt',
+      imageUrl: 'https://cdn.simpleicons.org/hashicorp/000000',
+    },
     {
-      name: 'Slack',
-      imageUrl: '/slack-logo.png',
-    }
-    ,
+      name: 'Cloudformation',
+      imageUrl: '/aws-logo.png',
+    },
+    // Logging and Monitoring
+    {
+      name: 'Elastic Search',
+      imageUrl: 'https://cdn.simpleicons.org/elasticsearch/005571',
+    },
+    {
+      name: 'Fluentd/Fluentbit',
+      imageUrl: 'https://cdn.simpleicons.org/fluentd/0E83C8',
+    },
+    {
+      name: 'Kibana',
+      imageUrl: 'https://cdn.simpleicons.org/kibana/005571',
+    },
+    {
+      name: 'Prometheus',
+      imageUrl: 'https://cdn.simpleicons.org/prometheus/E6522C',
+    },
     {
       name: 'Grafana',
       imageUrl: '/grafana-logo.png',
-    }
-    ,
+    },
     {
-      name: 'EKS',
-      imageUrl: '/eks-logo.png',
-    }
-    ,
+      name: 'AlertManager',
+      imageUrl: 'https://cdn.simpleicons.org/prometheus/E6522C',
+    },
     {
-      name: 'Helm',
-      imageUrl: '/helm-logo.png',
-    }
+      name: 'Cloudwatch',
+      imageUrl: '/aws-logo.png',
+    },
+    {
+      name: 'Loki stack',
+      imageUrl: 'https://cdn.simpleicons.org/grafana/F46800',
+    },
+    // Serverless
+    {
+      name: 'AWS Lambda',
+      imageUrl: '/aws-logo.png',
+    },
+    {
+      name: 'Eventbridge',
+      imageUrl: '/aws-logo.png',
+    },
+    {
+      name: 'Dynamodb streams',
+      imageUrl: '/aws-logo.png',
+    },
+    {
+      name: 'AWS Step Functions',
+      imageUrl: '/aws-logo.png',
+    },
+    {
+      name: 'AWS SNS',
+      imageUrl: '/aws-logo.png',
+    },
+    // Networking
+    {
+      name: 'Loadbalancer',
+      imageUrl: '/aws-logo.png',
+    },
+    {
+      name: 'firewalls',
+      imageUrl: 'https://cdn.simpleicons.org/fortinet/EE3124',
+    },
+    {
+      name: 'WAF',
+      imageUrl: '/aws-logo.png',
+    },
+    // Communication
+    {
+      name: 'Slack',
+      imageUrl: '/slack-logo.png',
+    },
+    {
+      name: 'Confluence',
+      imageUrl: 'https://cdn.simpleicons.org/confluence/172B4D',
+    },
+    {
+      name: 'jira',
+      imageUrl: '/jira-logo.svg',
+    },
+    {
+      name: 'Teams',
+      imageUrl: 'https://cdn.simpleicons.org/microsoftteams/6264A7',
+    },
+    {
+      name: 'Zoom',
+      imageUrl: 'https://cdn.simpleicons.org/zoom/2D8CFF',
+    },
+    {
+      name: 'Twilio',
+      imageUrl: 'https://cdn.simpleicons.org/twilio/F22F46',
+    },
+    {
+      name: 'Sendgrid',
+      imageUrl: 'https://cdn.simpleicons.org/sendgrid/1A82E2',
+    },
+    // Message Queqe
+    {
+      name: 'Kafka',
+      imageUrl: 'https://cdn.simpleicons.org/apachekafka/231F20',
+    },
+    {
+      name: 'RabbitMQ',
+      imageUrl: 'https://cdn.simpleicons.org/rabbitmq/FF6600',
+    },
+    {
+      name: 'Redis',
+      imageUrl: '/redis-logo.svg',
+    },
+    {
+      name: 'AWS SQS',
+      imageUrl: '/aws-logo.png',
+    },
+    // Software Development Methodologies
+    {
+      name: 'Scrum',
+      imageUrl: '/agile.png',
+    },
+    {
+      name: 'Kanban',
+      imageUrl: '/agile.png',
+    },
+    {
+      name: 'Agile',
+      imageUrl: '/agile.png',
+    },
   ]
 }
 

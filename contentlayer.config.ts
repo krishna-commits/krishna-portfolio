@@ -15,6 +15,11 @@ export const BlogPost = defineDocumentType(() => ({
   filePathPattern: `blog/**/*.mdx`, // Type of file to parse (every mdx in the blog subfolder)
   contentType: 'mdx',
   fields: {
+    highlight: {
+      type: "boolean",
+      description: "Highlight this post in listings",
+      required: false,
+    },
     title: {
       type: "string",
       description: "The title of the blog post",
@@ -33,6 +38,12 @@ export const BlogPost = defineDocumentType(() => ({
     short_description: {
       type: "string",
       description: "The short description of the blog post",
+      required: false,
+    },
+    keywords: {
+      type: "list",
+      of: { type: "string" },
+      description: "Keywords/tags for the post",
       required: false,
     },
     link: {
@@ -68,6 +79,11 @@ export const ResearchCore = defineDocumentType(() => ({
   filePathPattern: `research-core/**/*.mdx`, // Type of file to parse (every mdx in the ResearchCore subfolder)
   contentType: 'mdx',
   fields: {
+    highlight: {
+      type: "boolean",
+      description: "Highlight this entry in listings",
+      required: false,
+    },
     title: {
       type: "string",
       description: "The title of the blog post",
@@ -81,6 +97,28 @@ export const ResearchCore = defineDocumentType(() => ({
     description: {
       type: "string",
       description: "The description of the blog post",
+      required: false,
+    },
+    venue: {
+      type: "string",
+      description: "Publication venue or context",
+      required: false,
+    },
+    citationCount: {
+      type: "number",
+      description: "Number of citations",
+      required: false,
+    },
+    collaborators: {
+      type: "list",
+      of: { type: "string" },
+      description: "Collaborators / co-authors",
+      required: false,
+    },
+    keywords: {
+      type: "list",
+      of: { type: "string" },
+      description: "Keywords/tags for the entry",
       required: false,
     },
     parent: {
@@ -125,6 +163,11 @@ export const Mantras = defineDocumentType(() => ({
   filePathPattern: `mantras/**/*.mdx`, // Type of file to parse (every mdx in the ResearchCore subfolder)
   contentType: 'mdx',
   fields: {
+    highlight: {
+      type: "boolean",
+      description: "Highlight this entry",
+      required: false,
+    },
     title: {
       type: "string",
       description: "The title of the blog post",
@@ -138,6 +181,12 @@ export const Mantras = defineDocumentType(() => ({
     description: {
       type: "string",
       description: "The description of the blog post",
+      required: false,
+    },
+    keywords: {
+      type: "list",
+      of: { type: "string" },
+      description: "Keywords/tags",
       required: false,
     },
     parent: {
@@ -184,6 +233,11 @@ export const Projects = defineDocumentType(() => ({
   filePathPattern: `projects/**/*.mdx`, // Type of file to parse (every mdx in the ResearchCore subfolder)
   contentType: 'mdx',
   fields: {
+    highlight: {
+      type: "boolean",
+      description: "Highlight this project",
+      required: false,
+    },
     title: {
       type: "string",
       description: "The title of the blog post",
@@ -202,6 +256,12 @@ export const Projects = defineDocumentType(() => ({
     link: {
       type: "string",
       description: "The link of the blog post",
+      required: false,
+    },
+    keywords: {
+      type: "list",
+      of: { type: "string" },
+      description: "Keywords/tags for the project",
       required: false,
     },
 

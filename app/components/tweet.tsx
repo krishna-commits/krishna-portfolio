@@ -1,36 +1,26 @@
-import { getTweet } from 'react-tweet/api';
-import { EmbeddedTweet, TweetNotFound, type TweetProps } from 'react-tweet';
-import './tweet.css';
+'use client'
 
-const TweetContent = async ({ id, components, onError }: TweetProps) => {
-  let error;
-  const tweet = id
-    ? await getTweet(id).catch((err) => {
-        if (onError) {
-          error = onError(err);
-        } else {
-          console.error(err);
-          error = err;
-        }
-      })
-    : undefined;
+import { Tweet } from 'react-tweet'
+import { useState, useEffect } from 'react'
 
-  if (!tweet) {
-    const NotFound = components?.TweetNotFound || TweetNotFound;
-    return <NotFound error={error} />;
-  }
+export function TweetEmbed({ id }: { id: string }) {
+	const [mounted, setMounted] = useState(false)
 
-  return <EmbeddedTweet tweet={tweet} components={components} />;
-};
+	useEffect(() => {
+		setMounted(true)
+	}, [])
 
-export const ReactTweet = (props: TweetProps) => <TweetContent {...props} />;
+	if (!mounted) {
+		return (
+			<div className="flex items-center justify-center p-8 border border-slate-200 dark:border-slate-800 rounded-lg">
+				<p className="text-sm text-slate-500 dark:text-slate-400">Loading tweet...</p>
+			</div>
+		)
+	}
 
-export async function TweetComponent({ id }: { id: string }) {
-  return (
-    <div className="tweet my-6">
-      <div className={`flex justify-center`}>
-        <ReactTweet id={id} />
-      </div>
-    </div>
-  );
+	return (
+		<div className="my-6">
+			<Tweet id={id} />
+		</div>
+	)
 }

@@ -12,9 +12,9 @@ import { usePathname } from 'next/navigation'
 
 export default function Layout({ children }) {
   const pathname = usePathname()
-    const firstSegment = pathname.split('/').filter(Boolean)[1]; // gets the second segment
-    const lastSegment = pathname.split('/').filter(Boolean)[3];
-    console.log('Extracted Segment:',  lastSegment);
+  const firstSegment = pathname.split('/').filter(Boolean)[1]
+  const lastSegment = pathname.split('/').filter(Boolean)[3]
+  
   return (
     <SidebarProvider>
       <AppSidebar firstSegment={firstSegment} lastSegment={lastSegment}/>
@@ -29,5 +29,3 @@ export default function Layout({ children }) {
     </SidebarProvider>
   )
 }
-
-

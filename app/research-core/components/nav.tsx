@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { allResearchCores } from ".contentlayer/generated"
+import { allResearchCores } from "contentlayer/generated"
 
 const NavigationList = () => {
   const sortedItems = allResearchCores.sort(function(a:any, b:any){return a.order - b.order});

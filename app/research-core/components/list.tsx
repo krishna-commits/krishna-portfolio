@@ -1,6 +1,6 @@
 import { Separator } from 'app/theme/components/ui/separator';
 import Link from 'next/link';
-import { allResearchCores } from ".contentlayer/generated"
+import { allResearchCores } from "contentlayer/generated"
 
 const ResearchCoreList = () => {
   const sortedItems = allResearchCores.sort(function (a: any, b: any) { return a.order - b.order });

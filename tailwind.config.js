@@ -71,6 +71,21 @@ module.exports = {
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
 			},
+			height: {
+				'18': '4.5rem', // 72px
+				'20': '5rem', // 80px
+				'22': '5.5rem', // 88px
+			},
+			width: {
+				'4.5': '1.125rem', // 18px
+			},
+			maxWidth: {
+				'4.5': '1.125rem', // 18px
+			},
+			fontSize: {
+				'2xs': ['0.625rem', { lineHeight: '0.75rem' }], // 10px
+				'3xs': ['0.5rem', { lineHeight: '0.625rem' }], // 8px
+			},
 			keyframes: {
 				'accordion-down': {
 					from: {

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { allMantras } from ".contentlayer/generated"
+import { allMantras } from "contentlayer/generated"
 
 const NavigationList = () => {
   const sortedItems = allMantras.sort(function(a:any, b:any){return a.order - b.order});

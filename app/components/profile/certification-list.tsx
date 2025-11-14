@@ -15,7 +15,7 @@ export default function CertificationList() {
   return (
     <ul role="list">
       {siteConfig.certification.map((item, index) => (
-        <div key={item.issuedby}>
+        <div key={`${item.issuedby}-${item.title}-${index}`}>
           <li className={`flex justify-between gap-x-4 py-3 ${index === siteConfig.certification.length - 1 ? '' : 'border-b'}`}>
             <div className="flex min-w-0 gap-x-5">
 

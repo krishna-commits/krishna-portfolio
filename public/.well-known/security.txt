@@ -1,0 +1,14 @@
+Contact: mailto:neupane.krishna33@gmail.com
+Expires: 2025-12-31T23:59:59.000Z
+Preferred-Languages: en
+Canonical: https://krishnaneupane.com/.well-known/security.txt
+Policy: https://krishnaneupane.com/security-policy
+Hiring: https://krishnaneupane.com/contact
+
+# Security Policy
+# If you discover a security vulnerability, please send an email to the address above.
+# Include as much detail as possible to help reproduce and fix the issue.
+# We appreciate responsible disclosure and will respond promptly.
+
+# Security Acknowledgments
+Acknowledgments: https://krishnaneupane.com/security-acknowledgments
