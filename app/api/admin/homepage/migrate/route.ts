@@ -80,7 +80,14 @@ export async function POST(request: NextRequest) {
           await prisma.workExperience.deleteMany({});
           
           for (let i = 0; i < siteConfig.work_experience.length; i++) {
-            const work = siteConfig.work_experience[i];
+            const work = siteConfig.work_experience[i] as {
+              organization: string;
+              role: string;
+              time: string;
+              description?: string;
+              imageUrl?: string;
+              url?: string;
+            };
             await prisma.workExperience.create({
               data: {
                 organization: work.organization,
