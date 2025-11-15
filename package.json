@@ -6,10 +6,15 @@
     "build-only": "next build",
     "start": "next start",
     "postinstall": "prisma generate",
-    "db:push": "prisma db push",
+    "db:setup": "npx tsx scripts/setup-database.ts",
+    "db:push": "npx tsx scripts/load-env-and-push.ts",
+    "db:p": "npx tsx scripts/load-env-and-push.ts",
+    "db:test": "npx tsx scripts/test-db-connection.ts",
     "db:migrate": "prisma migrate dev",
-    "db:studio": "prisma studio",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:studio": "npx tsx scripts/load-env-and-studio.ts",
+    "db:seed": "npx tsx prisma/seed.ts",
+    "db:import": "npx tsx scripts/import-all-data.ts",
+    "check:env": "npx tsx scripts/check-vercel-env.ts"
   },
   "dependencies": {
     "@googleapis/youtube": "^13.0.0",

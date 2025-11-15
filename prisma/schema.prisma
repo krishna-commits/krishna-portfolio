@@ -9,6 +9,7 @@ datasource db {
   provider  = "postgresql"
   url       = env("POSTGRES_PRISMA_URL")
   directUrl = env("POSTGRES_URL_NON_POOLING")
+  // Note: directUrl is optional - if not set, Prisma will use the main url for migrations
 }
 
 // Hobbies model for portfolio hobbies section

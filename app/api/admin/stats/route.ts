@@ -38,10 +38,19 @@ export async function GET(request: NextRequest) {
       activityData: [],
     };
 
-    if (prisma) {
-      try {
-        // Hobbies stats
-        const hobbiesTotal = await prisma.hobby.count();
+    if (!prisma) {
+      console.warn('[Admin Stats] Database not available - Prisma client not initialized');
+      console.warn('[Admin Stats] Please check:');
+      console.warn('[Admin Stats] 1. POSTGRES_PRISMA_URL is set in Vercel environment variables');
+      console.warn('[Admin Stats] 2. POSTGRES_URL_NON_POOLING is set (optional but recommended)');
+      console.warn('[Admin Stats] 3. Connection strings do NOT contain localhost/127.0.0.1');
+      // Return stats with zeros if database not available
+      return NextResponse.json(stats, { status: 200 });
+    }
+
+    try {
+      // Hobbies stats
+      const hobbiesTotal = await prisma.hobby.count();
         const hobbiesActive = await prisma.hobby.count({
           where: { isActive: true },
         });
@@ -141,11 +150,20 @@ export async function GET(request: NextRequest) {
           });
         }
         stats.activityData = activityData;
-      } catch (dbError) {
+      } catch (dbError: any) {
         // Database not configured or error
-        console.warn('[Admin Stats] Database not available:', dbError);
+        console.error('[Admin Stats] Database connection error:', dbError.message || dbError);
+        
+        // Check if it's a connection error
+        if (dbError.message?.includes('localhost') || dbError.message?.includes('127.0.0.1')) {
+          console.error('[Admin Stats] Error: Trying to connect to localhost in production!');
+          console.error('[Admin Stats] Please set POSTGRES_PRISMA_URL in Vercel Dashboard → Settings → Environment Variables');
+          console.error('[Admin Stats] Make sure the URL does NOT contain localhost or 127.0.0.1');
+        }
+        
+        // Return stats with zeros if database error
+        // Don't fail the request - just return empty stats
       }
-    }
 
     // Content stats (from MDX files - would need to fetch from Contentlayer)
     // These are placeholders - in production, you'd fetch from Contentlayer

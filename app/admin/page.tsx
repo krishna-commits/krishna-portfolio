@@ -19,6 +19,13 @@ import {
   ArrowDownRight,
   Sparkles,
   Zap,
+  Home,
+  Search,
+  Lock,
+  Shield,
+  Cloud,
+  RefreshCw,
+  X,
 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from 'app/theme/lib/utils';
@@ -80,16 +87,19 @@ export default function AdminDashboard() {
   const fetchStats = async () => {
     try {
       setLoading(true);
+      setError(null);
       const response = await fetch('/api/admin/stats');
       
       if (!response.ok) {
-        throw new Error('Failed to fetch stats');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Failed to fetch stats (${response.status})`);
       }
       
       const data = await response.json();
       setStats(data);
     } catch (err: any) {
-      setError(err.message || 'Failed to load stats');
+      const errorMessage = err.message || 'Failed to load stats';
+      setError(errorMessage);
       console.error('Failed to fetch admin stats:', err);
     } finally {
       setLoading(false);
@@ -128,9 +138,28 @@ export default function AdminDashboard() {
         </div>
 
         {error && (
-          <div className="mb-6 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400">
-            {error}
-          </div>
+          <Card className="mb-6 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">
+            <CardContent className="pt-6">
+              <div className="flex items-start gap-3">
+                <div className="p-2 rounded-lg bg-red-500">
+                  <X className="h-5 w-5 text-white" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-red-600 dark:text-red-400 mb-1">Error loading dashboard</p>
+                  <p className="text-sm text-red-600 dark:text-red-400 mb-3">{error}</p>
+                  <Button
+                    onClick={fetchStats}
+                    variant="outline"
+                    size="sm"
+                    className="bg-white dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-900/20 border-red-300 dark:border-red-700 text-red-600 dark:text-red-400"
+                  >
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                    Retry
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         )}
 
         {/* Stats Grid */}
@@ -213,7 +242,7 @@ export default function AdminDashboard() {
         )}
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <Card className="relative overflow-hidden border-2 hover:border-blue-300 dark:hover:border-blue-700 transition-colors">
             <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-blue-500 to-cyan-500 opacity-5 rounded-full -mr-20 -mt-20" />
             <CardHeader>
@@ -223,7 +252,7 @@ export default function AdminDashboard() {
                 </div>
                 <div>
                   <CardTitle>Quick Actions</CardTitle>
-                  <CardDescription>Common administrative tasks</CardDescription>
+                  <CardDescription>Common tasks</CardDescription>
                 </div>
               </div>
             </CardHeader>
@@ -231,14 +260,7 @@ export default function AdminDashboard() {
               <Link href="/admin/upload-images">
                 <Button variant="outline" className="w-full justify-start group hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-colors">
                   <ImageIcon className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
-                  Upload Images to Blob Storage
-                  <ArrowUpRight className="ml-auto h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </Button>
-              </Link>
-              <Link href="/admin/images">
-                <Button variant="outline" className="w-full justify-start group hover:bg-purple-50 dark:hover:bg-purple-950/20 transition-colors">
-                  <ImageIcon className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
-                  Manage Images & Folders
+                  Upload Images
                   <ArrowUpRight className="ml-auto h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </Button>
               </Link>
@@ -252,7 +274,7 @@ export default function AdminDashboard() {
               <Link href="/admin/newsletter">
                 <Button variant="outline" className="w-full justify-start group hover:bg-cyan-50 dark:hover:bg-cyan-950/20 transition-colors">
                   <Mail className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
-                  Manage Newsletter Subscribers
+                  Newsletter
                   <ArrowUpRight className="ml-auto h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </Button>
               </Link>
@@ -264,26 +286,57 @@ export default function AdminDashboard() {
             <CardHeader>
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-500">
-                  <Sparkles className="h-5 w-5 text-white" />
+                  <Home className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <CardTitle>Content Management</CardTitle>
-                  <CardDescription>Manage your portfolio content</CardDescription>
+                  <CardTitle>Content</CardTitle>
+                  <CardDescription>Manage content</CardDescription>
                 </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Link href="/admin/content">
+              <Link href="/admin/homepage">
                 <Button variant="outline" className="w-full justify-start group hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors">
-                  <FileText className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
-                  Content Statistics
+                  <Home className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
+                  Homepage
                   <ArrowUpRight className="ml-auto h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </Button>
               </Link>
-              <Link href="/admin/settings">
-                <Button variant="outline" className="w-full justify-start group hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-                  <Activity className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
-                  Admin Settings
+              <Link href="/admin/content">
+                <Button variant="outline" className="w-full justify-start group hover:bg-purple-50 dark:hover:bg-purple-950/20 transition-colors">
+                  <FileText className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
+                  MDX Content
+                  <ArrowUpRight className="ml-auto h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="relative overflow-hidden border-2 hover:border-emerald-300 dark:hover:border-emerald-700 transition-colors">
+            <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-emerald-500 to-teal-500 opacity-5 rounded-full -mr-20 -mt-20" />
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500">
+                  <BarChart3 className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <CardTitle>Analytics</CardTitle>
+                  <CardDescription>View insights</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Link href="/admin/analytics">
+                <Button variant="outline" className="w-full justify-start group hover:bg-emerald-50 dark:hover:bg-emerald-950/20 transition-colors">
+                  <BarChart3 className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
+                  Portfolio Analytics
+                  <ArrowUpRight className="ml-auto h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </Button>
+              </Link>
+              <Link href="/admin/cloudflare">
+                <Button variant="outline" className="w-full justify-start group hover:bg-orange-50 dark:hover:bg-orange-950/20 transition-colors">
+                  <Cloud className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
+                  Cloudflare Metrics
                   <ArrowUpRight className="ml-auto h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </Button>
               </Link>

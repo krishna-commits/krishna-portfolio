@@ -71,12 +71,21 @@ export default function ImageUploadPage(): JSX.Element {
   const [selectedFolderFilter, setSelectedFolderFilter] = useState<string>('');
 
   // Fetch existing images from blob store
-  const { data: blobData, error: blobError, mutate: refetchBlobs } = useSWR<BlobListResponse>(
+  const { data: blobData, error: blobError, isLoading: blobLoading, mutate: refetchBlobs } = useSWR<BlobListResponse>(
     `/api/admin/blob/list${selectedFolderFilter ? `?folder=${selectedFolderFilter}` : ''}`,
     fetcher,
     {
       refreshInterval: 30000, // Refresh every 30 seconds
       revalidateOnFocus: true,
+      onError: (error) => {
+        console.error('Error fetching blob data:', error);
+        if (error.message?.includes('Unauthorized') || error.message?.includes('401')) {
+          toast.error('Authentication required. Please log in.');
+          setTimeout(() => {
+            window.location.href = '/admin/login';
+          }, 2000);
+        }
+      },
     }
   );
 
@@ -433,35 +442,53 @@ export default function ImageUploadPage(): JSX.Element {
                   <p className="text-sm text-red-600 dark:text-red-400 font-medium mb-2">
                     Error loading images: {blobError.message || 'Failed to fetch images'}
                   </p>
-                  <p className="text-xs text-red-500 dark:text-red-400">
+                  <p className="text-xs text-red-500 dark:text-red-400 mb-3">
                     Please check:
                     <ul className="list-disc list-inside mt-1 space-y-1">
                       <li>You are logged in to the admin panel</li>
                       <li>Vercel Blob Storage token is configured (BLOB_READ_WRITE_TOKEN)</li>
                       <li>Your session hasn't expired</li>
+                      <li>API endpoint is accessible</li>
                     </ul>
                   </p>
-                  <button
-                    onClick={() => {
-                      window.location.href = '/admin/login';
-                    }}
-                    className="mt-2 px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
-                  >
-                    Go to Login
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => refetchBlobs()}
+                      className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors flex items-center gap-1"
+                    >
+                      <RefreshCw className="h-3 w-3" />
+                      Retry
+                    </button>
+                    <button
+                      onClick={() => {
+                        window.location.href = '/admin/login';
+                      }}
+                      className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                    >
+                      Go to Login
+                    </button>
+                  </div>
                 </div>
               )}
 
-              {!blobData && !blobError && (
+              {blobLoading && !blobData && !blobError && (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <Loader2 className="h-8 w-8 animate-spin text-slate-400 mb-2" />
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Loading images from blob store...</p>
+                </div>
+              )}
+
+              {!blobLoading && !blobData && !blobError && (
                 <div className="flex items-center justify-center py-12">
                   <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
                 </div>
               )}
 
-              {blobData && blobData.total === 0 && (
+              {blobData && blobData.total === 0 && !blobLoading && (
                 <div className="text-center py-12 text-slate-500 dark:text-slate-400">
                   <ImageIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>No images found in blob store{selectedFolderFilter ? ` in "${selectedFolderFilter}" folder` : ''}.</p>
+                  <p className="mb-2">No images found in blob store{selectedFolderFilter ? ` in "${selectedFolderFilter}" folder` : ''}.</p>
+                  <p className="text-xs">Upload images using the forms above to get started.</p>
                 </div>
               )}
 
