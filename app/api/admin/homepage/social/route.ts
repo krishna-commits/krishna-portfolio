@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
         researchgate: configLinks.researchgate || '',
         orcid: configLinks.orcid || '',
         medium: configLinks.medium || '',
-        twitter: configLinks.twitter || '',
+        twitter: '',
         email: siteConfig.copyright?.email || '',
         instagram: configLinks.instagram || '',
         _source: 'config',

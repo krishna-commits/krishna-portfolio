@@ -90,43 +90,43 @@
    TYPOGRAPHY SYSTEM - MINIMIZED FONT SIZES
    ============================================ */
 @layer base {
-	:root {
-		--background: 0 0% 100%;
-		--foreground: 222.2 84% 4.9%;
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
 
-		--card: 0 0% 100%;
-		--card-foreground: 222.2 84% 4.9%;
-	 
-		--popover: 0 0% 100%;
-		--popover-foreground: 222.2 84% 4.9%;
-	 
-		--primary: 222.2 47.4% 11.2%;
-		--primary-foreground: 210 40% 98%;
-	 
-		--secondary: 210 40% 96.1%;
-		--secondary-foreground: 222.2 47.4% 11.2%;
-	 
-		--muted: 210 40% 96.1%;
-		--muted-foreground: 215.4 16.3% 46.9%;
-	 
-		--accent: 210 40% 96.1%;
-		--accent-foreground: 222.2 47.4% 11.2%;
-	 
-		--destructive: 0 84.2% 60.2%;
-		--destructive-foreground: 210 40% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+ 
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+ 
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+ 
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+ 
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+ 
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+ 
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
 
-		--border: 214.3 31.8% 91.4%;
-		--input: 214.3 31.8% 91.4%;
-		--ring: 222.2 84% 4.9%;
-	 
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+ 
 		--radius: 0.75rem;
-	 
-		--sidebar-background: 0 0% 98%;
-		--sidebar-foreground: 240 5.3% 26.1%;
-		--sidebar-primary: 240 5.9% 10%;
-		--sidebar-primary-foreground: 0 0% 98%;
-		--sidebar-accent: 240 4.8% 95.9%;
-		--sidebar-accent-foreground: 240 5.9% 10%;
+ 
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
 		--sidebar-border: 220 13% 91%;
 		--sidebar-ring: 217.2 91.2% 59.8%;
 
@@ -161,50 +161,50 @@
 		--spacing-2xl: 2rem;           /* 32px */
 		--spacing-3xl: 3rem;           /* 48px */
 		--spacing-4xl: 4rem;           /* 64px */
-	}
+  }
  
-	.dark {
-		--background: 222.2 84% 4.9%;
-		--foreground: 210 40% 98%;
-	 
-		--card: 222.2 84% 4.9%;
-		--card-foreground: 210 40% 98%;
-	 
-		--popover: 222.2 84% 4.9%;
-		--popover-foreground: 210 40% 98%;
-	 
-		--primary: 210 40% 98%;
-		--primary-foreground: 222.2 47.4% 11.2%;
-	 
-		--secondary: 217.2 32.6% 17.5%;
-		--secondary-foreground: 210 40% 98%;
-	 
-		--muted: 217.2 32.6% 17.5%;
-		--muted-foreground: 215 20.2% 65.1%;
-	 
-		--accent: 217.2 32.6% 17.5%;
-		--accent-foreground: 210 40% 98%;
-	 
-		--destructive: 0 62.8% 30.6%;
-		--destructive-foreground: 210 40% 98%;
-	 
-		--border: 217.2 32.6% 17.5%;
-		--input: 217.2 32.6% 17.5%;
-		--ring: 212.7 26.8% 83.9%;
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+ 
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+ 
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+ 
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+ 
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+ 
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+ 
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+ 
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+ 
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
 	 
 		--sidebar-background: 240 10% 3.9%;
 		--sidebar-foreground: 240 5% 64.9%;
 		--sidebar-primary: 0 0% 98%;
 		--sidebar-primary-foreground: 240 5.9% 10%;
-		--sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent: 240 3.7% 15.9%;
 		--sidebar-accent-foreground: 240 5% 64.9%;
-		--sidebar-border: 240 3.7% 15.9%;
-		--sidebar-ring: 217.2 91.2% 59.8%;
-	}
-
-	* {
-		@apply border-border;
-	}
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+}
+ 
+  * {
+    @apply border-border;
+  }
 
 	html {
 		scroll-behavior: smooth;
@@ -214,7 +214,7 @@
 		font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "pnum" 1, "tnum" 0, "onum" 1, "lnum" 0, "dlig" 0;
 	}
 
-	body {
+  body {
 		@apply bg-background text-foreground antialiased;
 		font-feature-settings: "rlig" 1, "calt" 1;
 		line-height: 1.6;
@@ -364,10 +364,10 @@
    ============================================ */
 @layer utilities {
 	/* Hide Scrollbar */
-	.no-scrollbar::-webkit-scrollbar {
-		display: none;
-	}
-	.no-scrollbar {
+  .no-scrollbar::-webkit-scrollbar {
+      display: none;
+  }
+  .no-scrollbar {
 		-ms-overflow-style: none;
 		scrollbar-width: none;
 	}
@@ -437,17 +437,17 @@
    CODE BLOCK STYLING
    ============================================ */
 code[data-line-numbers] {
-	counter-reset: lineNumber;
+  counter-reset: lineNumber;
 }
  
 code[data-line-numbers] .line::before {
-	counter-increment: lineNumber;
-	content: counter(lineNumber);
-	display: inline-block;
-	text-align: right;
-	margin-right: 0.75rem;
-	width: 1rem;
-	color: rgb(255 255 255 / 0.2);
+  counter-increment: lineNumber;
+  content: counter(lineNumber);
+  display: inline-block;
+  text-align: right;
+  margin-right: 0.75rem;
+  width: 1rem;
+  color: rgb(255 255 255 / 0.2);
 }
 
 /* Remove backticks from inline code */
@@ -495,19 +495,19 @@ th {
 	font-weight: bold;
 	padding: 12px 15px;
 	text-align: left;
-	border-bottom: 1px solid gray;
-	border: 1px solid #94a3b8;
+  border-bottom: 1px solid gray;
+  border: 1px solid #94a3b8;
 }
 
 td {
 	padding: 12px 15px;
 	border: 1px solid #f8fafc;
-	border: 1px solid #94a3b8;
+  border: 1px solid #94a3b8;
 }
 
 tr:nth-child(even) {
 	background-color: #f1f5f9;
-	border: 1px solid #94a3b8;
+  border: 1px solid #94a3b8;
 }
 
 tr:nth-child(odd) {
