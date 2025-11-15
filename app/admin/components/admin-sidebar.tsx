@@ -20,7 +20,8 @@ import {
     Search,
     Lock,
     FolderOpen,
-    Shield
+    Shield,
+    Cloud
   } from 'lucide-react';
 import { Button } from 'app/theme/components/ui/button';
 import toast from 'react-hot-toast';
