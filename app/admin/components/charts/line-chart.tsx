@@ -15,6 +15,7 @@ interface AdminLineChartProps {
   dataKey: string;
   color?: string;
   height?: number;
+  suffix?: string; // Suffix to append to values (e.g., '%', 'MB')
 }
 
 export function AdminLineChart({
@@ -24,6 +25,7 @@ export function AdminLineChart({
   dataKey,
   color = '#3b82f6',
   height = 300,
+  suffix = '',
 }: AdminLineChartProps) {
   const chartContent = (
     <ResponsiveContainer width="100%" height={height}>
@@ -37,6 +39,7 @@ export function AdminLineChart({
         <YAxis 
           className="text-xs fill-slate-600 dark:fill-slate-400"
           stroke="#64748b"
+          tickFormatter={(value) => `${value}${suffix}`}
         />
         <Tooltip 
           contentStyle={{
@@ -50,7 +53,7 @@ export function AdminLineChart({
                 <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-2 shadow-lg">
                   {payload.map((entry: any, index: number) => (
                     <p key={index} className="text-sm text-slate-900 dark:text-slate-50">
-                      {`${entry.name}: ${entry.value}`}
+                      {`${entry.name}: ${entry.value}${suffix}`}
                     </p>
                   ))}
                 </div>
