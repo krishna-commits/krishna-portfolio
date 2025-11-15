@@ -19,32 +19,49 @@ export async function GET() {
       }, { status: 200 });
     }
 
-    const certifications = await prisma.certification.findMany({
-      orderBy: { orderIndex: 'asc' },
-    });
+    try {
+      const certifications = await prisma.certification.findMany({
+        orderBy: { orderIndex: 'asc' },
+      });
 
-    if (certifications.length === 0) {
-      return NextResponse.json({ 
-        certifications: (siteConfig.certification || []).map((c: any) => ({
-          title: c.title,
-          issuedby: c.issuedby,
-          imageURL: c.imageURL,
-          link: c.link,
-          time: c.time,
-        }))
-      }, { status: 200 });
+      if (certifications.length === 0) {
+        return NextResponse.json({ 
+          certifications: (siteConfig.certification || []).map((c: any) => ({
+            title: c.title,
+            issuedby: c.issuedby,
+            imageURL: c.imageURL,
+            link: c.link,
+            time: c.time,
+          }))
+        }, { status: 200 });
+      }
+
+      // Map to match config format
+      const formattedCertifications = certifications.map(cert => ({
+        title: cert.title,
+        issuedby: cert.issuedby,
+        imageURL: cert.imageUrl,
+        link: cert.link,
+        time: cert.time,
+      }));
+
+      return NextResponse.json({ certifications: formattedCertifications }, { status: 200 });
+    } catch (dbError: any) {
+      // Handle database connection errors gracefully
+      if (dbError.code === 'P1001' || dbError.message?.includes('Can\'t reach database server')) {
+        console.warn('[Certifications API] Database connection error - using config fallback');
+        return NextResponse.json({
+          certifications: (siteConfig.certification || []).map((c: any) => ({
+            title: c.title,
+            issuedby: c.issuedby,
+            imageURL: c.imageURL,
+            link: c.link,
+            time: c.time,
+          }))
+        }, { status: 200 });
+      }
+      throw dbError; // Re-throw other errors
     }
-
-    // Map to match config format
-    const formattedCertifications = certifications.map(cert => ({
-      title: cert.title,
-      issuedby: cert.issuedby,
-      imageURL: cert.imageUrl,
-      link: cert.link,
-      time: cert.time,
-    }));
-
-    return NextResponse.json({ certifications: formattedCertifications }, { status: 200 });
   } catch (error: any) {
     console.error('[Certifications API] Error:', error);
     return NextResponse.json({ 

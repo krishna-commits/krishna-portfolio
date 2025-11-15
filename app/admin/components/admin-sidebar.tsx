@@ -105,6 +105,12 @@ const adminNavItems = [
     description: 'Monitor login attempts',
   },
   {
+    title: 'Cloudflare Analytics',
+    href: '/admin/cloudflare',
+    icon: Cloud,
+    description: 'CDN & cache metrics',
+  },
+  {
     title: 'Settings',
     href: '/admin/settings',
     icon: Settings,

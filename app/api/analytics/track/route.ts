@@ -30,35 +30,44 @@ export async function POST(request: NextRequest) {
     const city = headersList.get('x-vercel-ip-city') || null;
     const region = headersList.get('x-vercel-ip-country-region') || null;
 
-    // Create or update visitor record
-    const visitor = await prisma.visitor.create({
-      data: {
-        ipAddress: ipAddress.split(',')[0], // Take first IP if multiple
-        userAgent,
-        country,
-        city,
-        region,
-        pathname,
-        referrer: referrer || null,
-        sessionId,
-        timeOnPage: timeOnPage || null,
-      },
-    });
+    try {
+      // Create or update visitor record
+      const visitor = await prisma.visitor.create({
+        data: {
+          ipAddress: ipAddress.split(',')[0], // Take first IP if multiple
+          userAgent,
+          country,
+          city,
+          region,
+          pathname,
+          referrer: referrer || null,
+          sessionId,
+          timeOnPage: timeOnPage || null,
+        },
+      });
 
-    // Track page view for engagement metrics
-    const bounce = (timeOnPage || 0) < 10 && (scrollDepth || 0) < 25; // Less than 10 seconds and less than 25% scroll = bounce
-    
-    await prisma.pageView.create({
-      data: {
-        sessionId,
-        pathname,
-        timeOnPage: timeOnPage || 0,
-        scrollDepth: scrollDepth || 0,
-        bounce,
-      },
-    });
+      // Track page view for engagement metrics
+      const bounce = (timeOnPage || 0) < 10 && (scrollDepth || 0) < 25; // Less than 10 seconds and less than 25% scroll = bounce
+      
+      await prisma.pageView.create({
+        data: {
+          sessionId,
+          pathname,
+          timeOnPage: timeOnPage || 0,
+          scrollDepth: scrollDepth || 0,
+          bounce,
+        },
+      });
 
-    return NextResponse.json({ success: true, visitorId: visitor.id }, { status: 200 });
+      return NextResponse.json({ success: true, visitorId: visitor.id }, { status: 200 });
+    } catch (dbError: any) {
+      // Handle database connection errors gracefully
+      if (dbError.code === 'P1001' || dbError.message?.includes('Can\'t reach database server')) {
+        console.warn('[Track Analytics] Database connection error - analytics tracking disabled');
+        return NextResponse.json({ success: true }, { status: 200 }); // Silent fail
+      }
+      throw dbError; // Re-throw other errors
+    }
   } catch (error: any) {
     console.error('[Track Analytics] Error:', error);
     // Return success even on error to not break user experience
@@ -87,20 +96,29 @@ export async function GET(request: NextRequest) {
     const city = headersList.get('x-vercel-ip-city') || null;
     const region = headersList.get('x-vercel-ip-country-region') || null;
 
-    await prisma.visitor.create({
-      data: {
-        ipAddress: ipAddress.split(',')[0],
-        userAgent,
-        country,
-        city,
-        region,
-        pathname,
-        referrer,
-        sessionId,
-      },
-    });
+    try {
+      await prisma.visitor.create({
+        data: {
+          ipAddress: ipAddress.split(',')[0],
+          userAgent,
+          country,
+          city,
+          region,
+          pathname,
+          referrer,
+          sessionId,
+        },
+      });
+    } catch (dbError: any) {
+      // Handle database connection errors gracefully
+      if (dbError.code === 'P1001' || dbError.message?.includes('Can\'t reach database server')) {
+        console.warn('[Track Analytics GET] Database connection error - analytics tracking disabled');
+      } else {
+        console.error('[Track Analytics GET] Error:', dbError);
+      }
+    }
 
-    // Return 1x1 transparent pixel
+    // Return 1x1 transparent pixel (always return pixel even on error)
     const pixel = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64');
     return new NextResponse(pixel, {
       status: 200,
@@ -111,6 +129,7 @@ export async function GET(request: NextRequest) {
     });
   } catch (error: any) {
     console.error('[Track Analytics GET] Error:', error);
+    // Always return pixel even on error
     const pixel = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64');
     return new NextResponse(pixel, {
       status: 200,
