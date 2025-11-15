@@ -353,10 +353,10 @@ export default function EnvManagementPage() {
                               {envVar.key}
                             </code>
                             {envVar.protected && (
-                              <Shield className="h-4 w-4 text-amber-500" title="Protected" />
+                              <Shield className="h-4 w-4 text-amber-500" aria-label="Protected" />
                             )}
                             {envVar.masked && (
-                              <Lock className="h-4 w-4 text-red-500" title="Encrypted" />
+                              <Lock className="h-4 w-4 text-red-500" aria-label="Encrypted" />
                             )}
                           </div>
                         </td>
