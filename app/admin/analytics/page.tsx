@@ -146,7 +146,7 @@ export default function AnalyticsPage() {
         {/* Newsletter Growth */}
         {newsletterGrowth && newsletterGrowth.length > 0 && (
           <AdminLineChart
-            data={newsletterGrowth.map(item => ({ name: item.date, value: item.count }))}
+            data={newsletterGrowth.map((item: { date: string; count: number; new?: number }) => ({ name: item.date, value: item.count }))}
             title="Newsletter Growth (Last 30 Days)"
             description="Subscriber growth over time"
             dataKey="value"
