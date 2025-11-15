@@ -68,13 +68,14 @@ prisma/*.db
 prisma/*.db-shm
 prisma/*.db-wal
 
-# Admin Panel - Sensitive files that should not be public
-# These are excluded from public repositories for security
-/app/admin/
-/app/api/admin/
+# Admin Panel - Note: Admin routes are included in the repo
+# The admin panel itself is public code but protected by authentication
+# Only environment variables (credentials, secrets) are excluded
+# /app/admin/ - REMOVED from gitignore (needed for deployment)
+# /app/api/admin/ - REMOVED from gitignore (needed for deployment)
 
 # Note: lib/auth.ts is kept in the repo because it's used by non-admin routes
-# However, all sensitive credentials should be in environment variables (excluded via .env*)
+# All sensitive credentials should be in environment variables (excluded via .env*)
 
 # Sensitive configuration files
 config/secrets.ts

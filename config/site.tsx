@@ -12,7 +12,7 @@ export const siteConfig = {
   },
   bio: "Senior DevSecOps Engineer | Cybersecurity Expert | Security Researcher",
   talks_about: "#DevOps, #DevSecOps, #clientside, #CyberSecurity, #Learner, #Researcher, #edgenetwork",
-  profile_image: "/photo.jpg",
+  profile_image: "https://yqymybxe5e8jynd2.public.blob.vercel-storage.com/public/photo.JPG",
   home: {
     title: "Building Secure, Scalable Systems | DevSecOps & Cybersecurity Expert",
     description: `

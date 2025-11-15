@@ -1,0 +1,78 @@
+'use client';
+
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'app/theme/components/ui/card';
+
+interface LineChartData {
+  name: string;
+  [key: string]: string | number;
+}
+
+interface AdminLineChartProps {
+  data: LineChartData[];
+  title?: string;
+  description?: string;
+  dataKey: string;
+  color?: string;
+  height?: number;
+}
+
+export function AdminLineChart({
+  data,
+  title,
+  description,
+  dataKey,
+  color = '#3b82f6',
+  height = 300,
+}: AdminLineChartProps) {
+  const chartContent = (
+    <ResponsiveContainer width="100%" height={height}>
+      <LineChart data={data}>
+        <CartesianGrid strokeDasharray="3 3" className="stroke-slate-200 dark:stroke-slate-800" />
+        <XAxis 
+          dataKey="name" 
+          className="text-xs fill-slate-600 dark:fill-slate-400"
+          stroke="#64748b"
+        />
+        <YAxis 
+          className="text-xs fill-slate-600 dark:fill-slate-400"
+          stroke="#64748b"
+        />
+        <Tooltip 
+          contentStyle={{
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            border: '1px solid #e2e8f0',
+            borderRadius: '8px',
+          }}
+          className="dark:bg-slate-800 dark:border-slate-700"
+        />
+        <Legend />
+        <Line 
+          type="monotone" 
+          dataKey={dataKey} 
+          stroke={color} 
+          strokeWidth={2}
+          dot={{ fill: color, r: 4 }}
+          activeDot={{ r: 6 }}
+        />
+      </LineChart>
+    </ResponsiveContainer>
+  );
+
+  if (title) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>{title}</CardTitle>
+          {description && <CardDescription>{description}</CardDescription>}
+        </CardHeader>
+        <CardContent>
+          {chartContent}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return chartContent;
+}
+
