@@ -1,5 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { verifyCredentials, createSession } from 'lib/auth';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+
+// Route segment config - prevent static generation
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+export const fetchCache = 'force-no-store';
+
+// Lazy import to avoid build-time execution
+const getAuthFunctions = async () => {
+  const { verifyCredentials, createSession } = await import('lib/auth');
+  return { verifyCredentials, createSession };
+};
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,6 +23,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const { verifyCredentials, createSession } = await getAuthFunctions();
     const isValid = await verifyCredentials(email, password);
 
     if (!isValid) {
