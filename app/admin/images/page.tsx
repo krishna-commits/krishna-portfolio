@@ -204,10 +204,10 @@ export default function ImageManagerPage() {
   return (
     <div className="min-h-screen pt-16 lg:pt-0">
       <Toaster position="top-right" />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-12">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-500">
                 <ImageIcon className="h-6 w-6 text-white" />
@@ -221,7 +221,7 @@ export default function ImageManagerPage() {
                 </p>
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button
                 onClick={fetchImages}
                 variant="outline"
@@ -229,7 +229,7 @@ export default function ImageManagerPage() {
                 className="gap-2"
               >
                 <RefreshCw className="h-4 w-4" />
-                Refresh
+                <span className="hidden sm:inline">Refresh</span>
               </Button>
               {selectedImages.size > 0 && (
                 <Button
@@ -242,12 +242,13 @@ export default function ImageManagerPage() {
                   {deleting ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      Deleting...
+                      <span className="hidden sm:inline">Deleting...</span>
                     </>
                   ) : (
                     <>
                       <Trash2 className="h-4 w-4" />
-                      Delete ({selectedImages.size})
+                      <span className="hidden sm:inline">Delete ({selectedImages.size})</span>
+                      <span className="sm:hidden">({selectedImages.size})</span>
                     </>
                   )}
                 </Button>
@@ -323,7 +324,7 @@ export default function ImageManagerPage() {
               <CardDescription>Images organized by folders</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
                 {Object.entries(folders).map(([folderName, files]) => (
                   <button
                     key={folderName}
@@ -411,7 +412,7 @@ export default function ImageManagerPage() {
                 )}
               </div>
             ) : viewMode === 'grid' ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
                 {filteredImages.map((image) => {
                   const isSelected = selectedImages.has(image.url);
                   const folder = getFolderFromPath(image.pathname);

@@ -68,8 +68,8 @@ export default function AdminLayout({
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       <AdminSidebar />
-      <main className="lg:pl-64 transition-all duration-200">
-        <div className="min-h-screen">
+      <main className="lg:pl-64 transition-all duration-200 w-full">
+        <div className="min-h-screen w-full">
           {children}
         </div>
       </main>

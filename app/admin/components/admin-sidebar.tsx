@@ -134,17 +134,19 @@ export default function AdminSidebar() {
   return (
     <>
       {/* Mobile header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between shadow-sm">
         <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-50">Admin Panel</h1>
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="touch-manipulation"
+          aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
         >
           {mobileMenuOpen ? (
-            <X className="h-5 w-5" />
+            <X className="h-6 w-6" />
           ) : (
-            <Menu className="h-5 w-5" />
+            <Menu className="h-6 w-6" />
           )}
         </Button>
       </div>
@@ -152,7 +154,7 @@ export default function AdminSidebar() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-40 h-screen w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 shadow-sm transition-transform",
+          "fixed top-0 left-0 z-40 h-screen w-64 sm:w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 shadow-lg lg:shadow-sm transition-transform",
           "lg:translate-x-0",
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
@@ -174,7 +176,7 @@ export default function AdminSidebar() {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 overflow-y-auto p-4 space-y-2">
+          <nav className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-2">
             {adminNavItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
@@ -185,17 +187,18 @@ export default function AdminSidebar() {
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200",
-                    "text-slate-700 dark:text-slate-300",
+                    "flex items-center gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg transition-all duration-200",
+                    "text-slate-700 dark:text-slate-300 min-h-[56px] sm:min-h-auto",
+                    "touch-manipulation", // Better touch handling on mobile
                     isActive
                       ? "bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 text-slate-900 font-semibold shadow-md"
-                      : "hover:bg-slate-100 dark:hover:bg-slate-800 hover:translate-x-1"
+                      : "hover:bg-slate-100 dark:hover:bg-slate-800 hover:translate-x-1 active:bg-slate-200 dark:active:bg-slate-700"
                   )}
                 >
-                  <Icon className="h-5 w-5" />
-                  <div className="flex-1">
-                    <div className="font-medium">{item.title}</div>
-                    <div className="text-xs opacity-70">{item.description}</div>
+                  <Icon className="h-5 w-5 flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium text-sm sm:text-base truncate">{item.title}</div>
+                    <div className="text-xs opacity-70 hidden sm:block">{item.description}</div>
                   </div>
                 </Link>
               );
@@ -220,8 +223,9 @@ export default function AdminSidebar() {
       {/* Mobile overlay */}
       {mobileMenuOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black/50 z-30"
+          className="lg:hidden fixed inset-0 bg-black/50 z-30 backdrop-blur-sm"
           onClick={() => setMobileMenuOpen(false)}
+          aria-hidden="true"
         />
       )}
     </>

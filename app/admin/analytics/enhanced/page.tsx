@@ -82,10 +82,10 @@ export default function EnhancedAnalyticsPage() {
 
   return (
     <div className="min-h-screen pt-16 lg:pt-0">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-12">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4 flex-wrap gap-4">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600">
                 <BarChart3 className="h-6 w-6 text-white" />
@@ -145,7 +145,7 @@ export default function EnhancedAnalyticsPage() {
         </Card>
 
         {/* Visitor Analytics Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <StatCard
             title="Total Page Views"
             value={visitorAnalytics?.totalPageViews || 0}
@@ -196,7 +196,7 @@ export default function EnhancedAnalyticsPage() {
         )}
 
         {/* Traffic by Country and Top Pages */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {/* Traffic by Country */}
           {visitorAnalytics?.trafficByCountry && visitorAnalytics.trafficByCountry.length > 0 && (
             <Card>
@@ -284,7 +284,7 @@ export default function EnhancedAnalyticsPage() {
               <CardDescription>Performance metrics (LCP, FID, CLS, TTFB, FCP)</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {Object.entries(performanceMetrics).map(([metric, data]: [string, any]) => (
                   <div
                     key={metric}
@@ -316,7 +316,7 @@ export default function EnhancedAnalyticsPage() {
         )}
 
         {/* External Metrics */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {/* GitHub Stats */}
           {externalMetrics?.github && (
             <Card>
@@ -418,7 +418,7 @@ export default function EnhancedAnalyticsPage() {
         {advancedData && (
           <>
             {/* Device Analytics */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Device Types</CardTitle>
@@ -504,7 +504,7 @@ export default function EnhancedAnalyticsPage() {
 
             {/* User Flow */}
             {advancedData.userFlow && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
                 {/* Top User Flows */}
                 <Card>
                   <CardHeader>

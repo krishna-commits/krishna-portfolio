@@ -86,39 +86,35 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Overview Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <StatCard
             title="Total Content"
             value={overview?.totalContent || 0}
             icon={FileText}
             gradient="from-blue-500 to-cyan-500"
-            trend={null}
           />
           <StatCard
             title="Newsletter Subs"
             value={overview?.newsletterSubscribers || 0}
             icon={Mail}
             gradient="from-green-500 to-emerald-500"
-            trend={null}
           />
           <StatCard
             title="Homepage Sections"
             value={overview?.totalHomepageSections || 0}
             icon={Code}
             gradient="from-purple-500 to-indigo-500"
-            trend={null}
           />
           <StatCard
             title="Active Hobbies"
             value={overview?.hobbies || 0}
             icon={Heart}
             gradient="from-rose-500 to-pink-500"
-            trend={null}
           />
         </div>
 
         {/* Charts Row 1 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {/* Content Distribution */}
           {contentDistribution && contentDistribution.length > 0 && (
             <AdminPieChart

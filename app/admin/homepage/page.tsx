@@ -211,10 +211,10 @@ export default function HomepageManagementPage() {
 
   return (
     <div className="min-h-screen pt-16 lg:pt-0">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-12">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-500">
                 <Settings className="h-6 w-6 text-slate-900" />
@@ -231,7 +231,7 @@ export default function HomepageManagementPage() {
             <Button
               onClick={handleMigrate}
               disabled={migrating || migrated}
-              className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
+              className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white w-full sm:w-auto"
             >
               {migrating ? (
                 <>
@@ -288,7 +288,7 @@ export default function HomepageManagementPage() {
         )}
 
         {/* Sections Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {homepageSections.map((section, index) => {
             const Icon = section.icon;
             return (

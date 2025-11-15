@@ -186,7 +186,7 @@ export default function ImageUploadPage(): JSX.Element {
 
   return (
     <div className="min-h-screen pt-16 lg:pt-0">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-12">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
             <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-50 mb-2">
