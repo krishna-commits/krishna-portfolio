@@ -6,16 +6,25 @@ import Link from "next/link"
 import { siteConfig } from "config/site"
 import useSWR from 'swr'
 
+interface Recommendation {
+	name: string
+	title: string
+	company?: string
+	text: string
+	date?: string
+	linkedinUrl?: string
+}
+
 const fetcher = (url: string) => fetch(url).then(res => res.json())
 
 export function LinkedInRecommendations() {
 	const { data } = useSWR('/api/homepage/recommendations', fetcher)
-	const recommendations = data?.recommendations || siteConfig.linkedin_recommendations || []
+	const recommendations = (data?.recommendations || siteConfig.linkedin_recommendations || []) as Recommendation[]
 	
 	// Normalize recommendations data - use siteConfig LinkedIn URL as fallback
-	const normalizedRecommendations = recommendations.map((rec: any) => ({
+	const normalizedRecommendations: Recommendation[] = recommendations.map((rec: Recommendation) => ({
 		...rec,
-		linkedinUrl: (rec as any).linkedinUrl || siteConfig.links.linkedIn,
+		linkedinUrl: rec.linkedinUrl || siteConfig.links.linkedIn,
 	}))
 	
 	if (normalizedRecommendations.length === 0) return null
@@ -58,7 +67,7 @@ export function LinkedInRecommendations() {
 
 			{/* Recommendations Grid */}
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-				{normalizedRecommendations.map((rec, idx) => (
+				{normalizedRecommendations.map((rec: Recommendation, idx: number) => (
 					<RecommendationCard key={idx} rec={rec} index={idx} />
 				))}
 			</div>
@@ -79,7 +88,7 @@ export function LinkedInRecommendations() {
 	)
 }
 
-function RecommendationCard({ rec, index }: { rec: any; index: number }) {
+function RecommendationCard({ rec, index }: { rec: Recommendation; index: number }) {
 	return (
 		<motion.div
 			initial={{ opacity: 0, y: 20 }}
