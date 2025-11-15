@@ -32,5 +32,5 @@
     "**/*.tsx", 
     ".next/types/**/*.ts",
     ".contentlayer/generated", "content/projects/project1.mdx" ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "lib/auth.example.ts"]
 }
