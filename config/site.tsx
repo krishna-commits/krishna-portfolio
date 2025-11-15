@@ -166,107 +166,11 @@ export const siteConfig = {
       link: 'https://training.tp-link.com/pdfjs-2.2.228-dist/web/viewer.html?file=%2Fapi%2Fattachment%2FprfPreview%3FattachId%3D53509',
       time: 'Feb 12, 2025',
     },
-    // {
-    //   title: 'Networking Basics',
-    //   issuedby: 'Cisco',
-    //   role: 'Co-Founder / CEO',
-    //   imageURL: 'https://images.credly.com/size/680x680/images/5bdd6a39-3e03-4444-9510-ecff80c9ce79/image.png',
-    //   link: 'https://www.credly.com/badges/ae202312-48b8-4d48-b299-06bcd2c04311/public_url',
-    //   time: '2024',
-    // },
-    // {
-    //   title: 'ISC2 Candidate',
-    //   issuedby: 'ISC2',
-    //   role: '',
-    //   imageURL: 'https://images.credly.com/size/680x680/images/9180921d-4a13-429e-9357-6f9706a554f0/image.png',
-    //   link: 'https://www.credly.com/badges/b6ccc92d-90ef-46d3-9709-0a6b47a3d058/public_url',
-    //   time: '2024',
-    // },
-
-    // {
-    //   title: `LFS169: Introduction to GitOps`,
-    //   issuedby: 'IBM',
-    //   role: 'Co-Founder / CEO',
-    //   imageURL: 'https://images.credly.com/size/680x680/images/032a65da-a036-4d05-ad80-8fc1274363ab/blob',
-    //   link: 'https://www.credly.com/badges/795f303a-e366-44dd-a890-52afe348ce26/public_url',
-    //   time: '2023',
-    // },
-    // {
-    //   title: `Linux on LinuxONE`,
-    //   issuedby: 'IBM',
-    //   role: 'Co-Founder / CEO',
-    //   imageURL: 'https://images.credly.com/size/680x680/images/b39af728-f97d-44d6-8fc4-15f6a2c26f56/image.png',
-    //   link: 'https://www.credly.com/badges/34e70584-fda2-4f1e-b689-6290f0bbb631/public_url',
-    //   time: '2023',
-    // },
-    // {
-    //   title: `LFD103: A Beginner's Guide to Linux Kernel Development`,
-    //   issuedby: 'The Linux Foundation',
-    //   role: 'Co-Founder / CEO',
-    //   imageURL: 'https://images.credly.com/size/680x680/images/c6d2f560-62c8-4b89-a825-aa982fdafed7/blob',
-    //   link: 'https://www.credly.com/badges/7ed74526-9779-42d0-a5bc-1129606cd156/public_url',
-    //   time: '2023',
-    // },
-    // {
-    //   title: 'Containers & Kubernetes Essentials',
-    //   issuedby: 'IBM',
-    //   role: 'Co-Founder / CEO',
-    //   imageURL: 'https://images.credly.com/size/680x680/images/82966826-6630-4768-80d4-6028b3fab414/image.png',
-    //   link: 'https://www.credly.com/badges/01d73a8b-0823-40f9-8680-03a3517f6df5/public_url',
-    //   time: '2023',
-    // },
-    // {
-    //   title: 'AWS Cloud Quest: Cloud Practitioner',
-    //   issuedby: 'Amazon Web Services Training and Certification',
-    //   role: 'Co-Founder / CEO',
-    //   imageURL: 'https://images.credly.com/size/680x680/images/2784d0d8-327c-406f-971e-9f0e15097003/image.png',
-    //   link: 'https://www.credly.com/badges/59021ca3-955b-4c06-9dfb-de4975aac17e/public_url',
-    //   time: '2023',
-    // },
-    // {
-    //   title: 'Docker Essentials: A Developer Introduction',
-    //   issuedby: 'IBM',
-    //   role: 'Co-Founder / CEO',
-    //   imageURL: 'https://images.credly.com/size/680x680/images/b0c5445a-72a2-46ce-a599-96147e210efb/blob',
-    //   link: 'https://www.credly.com/badges/655f64b5-9551-4a96-aee1-61bbd4d5d282/public_url',
-    //   time: '2023',
-    // },
-    // {
-    //   title: 'Linear Regression with NumPy and Python',
-    //   issuedby: 'Coursera Project Network',
-    //   role: 'Co-Founder / CEO',
-    //   imageURL: 'https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://coursera.s3.amazonaws.com/media/coursera-rebrand-logo-square.png?auto=format%2Ccompress&dpr=1',
-    //   link: 'https://www.coursera.org/account/accomplishments/certificate/728CKVU9DSHN',
-    //   time: '2023',
-    // },
-    // {
-    //   title: 'Deep Learning with PyTorch : Neural Style Transfer',
-    //   issuedby: 'Coursera Project Network',
-    //   role: 'Co-Founder / CEO',
-    //   imageURL: 'https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://coursera.s3.amazonaws.com/media/coursera-rebrand-logo-square.png?auto=format%2Ccompress&dpr=1',
-    //   link: 'https://www.coursera.org/account/accomplishments/certificate/HFN8HE9PA3YN',
-    //   time: '2023',
-    // },
-    // {
-    //   title: 'Overview of Data Visualization',
-    //   issuedby: 'Coursera Project Network',
-    //   role: 'Co-Founder / CEO',
-    //   imageURL: 'https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://coursera.s3.amazonaws.com/media/coursera-rebrand-logo-square.png?auto=format%2Ccompress&dpr=1',
-    //   link: 'https://www.coursera.org/account/accomplishments/certificate/2RYDVHREDUND',
-    //   time: '2023',
-    // },
+  
   ],
 
   // WORK EXPERIENCE
   work_experience: [
-    // {
-    //   organization: 'Nepal News Bank',
-    //   course: 'Web Developer',
-    //   role: 'Web Developer',
-    //   time: '2021',
-    //   imageUrl: '/nnb.png',
-    //   url: 'https://offix.services'
-    // }
   ],
 
   // LINKEDIN RECOMMENDATIONS
