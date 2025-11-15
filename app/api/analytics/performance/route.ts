@@ -22,18 +22,32 @@ export async function POST(request: NextRequest) {
 
     // Store each metric
     for (const [metricType, data] of Object.entries(metrics)) {
-      const value = typeof data === 'object' ? data.value : data;
-      const score = typeof data === 'object' ? data.score : null;
-      const metadata = typeof data === 'object' && data.metadata 
-        ? JSON.stringify(data.metadata) 
+      // Skip if data is null or undefined
+      if (data === null || data === undefined) {
+        continue;
+      }
+
+      const value = typeof data === 'object' && data !== null 
+        ? (data as { value?: number | string }).value ?? data
+        : data;
+      const score = typeof data === 'object' && data !== null 
+        ? (data as { score?: number | null }).score ?? null
         : null;
+      const metadata = typeof data === 'object' && data !== null && (data as { metadata?: any }).metadata
+        ? JSON.stringify((data as { metadata: any }).metadata) 
+        : null;
+
+      // Skip if value is invalid
+      if (value === null || value === undefined) {
+        continue;
+      }
 
       records.push(
         prisma.performanceMetric.create({
           data: {
             pathname,
             metricType: metricType.toUpperCase(),
-            value: parseFloat(value.toString()),
+            value: parseFloat(String(value)),
             score,
             metadata,
           },
