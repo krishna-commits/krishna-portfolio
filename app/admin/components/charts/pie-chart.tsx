@@ -49,7 +49,20 @@ export function AdminPieChart({
             border: '1px solid #e2e8f0',
             borderRadius: '8px',
           }}
-          className="dark:bg-slate-800 dark:border-slate-700"
+          content={({ active, payload }) => {
+            if (active && payload && payload.length) {
+              return (
+                <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-2 shadow-lg">
+                  {payload.map((entry: any, index: number) => (
+                    <p key={index} className="text-sm text-slate-900 dark:text-slate-50">
+                      {`${entry.name}: ${entry.value}`}
+                    </p>
+                  ))}
+                </div>
+              );
+            }
+            return null;
+          }}
         />
         <Legend />
       </PieChart>
