@@ -34,10 +34,9 @@ export async function POST(request: NextRequest) {
       urls.push(`  <url><loc>${baseUrl}/blog/${post.slug}</loc><lastmod>${date}</lastmod><priority>0.6</priority></url>`);
     });
 
-    // Add projects
+    // Add projects (projects don't have date fields, using current date)
     allProjects.forEach((project) => {
-      const date = project.publishedAt ? new Date(project.publishedAt).toISOString().split('T')[0] : currentDate;
-      urls.push(`  <url><loc>${baseUrl}/projects/${project.slug}</loc><lastmod>${date}</lastmod><priority>0.6</priority></url>`);
+      urls.push(`  <url><loc>${baseUrl}/projects/${project.slug}</loc><lastmod>${currentDate}</lastmod><priority>0.6</priority></url>`);
     });
 
     // Add research articles

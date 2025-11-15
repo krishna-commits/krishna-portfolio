@@ -113,12 +113,12 @@ export async function GET(request: NextRequest) {
       }));
 
     const recentProjects = allProjects
-      .sort((a, b) => new Date(b.publishedAt || 0).getTime() - new Date(a.publishedAt || 0).getTime())
+      .sort((a, b) => (b.order || 0) - (a.order || 0))
       .slice(0, 5)
       .map(project => ({
         title: project.title,
-        date: project.publishedAt,
-        published: new Date(project.publishedAt || 0).toLocaleDateString(),
+        date: null,
+        published: 'N/A',
       }));
 
     // Engagement metrics
@@ -141,10 +141,9 @@ export async function GET(request: NextRequest) {
         return new Date(post.date).toISOString().slice(0, 7) === monthStr;
       }).length;
 
-      const projectsInMonth = allProjects.filter(proj => {
-        if (!proj.publishedAt) return false;
-        return new Date(proj.publishedAt).toISOString().slice(0, 7) === monthStr;
-      }).length;
+      // Projects don't have date fields, so we can't filter by month
+      // Using 0 as placeholder since projects don't have dates
+      const projectsInMonth = 0;
 
       monthlyContent.push({
         month: month.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
