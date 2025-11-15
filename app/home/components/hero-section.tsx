@@ -196,7 +196,7 @@ export const HeroSection = memo(function HeroSection() {
 			<SecurityPatternBackground />
 			
 			<div className="relative w-full z-10">
-				<div className="w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 max-w-7xl py-8 sm:py-12 lg:py-16">
+				<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl py-6 sm:py-8 lg:py-12 xl:py-16">
 					<div className="space-y-6 sm:space-y-8 lg:space-y-10">
 						<div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
 							<div className="lg:col-span-7 space-y-4 sm:space-y-5">

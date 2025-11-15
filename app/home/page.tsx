@@ -107,7 +107,7 @@ export default function HomePage() {
 					{/* Impact Metrics */}
 					<section id="stats-heading" className="relative w-full py-2 sm:py-3 lg:py-4" aria-labelledby="stats-heading">
 						<div className="relative w-full">
-							<div className="w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 max-w-7xl">
+							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
 								<ScrollAnimation variant="fade">
 									<StatsSection />
 								</ScrollAnimation>
@@ -118,7 +118,7 @@ export default function HomePage() {
 					{/* Technology Stack - Moved Up */}
 					<section id="skills" className="relative w-full py-6 sm:py-8 lg:py-10 bg-slate-50/30 dark:bg-slate-900/30 bg-gradient-mesh bg-noise" aria-labelledby="skills-heading">
 						<div className="relative w-full">
-							<div className="w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 max-w-7xl">
+							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
 								<ScrollAnimation variant="slide-up" delay={0.1}>
 									<SkillsShowcase />
 								</ScrollAnimation>
@@ -129,7 +129,7 @@ export default function HomePage() {
 					{/* Background (Education & Experience) - Moved Up */}
 					<section className="relative w-full py-6 sm:py-8 lg:py-10" aria-labelledby="education-heading">
 						<div className="relative w-full">
-							<div className="w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 max-w-7xl">
+							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
 								<EducationExperience />
 							</div>
 						</div>
@@ -138,7 +138,7 @@ export default function HomePage() {
 					{/* Certifications */}
 					<section className="relative w-full py-6 sm:py-8 lg:py-10" aria-labelledby="certifications-heading">
 						<div className="relative w-full">
-							<div className="w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 max-w-7xl">
+							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
 								<Certifications />
 							</div>
 						</div>
@@ -147,7 +147,7 @@ export default function HomePage() {
 					{/* Personal Note */}
 					<section id="about" className="relative w-full py-6 sm:py-8 lg:py-10 bg-slate-50/30 dark:bg-slate-900/30" aria-labelledby="about-heading">
 						<div className="relative w-full">
-							<div className="w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 max-w-7xl">
+							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
 								<PersonalNote />
 							</div>
 						</div>
@@ -156,7 +156,7 @@ export default function HomePage() {
 					{/* Security-First Approach */}
 					<section id="security" className="relative w-full py-6 sm:py-8 lg:py-10" aria-labelledby="security-heading">
 						<div className="relative w-full">
-							<div className="w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 max-w-7xl">
+							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
 								<SecurityFirstApproach />
 							</div>
 						</div>
@@ -165,7 +165,7 @@ export default function HomePage() {
 					{/* Featured Projects */}
 					<section id="projects" className="relative w-full py-6 sm:py-8 lg:py-10 bg-slate-50/30 dark:bg-slate-900/30 bg-gradient-mesh" aria-labelledby="projects-heading">
 						<div className="relative w-full">
-							<div className="w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 max-w-7xl">
+							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
 								<ErrorBoundary>
 									<Suspense fallback={
 										<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -186,7 +186,7 @@ export default function HomePage() {
 					{/* GitHub Contribution Graph */}
 					<section className="relative w-full py-6 sm:py-8 lg:py-10 bg-slate-50/30 dark:bg-slate-900/30" aria-labelledby="github-contributions-heading">
 						<div className="relative w-full">
-							<div className="w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 max-w-7xl">
+							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
 								<ErrorBoundary>
 									<Suspense fallback={<GitHubMetricsSkeleton />}>
 										<GitHubContributionGraph />
@@ -199,7 +199,7 @@ export default function HomePage() {
 					{/* GitHub */}
 					<section className="relative w-full py-6 sm:py-8 lg:py-10" aria-labelledby="github-heading">
 						<div className="relative w-full">
-							<div className="w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 max-w-7xl">
+							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
 								<GitHubContributions />
 							</div>
 						</div>
@@ -208,7 +208,7 @@ export default function HomePage() {
 					{/* Recommendations */}
 					<section className="relative w-full py-6 sm:py-8 lg:py-10 bg-slate-50/30 dark:bg-slate-900/30" aria-labelledby="recommendations-heading">
 						<div className="relative w-full">
-							<div className="w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 max-w-7xl">
+							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
 								<LinkedInRecommendations />
 							</div>
 						</div>
@@ -217,7 +217,7 @@ export default function HomePage() {
 					{/* Newsletter */}
 					<section className="relative w-full py-6 sm:py-8 lg:py-10" aria-labelledby="newsletter-heading">
 						<div className="relative w-full">
-							<div className="w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 max-w-7xl">
+							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
 								<Newsletter />
 							</div>
 						</div>
@@ -226,7 +226,7 @@ export default function HomePage() {
 					{/* Hobbies */}
 					<section className="relative w-full py-6 sm:py-8 lg:py-10" aria-labelledby="hobbies-heading">
 						<div className="relative w-full">
-							<div className="w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 max-w-7xl">
+							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
 								<HobbiesSection />
 							</div>
 						</div>
@@ -235,7 +235,7 @@ export default function HomePage() {
 					{/* Social Links */}
 					<section className="relative w-full py-6 sm:py-8 lg:py-10 bg-slate-50/30 dark:bg-slate-900/30" aria-labelledby="social-heading">
 						<div className="relative w-full">
-							<div className="w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 max-w-7xl">
+							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
 								<SocialLinks />
 							</div>
 						</div>

@@ -459,7 +459,7 @@ function CategorySection({ title, icon: Icon, stats, chartData, colors, chartTyp
 					</div>
 					
 					{/* Stats Grid */}
-					<div className="lg:col-span-2 grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+					<div className="lg:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
 						{stats.map((stat, idx) => (
 							<StatCard key={idx} stat={stat} index={idx} />
 						))}
@@ -467,7 +467,7 @@ function CategorySection({ title, icon: Icon, stats, chartData, colors, chartTyp
 				</div>
 			) : (
 				/* Stats Grid without Chart */
-				<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+				<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
 					{stats.map((stat, idx) => (
 						<StatCard key={idx} stat={stat} index={idx} />
 					))}
@@ -727,7 +727,7 @@ export const StatsSection = memo(function StatsSection() {
 				</div>
 
 				{/* Featured Stats - Large Cards */}
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 mb-8 sm:mb-10">
+				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-5 mb-6 sm:mb-8 lg:mb-10">
 					{featuredStats.map((stat, idx) => (
 						<FeaturedStatCard key={idx} stat={stat} index={idx} />
 					))}

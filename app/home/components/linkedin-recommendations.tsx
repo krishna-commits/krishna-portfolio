@@ -66,7 +66,7 @@ export function LinkedInRecommendations() {
 			</motion.div>
 
 			{/* Recommendations Grid */}
-			<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
 				{normalizedRecommendations.map((rec: Recommendation, idx: number) => (
 					<RecommendationCard key={idx} rec={rec} index={idx} />
 				))}

@@ -55,7 +55,7 @@ export function SiteHeader() {
 			{/* Full width container */}
 			<div className="relative w-full">
 				<div className="w-full mx-auto max-w-7xl">
-					<div className="flex h-14 sm:h-16 items-center justify-between px-4 sm:px-6 md:px-8 lg:px-10">
+					<div className="flex h-14 sm:h-16 items-center justify-between px-3 sm:px-4 md:px-6 lg:px-8">
 						{/* Left Section: Mobile Nav + Logo + Navbar */}
 						<div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0 overflow-hidden">
 							<MobileNav />
