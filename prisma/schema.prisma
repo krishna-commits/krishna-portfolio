@@ -198,3 +198,69 @@ model PerformanceMetric {
   @@index([createdAt])
   @@map("performance_metrics")
 }
+
+// Login Attempt Logging
+model LoginAttempt {
+  id          Int      @id @default(autoincrement())
+  email       String   @db.VarChar(255)
+  ipAddress   String   @map("ip_address") @db.VarChar(45)
+  userAgent   String?  @map("user_agent") @db.Text
+  success     Boolean
+  reason      String?  @db.VarChar(255)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([email, createdAt])
+  @@index([ipAddress, createdAt])
+  @@index([createdAt])
+  @@map("login_attempts")
+}
+
+// Account Lockout (rate limiting)
+model AccountLockout {
+  id          Int      @id @default(autoincrement())
+  email       String   @unique @db.VarChar(255)
+  ipAddress   String?  @map("ip_address") @db.VarChar(45)
+  lockedUntil DateTime @map("locked_until")
+  attempts    Int      @default(0)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([email])
+  @@index([lockedUntil])
+  @@map("account_lockouts")
+}
+
+// Admin User (for password hashing and future enhancements)
+model AdminUser {
+  id              Int       @id @default(autoincrement())
+  email           String    @unique @db.VarChar(255)
+  passwordHash    String    @map("password_hash") @db.VarChar(255)
+  twoFactorEnabled Boolean  @default(false) @map("two_factor_enabled")
+  twoFactorSecret String?   @map("two_factor_secret") @db.VarChar(255)
+  lastLogin       DateTime? @map("last_login")
+  lastLoginIp     String?   @map("last_login_ip") @db.VarChar(45)
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  sessions        ActiveSession[]
+
+  @@map("admin_users")
+}
+
+// Active Sessions (for session management)
+model ActiveSession {
+  id          Int       @id @default(autoincrement())
+  userId      Int       @map("user_id")
+  sessionToken String   @unique @map("session_token") @db.VarChar(500)
+  ipAddress   String   @map("ip_address") @db.VarChar(45)
+  userAgent   String?  @map("user_agent") @db.Text
+  expiresAt   DateTime @map("expires_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user        AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([sessionToken])
+  @@index([expiresAt])
+  @@map("active_sessions")
+}

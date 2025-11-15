@@ -430,9 +430,25 @@ export default function ImageUploadPage(): JSX.Element {
 
               {blobError && (
                 <div className="p-4 rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">
-                  <p className="text-sm text-red-600 dark:text-red-400">
-                    Error loading images: {blobError.message}
+                  <p className="text-sm text-red-600 dark:text-red-400 font-medium mb-2">
+                    Error loading images: {blobError.message || 'Failed to fetch images'}
                   </p>
+                  <p className="text-xs text-red-500 dark:text-red-400">
+                    Please check:
+                    <ul className="list-disc list-inside mt-1 space-y-1">
+                      <li>You are logged in to the admin panel</li>
+                      <li>Vercel Blob Storage token is configured (BLOB_READ_WRITE_TOKEN)</li>
+                      <li>Your session hasn't expired</li>
+                    </ul>
+                  </p>
+                  <button
+                    onClick={() => {
+                      window.location.href = '/admin/login';
+                    }}
+                    className="mt-2 px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                  >
+                    Go to Login
+                  </button>
                 </div>
               )}
 

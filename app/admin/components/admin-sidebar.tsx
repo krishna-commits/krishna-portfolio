@@ -19,7 +19,8 @@ import {
     Home,
     Search,
     Lock,
-    FolderOpen
+    FolderOpen,
+    Shield
   } from 'lucide-react';
 import { Button } from 'app/theme/components/ui/button';
 import toast from 'react-hot-toast';
@@ -96,6 +97,12 @@ const adminNavItems = [
     href: '/admin/env',
     icon: Lock,
     description: 'Manage env vars securely',
+  },
+  {
+    title: 'Security & Login',
+    href: '/admin/security',
+    icon: Shield,
+    description: 'Monitor login attempts',
   },
   {
     title: 'Settings',

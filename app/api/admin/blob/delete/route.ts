@@ -1,12 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { del } from '@vercel/blob';
-import { isAuthenticated } from 'lib/auth';
 
+// Route segment config - prevent static generation
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+export const fetchCache = 'force-no-store';
+
+// Lazy import to avoid build-time execution
+const getAuthFunction = async () => {
+  const { isAuthenticated } = await import('lib/auth');
+  return isAuthenticated;
+};
 
 // DELETE - Delete a blob by URL
 export async function DELETE(request: NextRequest) {
   try {
+    // Check authentication
+    const isAuthenticated = await getAuthFunction();
     const authenticated = await isAuthenticated();
     if (!authenticated) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -41,6 +51,8 @@ export async function DELETE(request: NextRequest) {
 // POST - Delete multiple blobs
 export async function POST(request: NextRequest) {
   try {
+    // Check authentication
+    const isAuthenticated = await getAuthFunction();
     const authenticated = await isAuthenticated();
     if (!authenticated) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
