@@ -211,7 +211,10 @@ export default function CloudflareAnalyticsPage() {
             </CardHeader>
             <CardContent>
               <AdminLineChart
-                data={chartData.requests}
+                data={chartData.requests.map((item: any) => ({
+                  name: item.date,
+                  value: item.value,
+                }))}
                 title=""
                 description=""
                 dataKey="value"
@@ -230,7 +233,10 @@ export default function CloudflareAnalyticsPage() {
             </CardHeader>
             <CardContent>
               <AdminLineChart
-                data={chartData.bandwidth}
+                data={chartData.bandwidth.map((item: any) => ({
+                  name: item.date,
+                  value: item.value,
+                }))}
                 title=""
                 description=""
                 dataKey="value"
@@ -251,7 +257,10 @@ export default function CloudflareAnalyticsPage() {
             </CardHeader>
             <CardContent>
               <AdminLineChart
-                data={chartData.cacheHitRate}
+                data={chartData.cacheHitRate.map((item: any) => ({
+                  name: item.date,
+                  value: item.value,
+                }))}
                 title=""
                 description=""
                 dataKey="value"
@@ -271,11 +280,14 @@ export default function CloudflareAnalyticsPage() {
             </CardHeader>
             <CardContent>
               <AdminBarChart
-                data={chartData.pageViews}
+                data={chartData.pageViews.map((item: any) => ({
+                  name: item.date,
+                  value: item.value,
+                }))}
                 title=""
                 description=""
-                dataKey="value"
-                color="#f97316"
+                dataKeys={['value']}
+                colors={['#f97316']}
               />
             </CardContent>
           </Card>
@@ -405,13 +417,14 @@ export default function CloudflareAnalyticsPage() {
           <CardContent>
             <AdminBarChart
               data={chartData.bandwidth.map((item: any, idx: number) => ({
-                date: item.date,
+                name: item.date,
                 'Cached': Math.round((safeDailyData[idx]?.cachedBytes || 0) / 1024 / 1024),
                 'Uncached': Math.round(((safeDailyData[idx]?.bytes || 0) - (safeDailyData[idx]?.cachedBytes || 0)) / 1024 / 1024),
               }))}
               title=""
               description=""
               dataKeys={['Cached', 'Uncached']}
+              colors={['#10b981', '#ef4444']}
               stacked={true}
             />
           </CardContent>
