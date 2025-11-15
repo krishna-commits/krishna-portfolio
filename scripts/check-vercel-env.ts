@@ -25,8 +25,15 @@ if (isProduction) {
   }
 }
 
+// Environment variable configuration type
+interface EnvVarConfig {
+  description: string;
+  required: boolean;
+  mustNotContain?: string[];
+}
+
 // Required environment variables
-const requiredVars = {
+const requiredVars: Record<string, EnvVarConfig> = {
   'POSTGRES_PRISMA_URL': {
     description: 'Prisma Accelerate URL (for queries)',
     required: true,
