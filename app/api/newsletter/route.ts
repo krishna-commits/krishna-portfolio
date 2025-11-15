@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSql } from 'lib/db';
+import { prisma } from 'lib/prisma';
 
 export async function POST(req: NextRequest) {
     try {
@@ -22,15 +22,25 @@ export async function POST(req: NextRequest) {
         }
 
         try {
-            const sql = getSql();
-            await sql`INSERT INTO newsletter_subscribers (email) VALUES (${email});`;
+            if (!prisma) {
+                // Database not configured - return success anyway (email could be handled externally)
+                return NextResponse.json(
+                    { message: 'Subscription request received!' },
+                    { status: 200 }
+                );
+            }
+
+            await prisma.newsletterSubscriber.create({
+                data: { email },
+            });
+
             return NextResponse.json(
                 { message: 'Subscribed successfully!' },
                 { status: 200 }
             );
         } catch (dbError: any) {
-            // Handle duplicate email error
-            if (dbError.code === '23505') {
+            // Handle duplicate email error (Prisma unique constraint)
+            if (dbError.code === 'P2002') {
                 return NextResponse.json(
                     { error: 'Email already subscribed' },
                     { status: 409 }

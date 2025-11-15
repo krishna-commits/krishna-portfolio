@@ -28,12 +28,12 @@ export function rehypePrettyCodeClasses() {
     visit(
       tree,
       (node: any) => node.tagName === "img", // Check for <img> tags
-      (node: any, index: number, parent: any) => {
+      (node: any, index: number | null, parent: any) => {
         // Add classes to the image
         node.properties.className = [IMAGE];
 
         // Check if the image has alt text and a parent node
-        if (node.properties.alt && parent && Array.isArray(parent.children)) {
+        if (node.properties.alt && parent && Array.isArray(parent.children) && index !== null) {
           // Create a new <p> element for the alt text and source link
           const textContainer = {
             type: "element",
@@ -198,9 +198,7 @@ export function rehypePrettyCodeClasses() {
 
     visit(
       tree,
-      (node: any, index: number | null, parent: any) => {
-        return node.tagName === "table";
-      },
+      (node: any) => node.tagName === "table",
       (node: any, index: number | null, parent: any) => {
         if (index === null || !parent) return; 
         // Define the wrapper div with the class you want

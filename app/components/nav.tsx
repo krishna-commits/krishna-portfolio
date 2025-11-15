@@ -8,8 +8,18 @@ import { siteConfig } from 'config/site';
 import { Home, BookOpen, GraduationCap, Lightbulb, FolderKanban, Mail, Code2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
+type NavItemConfig = {
+	name: string;
+	icon: any;
+	ariaLabel: string;
+	gradient: string;
+	isAnchor: boolean;
+};
+
+type NavItems = Record<string, NavItemConfig>;
+
 // Primary navigation items (always visible) - Vibrant colors: Yellow, Gold, Mustard, Orange, Red, Light Blue
-const primaryNavItems = {
+const primaryNavItems: NavItems = {
 	'/': {
 		name: 'Home',
 		icon: Home,
@@ -62,7 +72,7 @@ const primaryNavItems = {
 };
 
 // Secondary navigation items (anchor links - shown on larger screens)
-const secondaryNavItems = {
+const secondaryNavItems: NavItems = {
 	// No secondary items currently
 };
 
@@ -238,7 +248,8 @@ export function Navbar({
 				{/* Secondary items (anchor links) - show on 2xl screens if any exist */}
 				{Object.keys(secondaryNavItems).length > 0 && (
 					<div className="hidden 2xl:flex items-center gap-2">
-						{Object.entries(secondaryNavItems).map(([path, { name, icon, ariaLabel, gradient, isAnchor }]) => {
+						{Object.entries(secondaryNavItems).map(([path, item]) => {
+							const { name, icon, ariaLabel, gradient, isAnchor } = item;
 							return (
 								<NavItem 
 									key={path} 

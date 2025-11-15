@@ -4,11 +4,13 @@ import { siteConfig } from "config/site";
 import Link from "next/link";
 
 export interface EducationItem {
-  imageUrl: string;
+  imageUrl?: string;
   organization: string;
   time: string;
   course: string;
   university: string;
+  thesis?: string;
+  modules?: string[];
 }
 
 export interface SiteConfig {
@@ -18,28 +20,37 @@ export interface SiteConfig {
 export default function EducationList(): JSX.Element {
     return (
       <ul role="list">
-        {siteConfig.education.length !== 0 &&  siteConfig.education.map((item: EducationItem, index: number) => (
-          <div key={index}>
-            <li className={`flex justify-between gap-x-4 py-3 ${index === siteConfig.education.length - 1 ? '' : 'border-b'}`}>
-              <div className="flex min-w-0 w-full space-x-4 justify-center items-center">
-                <img className="h-14 w-14 ring-1 ml-1 ring-slate-200 flex-none rounded-full bg-gray-50" src={item.imageUrl} alt="" />
-                <div className="flex flex-col w-full ">
-                  <div className="flex flex-col md:flex-row md:space-x-3 justify-between">
-                    <p className="text-sm md:text-sm font-semibold text-left dark:text-slate-300">{item.organization}</p>
-                    <div className="w-fit text-muted-foreground text-[10px] px-0">{item.time}</div>
+        {siteConfig.education.length !== 0 && siteConfig.education.map((item, index) => {
+          const educationItem = item as EducationItem;
+          return (
+            <div key={index}>
+              <li className={`flex justify-between gap-x-4 py-3 ${index === siteConfig.education.length - 1 ? '' : 'border-b'}`}>
+                <div className="flex min-w-0 w-full space-x-4 justify-center items-center">
+                  {educationItem.imageUrl && (
+                    <img className="h-14 w-14 ring-1 ml-1 ring-slate-200 flex-none rounded-full bg-gray-50" src={educationItem.imageUrl} alt="" />
+                  )}
+                  {!educationItem.imageUrl && (
+                    <div className="h-14 w-14 ring-1 ml-1 ring-slate-200 flex-none rounded-full bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-500 flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">{item.organization.charAt(0)}</span>
+                    </div>
+                  )}
+                  <div className="flex flex-col w-full ">
+                    <div className="flex flex-col md:flex-row md:space-x-3 justify-between">
+                      <p className="text-sm md:text-sm font-semibold text-left dark:text-slate-300">{item.organization}</p>
+                      <div className="w-fit text-muted-foreground text-[10px] px-0">{item.time}</div>
+                    </div>
+                    <p className="text-xs leading-5 dark:text-slate-500">{item.course}, {item.university}</p>
                   </div>
-                  <p className="text-xs leading-5 dark:text-slate-500">{item.course}, {item.university}</p>
                 </div>
-              </div>
-            </li>
-          </div>
-        ))}
-        {
-          siteConfig.education.length == 0 &&
+              </li>
+            </div>
+          );
+        })}
+        {siteConfig.education.length == 0 && (
           <Button variant="outline" className="text-slate-600 w-full" asChild>
-          <Link href="/contact">Available Upon Request</Link>
-        </Button>
-        }
+            <Link href="/contact">Available Upon Request</Link>
+          </Button>
+        )}
       </ul>
     );
   }

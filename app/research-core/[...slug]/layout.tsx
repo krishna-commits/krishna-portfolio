@@ -10,7 +10,7 @@ import AppSidebar from "../components/app-sidebar"
 import ResearchCoreBreadcrumb from "../components/breadcrumb"
 import { usePathname } from 'next/navigation'
 
-export default function Layout({ children }) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const firstSegment = pathname.split('/').filter(Boolean)[1]
   const lastSegment = pathname.split('/').filter(Boolean)[3]

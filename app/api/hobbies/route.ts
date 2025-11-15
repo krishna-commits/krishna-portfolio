@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSql } from 'lib/db';
+import { prisma } from 'lib/prisma';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -13,64 +13,35 @@ export async function GET(request: NextRequest) {
 		const { searchParams } = new URL(request.url);
 		const includeInactive = searchParams.get('includeInactive') === 'true';
 
-		const sql = getSql();
-		
-		let rows: any[];
-		if (includeInactive) {
-			const result = await sql`
-				SELECT 
-					id,
-					title,
-					description,
-					image_url,
-					order_index,
-					is_active,
-					created_at,
-					updated_at
-				FROM hobbies
-				ORDER BY order_index ASC, created_at DESC
-			`;
-			rows = result.rows;
-		} else {
-			const result = await sql`
-				SELECT 
-					id,
-					title,
-					description,
-					image_url,
-					order_index,
-					is_active,
-					created_at,
-					updated_at
-				FROM hobbies
-				WHERE is_active = true
-				ORDER BY order_index ASC, created_at DESC
-			`;
-			rows = result.rows;
+		// Check if Prisma client is available (database configured)
+		if (!prisma) {
+			return NextResponse.json(
+				{
+					hobbies: [],
+					count: 0,
+				},
+				{ status: 200 }
+			);
 		}
+
+		const where = includeInactive ? {} : { isActive: true };
+
+		const hobbies = await prisma.hobby.findMany({
+			where,
+			orderBy: [
+				{ orderIndex: 'asc' },
+				{ createdAt: 'desc' },
+			],
+		});
 
 		return NextResponse.json(
 			{
-				hobbies: rows,
-				count: rows.length,
+				hobbies,
+				count: hobbies.length,
 			},
 			{ status: 200 }
 		);
 	} catch (error: any) {
-		// Handle missing database connection gracefully
-		if (error?.message?.includes('connection string') || error?.code === 'missing_connection_string') {
-			return NextResponse.json(
-				{
-					error: process.env.NODE_ENV === 'development'
-						? 'Database not configured. Please set POSTGRES_URL environment variable.'
-						: 'Database temporarily unavailable.',
-					hobbies: [],
-					count: 0,
-				},
-				{ status: 503 } // Service Unavailable
-			);
-		}
-
 		console.error('[Hobbies API] GET Error:', error);
 		return NextResponse.json(
 			{
@@ -102,26 +73,29 @@ export async function POST(request: NextRequest) {
 			);
 		}
 
-		// Insert new hobby
-		const sql = getSql();
-		const { rows } = await sql`
-			INSERT INTO hobbies (title, description, image_url, order_index, is_active)
-			VALUES (${title}, ${description || null}, ${image_url}, ${order_index || 0}, ${is_active !== undefined ? is_active : true})
-			RETURNING 
-				id,
+		if (!prisma) {
+			return NextResponse.json(
+				{
+					error: 'Database not configured',
+				},
+				{ status: 503 }
+			);
+		}
+
+		const hobby = await prisma.hobby.create({
+			data: {
 				title,
-				description,
-				image_url,
-				order_index,
-				is_active,
-				created_at,
-				updated_at
-		`;
+				description: description || null,
+				imageUrl: image_url,
+				orderIndex: order_index || 0,
+				isActive: is_active !== undefined ? is_active : true,
+			},
+		});
 
 		return NextResponse.json(
 			{
 				message: 'Hobby created successfully',
-				hobby: rows[0],
+				hobby,
 			},
 			{ status: 201 }
 		);
@@ -137,4 +111,3 @@ export async function POST(request: NextRequest) {
 		);
 	}
 }
-

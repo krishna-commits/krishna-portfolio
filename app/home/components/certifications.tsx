@@ -8,9 +8,12 @@ import Link from "next/link"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "app/theme/components/ui/dialog"
 import { Button } from "app/theme/components/ui/button"
 import { useState } from "react"
+import useSWR from 'swr'
 
-const getCertificationsByProvider = () => {
-	const certs = siteConfig.certification || []
+const fetcher = (url: string) => fetch(url).then(res => res.json())
+
+const getCertificationsByProvider = (certifications: any[] = []) => {
+	const certs = certifications
 	return {
 		aws: certs.filter((c: any) => 
 			c.issuedby?.toLowerCase().includes('aws') || 
@@ -188,7 +191,9 @@ function CertificationProviderCard({
 }
 
 export function Certifications() {
-	const certifications = getCertificationsByProvider()
+	const { data } = useSWR('/api/homepage/certifications', fetcher)
+	const allCertifications = data?.certifications || siteConfig.certification || []
+	const certifications = getCertificationsByProvider(allCertifications)
 	const hasCertifications = Object.values(certifications).some(arr => arr.length > 0)
 
 	if (!hasCertifications) return null

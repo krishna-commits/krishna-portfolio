@@ -4,15 +4,18 @@ import type { PutBlobResult } from '@vercel/blob';
  * Upload a file to Vercel Blob Storage
  * @param file - The file to upload
  * @param filename - Optional custom filename. If not provided, uses file.name
+ * @param folder - Optional folder path (default: 'public')
  * @returns The PutBlobResult with the blob URL
  */
 export async function uploadToBlob(
   file: File,
-  filename?: string
+  filename?: string,
+  folder: string = 'public'
 ): Promise<PutBlobResult> {
   const uploadFilename = filename || file.name;
+  const folderParam = folder ? `&folder=${encodeURIComponent(folder)}` : '';
   const response = await fetch(
-    `/api/upload?filename=${encodeURIComponent(uploadFilename)}`,
+    `/api/upload?filename=${encodeURIComponent(uploadFilename)}${folderParam}`,
     {
       method: 'POST',
       body: file,
@@ -31,12 +34,14 @@ export async function uploadToBlob(
 /**
  * Upload multiple files to Vercel Blob Storage
  * @param files - Array of files to upload
+ * @param folder - Optional folder path (default: 'public')
  * @returns Array of PutBlobResult objects
  */
 export async function uploadMultipleToBlob(
-  files: File[]
+  files: File[],
+  folder: string = 'public'
 ): Promise<PutBlobResult[]> {
-  const uploadPromises = files.map((file) => uploadToBlob(file));
+  const uploadPromises = files.map((file) => uploadToBlob(file, undefined, folder));
   return Promise.all(uploadPromises);
 }
 

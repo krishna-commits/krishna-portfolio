@@ -1,0 +1,200 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+// Hobbies model for portfolio hobbies section
+model Hobby {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(255)
+  description String?  @db.Text
+  imageUrl    String   @map("image_url") @db.VarChar(500)
+  orderIndex  Int      @default(0) @map("order_index")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([orderIndex])
+  @@index([isActive])
+  @@map("hobbies")
+}
+
+// Newsletter subscribers model
+model NewsletterSubscriber {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique @db.VarChar(255)
+  createdAt    DateTime @default(now()) @map("created_at")
+  subscribedAt DateTime @default(now()) @map("subscribed_at")
+
+  @@map("newsletter_subscribers")
+}
+
+// Education model
+model Education {
+  id           Int      @id @default(autoincrement())
+  organization String   @db.VarChar(255)
+  course       String   @db.VarChar(255)
+  university   String?  @db.VarChar(255)
+  time         String   @db.VarChar(50)
+  thesis       String?  @db.Text
+  modules      String[] @db.Text
+  orderIndex   Int      @default(0) @map("order_index")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([orderIndex])
+  @@map("education")
+}
+
+// Work Experience model
+model WorkExperience {
+  id           Int      @id @default(autoincrement())
+  organization String   @db.VarChar(255)
+  role         String   @db.VarChar(255)
+  time         String   @db.VarChar(50)
+  description  String?  @db.Text
+  imageUrl     String?  @map("image_url") @db.VarChar(500)
+  url          String?  @db.VarChar(500)
+  orderIndex   Int      @default(0) @map("order_index")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([orderIndex])
+  @@map("work_experience")
+}
+
+// Certifications model
+model Certification {
+  id         Int      @id @default(autoincrement())
+  title      String   @db.VarChar(255)
+  issuedby   String   @map("issued_by") @db.VarChar(255)
+  imageUrl   String   @map("image_url") @db.VarChar(500)
+  link       String?  @db.VarChar(500)
+  time       String   @db.VarChar(50)
+  orderIndex Int      @default(0) @map("order_index")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@index([orderIndex])
+  @@map("certifications")
+}
+
+// LinkedIn Recommendations model
+model LinkedInRecommendation {
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(255)
+  title      String   @db.VarChar(255)
+  company    String?  @db.VarChar(255)
+  text       String   @db.Text
+  date       String   @db.VarChar(50)
+  orderIndex Int      @default(0) @map("order_index")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@index([orderIndex])
+  @@map("linkedin_recommendations")
+}
+
+// Technology Stack model
+model TechnologyStack {
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(255)
+  imageUrl   String   @map("image_url") @db.VarChar(500)
+  category   String?  @db.VarChar(100)
+  orderIndex Int      @default(0) @map("order_index")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@index([orderIndex])
+  @@index([category])
+  @@map("technology_stack")
+}
+
+// Volunteering model
+model Volunteering {
+  id           Int      @id @default(autoincrement())
+  organization String   @db.VarChar(255)
+  role         String   @db.VarChar(255)
+  time         String   @db.VarChar(100)
+  duration     String?  @db.VarChar(50)
+  type         String?  @db.VarChar(100)
+  orderIndex   Int      @default(0) @map("order_index")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([orderIndex])
+  @@map("volunteering")
+}
+
+// Site Settings model (for hero section, personal note, security approach, etc.)
+model SiteSetting {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique @db.VarChar(100)
+  value     String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("site_settings")
+}
+
+// Visitor Analytics model
+model Visitor {
+  id          Int      @id @default(autoincrement())
+  ipAddress   String   @map("ip_address") @db.VarChar(45)
+  userAgent   String?  @map("user_agent") @db.Text
+  country     String?  @db.VarChar(100)
+  city        String?  @db.VarChar(100)
+  region      String?  @db.VarChar(100)
+  pathname    String   @db.VarChar(500)
+  referrer    String?  @db.VarChar(500)
+  email       String?  @db.VarChar(255)
+  sessionId   String   @map("session_id") @db.VarChar(100)
+  createdAt   DateTime @default(now()) @map("created_at")
+  timeOnPage  Int?     @map("time_on_page") // in seconds
+
+  @@index([pathname])
+  @@index([sessionId])
+  @@index([createdAt])
+  @@index([country])
+  @@map("visitors")
+}
+
+// Page View model (for engagement metrics)
+model PageView {
+  id          Int      @id @default(autoincrement())
+  sessionId   String   @map("session_id") @db.VarChar(100)
+  pathname    String   @db.VarChar(500)
+  timeOnPage  Int      @map("time_on_page") @default(0) // in seconds
+  scrollDepth Int      @map("scroll_depth") @default(0) // percentage
+  bounce      Boolean  @default(false)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([sessionId])
+  @@index([pathname])
+  @@index([createdAt])
+  @@map("page_views")
+}
+
+// Performance Metrics model (Lighthouse, Core Web Vitals)
+model PerformanceMetric {
+  id          Int      @id @default(autoincrement())
+  pathname    String   @db.VarChar(500)
+  metricType  String   @map("metric_type") @db.VarChar(50) // 'LCP', 'FID', 'CLS', 'TTFB', 'FCP', 'lighthouse'
+  value       Float
+  score       Int?     // 0-100
+  metadata    String?  @db.Text // JSON string for additional data
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([pathname])
+  @@index([metricType])
+  @@index([createdAt])
+  @@map("performance_metrics")
+}

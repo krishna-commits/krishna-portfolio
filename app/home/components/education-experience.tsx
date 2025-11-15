@@ -8,8 +8,20 @@ import Link from "next/link"
 import { useState } from "react"
 import { cn } from "app/theme/lib/utils"
 import { Badge } from "app/theme/components/ui/badge"
+import useSWR from 'swr'
+
+const fetcher = (url: string) => fetch(url).then(res => res.json())
 
 export function EducationExperience() {
+	const { data: educationData } = useSWR('/api/homepage/education', fetcher)
+	const education = educationData?.education || siteConfig.education || []
+	
+	const { data: workData } = useSWR('/api/homepage/work', fetcher)
+	const workExperience = workData?.workExperience || siteConfig.work_experience || []
+	
+	const { data: volunteeringData } = useSWR('/api/homepage/volunteering', fetcher)
+	const volunteering = volunteeringData?.volunteering || siteConfig.volunteering || []
+
 	return (
 		<section className="relative w-full" aria-label="Education and experience">
 			{/* Header */}
@@ -39,15 +51,15 @@ export function EducationExperience() {
 
 			{/* Three Column Layout */}
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-				<EducationCard />
-				<WorkExperienceCard />
-				<VolunteeringCard />
+				<EducationCard education={education} />
+				<WorkExperienceCard workExperience={workExperience} />
+				<VolunteeringCard volunteering={volunteering} />
 			</div>
 		</section>
 	)
 }
 
-function EducationCard() {
+function EducationCard({ education }: { education: any[] }) {
 	const [expandedIndex, setExpandedIndex] = useState<number | null>(null)
 	
 	return (
@@ -68,9 +80,9 @@ function EducationCard() {
 							Education
 						</h3>
 					</div>
-					{siteConfig.education && siteConfig.education.length > 0 ? (
+					{education && education.length > 0 ? (
 						<div className="space-y-3 sm:space-y-4">
-							{siteConfig.education.map((item: any, index: number) => {
+							{education.map((item: any, index: number) => {
 								const isExpanded = expandedIndex === index
 								return (
 									<motion.div
@@ -173,7 +185,7 @@ function EducationCard() {
 	)
 }
 
-function WorkExperienceCard() {
+function WorkExperienceCard({ workExperience }: { workExperience: any[] }) {
 	return (
 		<motion.div
 			initial={{ opacity: 0, y: 20 }}
@@ -192,9 +204,9 @@ function WorkExperienceCard() {
 							Work Experience
 						</h3>
 					</div>
-					{siteConfig.work_experience && siteConfig.work_experience.length > 0 ? (
+					{workExperience && workExperience.length > 0 ? (
 						<div className="space-y-3 sm:space-y-4">
-							{siteConfig.work_experience.map((item: any, index: number) => (
+							{workExperience.map((item: any, index: number) => (
 								<motion.div
 									key={index}
 									initial={{ opacity: 0, y: 10 }}
@@ -258,7 +270,7 @@ function WorkExperienceCard() {
 	)
 }
 
-function VolunteeringCard() {
+function VolunteeringCard({ volunteering }: { volunteering: any[] }) {
 	return (
 		<motion.div
 			initial={{ opacity: 0, y: 20 }}
@@ -277,9 +289,9 @@ function VolunteeringCard() {
 							Volunteering
 						</h3>
 					</div>
-					{siteConfig.volunteering && siteConfig.volunteering.length > 0 ? (
+					{volunteering && volunteering.length > 0 ? (
 						<div className="space-y-3 sm:space-y-4">
-							{siteConfig.volunteering.map((item: any, index: number) => (
+							{volunteering.map((item: any, index: number) => (
 								<motion.div
 									key={index}
 									initial={{ opacity: 0, y: 10 }}

@@ -6,13 +6,22 @@ export async function POST(
 ): Promise<NextResponse> {
   try {
     const { searchParams } = new URL(request.url);
-    const filename = searchParams.get('filename');
+    let filename = searchParams.get('filename');
+    const folder = searchParams.get('folder') || 'public';
 
     if (!filename) {
       return NextResponse.json(
         { error: 'Filename is required' },
         { status: 400 }
       );
+    }
+
+    // Normalize folder path (remove leading/trailing slashes)
+    const normalizedFolder = folder.replace(/^\/+|\/+$/g, '');
+    
+    // Construct full path with folder prefix
+    if (normalizedFolder) {
+      filename = `${normalizedFolder}/${filename}`;
     }
 
     const blob = await request.blob();

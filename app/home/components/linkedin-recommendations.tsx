@@ -4,14 +4,18 @@ import { motion } from "framer-motion"
 import { Quote, Linkedin, ExternalLink, Users } from "lucide-react"
 import Link from "next/link"
 import { siteConfig } from "config/site"
+import useSWR from 'swr'
+
+const fetcher = (url: string) => fetch(url).then(res => res.json())
 
 export function LinkedInRecommendations() {
-	const recommendations = siteConfig.linkedin_recommendations || []
+	const { data } = useSWR('/api/homepage/recommendations', fetcher)
+	const recommendations = data?.recommendations || siteConfig.linkedin_recommendations || []
 	
 	// Normalize recommendations data - use siteConfig LinkedIn URL as fallback
-	const normalizedRecommendations = recommendations.map(rec => ({
+	const normalizedRecommendations = recommendations.map((rec: any) => ({
 		...rec,
-		linkedinUrl: rec.linkedinUrl || siteConfig.links.linkedIn,
+		linkedinUrl: (rec as any).linkedinUrl || siteConfig.links.linkedIn,
 	}))
 	
 	if (normalizedRecommendations.length === 0) return null

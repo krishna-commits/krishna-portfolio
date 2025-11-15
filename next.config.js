@@ -22,7 +22,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'yqymybxe5e8jynd2.public.blob.vercel-storage.com',
+        hostname: '*.public.blob.vercel-storage.com',
       },
       {
         protocol: 'https',
@@ -65,6 +65,7 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: [
       "@prisma/client",
+      "prisma",
       "@vercel/postgres",
       "@neondatabase/serverless",
     ],

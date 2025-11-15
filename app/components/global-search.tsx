@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { Search, X, FileText, BookOpen, Code, ArrowRight, Filter, Clock } from "lucide-react"
-import { allResearchCores, allProjects, allBlogPosts } from "contentlayer/generated"
+import { allResearchCores, allProjects, allBlogPosts } from ".contentlayer/generated"
 import useSWR from 'swr'
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"

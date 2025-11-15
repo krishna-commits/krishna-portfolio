@@ -211,7 +211,7 @@ export function GitHubContributionGraph() {
             </div>
             <div>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
-                GitHub Contributions
+                GitHub Public Contributions
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-500 mt-1 flex items-center gap-2">
                 <Clock className="h-3 w-3" />

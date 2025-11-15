@@ -51,7 +51,7 @@ export const defaultMetadata: Metadata = {
 		title: siteConfig.name,
 		description: siteConfig.home.description.trim(),
 		images: [siteConfig.profile_image],
-		creator: '@' + (siteConfig.links.twitter?.replace('https://twitter.com/', '') || ''),
+		creator: '@' + ((siteConfig.links as any).twitter?.replace('https://twitter.com/', '') || ''),
 	},
 	robots: {
 		index: true,
