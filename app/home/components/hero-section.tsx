@@ -196,10 +196,10 @@ export const HeroSection = memo(function HeroSection() {
 			<SecurityPatternBackground />
 			
 			<div className="relative w-full z-10">
-				<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl py-6 sm:py-8 lg:py-12 xl:py-16">
-					<div className="space-y-6 sm:space-y-8 lg:space-y-10">
-						<div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-							<div className="lg:col-span-7 space-y-4 sm:space-y-5">
+					<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl py-4 sm:py-6 md:py-8 lg:py-12 xl:py-16">
+					<div className="space-y-4 sm:space-y-6 md:space-y-8 lg:space-y-10">
+						<div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8 items-start">
+							<div className="lg:col-span-7 space-y-3 sm:space-y-4 md:space-y-5">
 								<motion.div
 									initial={prefersReducedMotion ? {} : { opacity: 0, y: 10 }}
 									animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
@@ -221,8 +221,8 @@ export const HeroSection = memo(function HeroSection() {
 									transition={prefersReducedMotion ? {} : { duration: 0.4, delay: 0.1, ease: "easeOut" }}
 									className="space-y-1.5 sm:space-y-2"
 								>
-									<h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold leading-[1.2] tracking-tight">
-										<RevealText variant="slide-up" className="block text-slate-900 dark:text-slate-50 mb-1">
+									<h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-[1.2] tracking-tight">
+										<RevealText variant="slide-up" className="block text-slate-900 dark:text-slate-50 mb-1 sm:mb-2">
 											Securing Cloud Infrastructure
 										</RevealText>
 										<RevealText variant="slide-up" delay={0.1} className="block">
@@ -231,7 +231,7 @@ export const HeroSection = memo(function HeroSection() {
 											</GradientText>
 										</RevealText>
 									</h1>
-									<p className="text-xs sm:text-sm md:text-base text-slate-600 dark:text-slate-400 font-medium leading-relaxed max-w-2xl mt-2">
+									<p className="text-sm sm:text-base md:text-lg text-slate-600 dark:text-slate-400 font-medium leading-relaxed max-w-2xl mt-2 sm:mt-3">
 										6+ years building security-first cloud systems, automating threat detection, and implementing zero-trust architectures across AWS, GCP, Heroku, Azure, and Kubernetes.
 									</p>
 								</motion.div>
@@ -240,7 +240,7 @@ export const HeroSection = memo(function HeroSection() {
 									initial={prefersReducedMotion ? {} : { opacity: 0, y: 10 }}
 									animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
 									transition={prefersReducedMotion ? {} : { duration: 0.4, delay: 0.2, ease: "easeOut" }}
-									className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed max-w-3xl"
+									className="text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed max-w-3xl"
 								>
 									{siteConfig.home.description.trim()}
 								</motion.p>
@@ -267,7 +267,7 @@ export const HeroSection = memo(function HeroSection() {
 									initial={prefersReducedMotion ? {} : { opacity: 0, y: 10 }}
 									animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
 									transition={prefersReducedMotion ? {} : { duration: 0.4, delay: 0.4, ease: "easeOut" }}
-									className="flex flex-wrap gap-2 pt-1"
+									className="flex flex-wrap gap-2 sm:gap-3 pt-2 sm:pt-3"
 								>
 									{CTA_LINKS.map((cta, idx) => {
 										const Icon = cta.icon
@@ -281,7 +281,7 @@ export const HeroSection = memo(function HeroSection() {
 												<Link
 													href={cta.href}
 													className={cn(
-														"group relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md font-semibold text-xs sm:text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 overflow-hidden",
+														"group relative inline-flex items-center gap-1.5 sm:gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-md font-semibold text-sm sm:text-base transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 overflow-hidden touch-target",
 														idx === 0
 															? "bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 text-white shadow-sm hover:shadow-lg shadow-colored"
 															: "bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-50 border border-orange-300 dark:border-orange-700 hover:border-orange-500 dark:hover:border-orange-500 hover:bg-orange-50/50 dark:hover:bg-orange-950/20 shadow-hover"
@@ -290,9 +290,9 @@ export const HeroSection = memo(function HeroSection() {
 												>
 													{/* Ripple Effect Background */}
 													<span className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-													<span className="relative z-10 flex items-center gap-1.5">
+													<span className="relative z-10 flex items-center gap-1.5 sm:gap-2">
 														{cta.label}
-														<Icon className="h-3 w-3 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+														<Icon className="h-4 w-4 sm:h-4 sm:w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
 													</span>
 												</Link>
 											</motion.div>
@@ -301,7 +301,7 @@ export const HeroSection = memo(function HeroSection() {
 								</motion.div>
 							</div>
 
-							<div className="lg:col-span-5 space-y-2 sm:space-y-3">
+							<div className="lg:col-span-5 space-y-3 sm:space-y-4 md:space-y-5">
 								<motion.div
 									initial={prefersReducedMotion ? {} : { opacity: 0, scale: 0.95, rotateY: -15 }}
 									animate={prefersReducedMotion ? {} : { opacity: 1, scale: 1, rotateY: 0 }}
@@ -322,7 +322,7 @@ export const HeroSection = memo(function HeroSection() {
 											ease: 'easeInOut'
 										}}
 									/>
-									<div className="relative w-full max-w-[300px] mx-auto aspect-square">
+									<div className="relative w-full max-w-[240px] sm:max-w-[280px] md:max-w-[300px] mx-auto aspect-square">
 										<motion.div
 											className="relative w-full h-full rounded-xl overflow-hidden border-2 border-yellow-300 dark:border-yellow-700 shadow-2xl"
 											whileHover={prefersReducedMotion ? {} : { scale: 1.02 }}
@@ -406,7 +406,7 @@ export const HeroSection = memo(function HeroSection() {
 							initial={prefersReducedMotion ? {} : { opacity: 0, y: 10 }}
 							animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
 							transition={prefersReducedMotion ? {} : { duration: 0.4, delay: 0.5, ease: "easeOut" }}
-							className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5"
+							className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5"
 							aria-label="Expertise areas"
 						>
 							{expertiseAreas.map((area, idx) => {
@@ -415,15 +415,15 @@ export const HeroSection = memo(function HeroSection() {
 									<motion.div
 										key={idx}
 										whileHover={prefersReducedMotion ? {} : { scale: 1.02, y: -2 }}
-										className="p-3 sm:p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md transition-all duration-300"
+										className="p-4 sm:p-5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md transition-all duration-300"
 									>
-										<div className={cn("inline-flex p-2 rounded-md bg-gradient-to-br", area.gradient, "mb-2 shadow-sm")}>
-											<Icon className="h-3 w-3 sm:h-4 sm:w-4 text-white" aria-hidden="true" />
+										<div className={cn("inline-flex p-2.5 sm:p-3 rounded-md bg-gradient-to-br", area.gradient, "mb-3 shadow-sm")}>
+											<Icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" aria-hidden="true" />
 										</div>
-										<h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-50 mb-1.5">
+										<h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-50 mb-2">
 											{area.title}
 										</h3>
-										<p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+										<p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
 											{area.description}
 										</p>
 									</motion.div>

@@ -202,7 +202,7 @@ export function GitHubContributionGraph() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
-        className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6"
+        className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6"
       >
         <div className="space-y-2">
           <div className="inline-flex items-center gap-3">
@@ -210,16 +210,16 @@ export function GitHubContributionGraph() {
               <Activity className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
+              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
                 GitHub Public Contributions
               </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-500 mt-1 flex items-center gap-2">
-                <Clock className="h-3 w-3" />
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-500 mt-1 sm:mt-2 flex items-center gap-2">
+                <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
                 Last updated: {data.timestamp ? moment(data.timestamp).fromNow() : 'Never'}
               </p>
             </div>
           </div>
-          <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-3xl leading-relaxed">
+          <p className="text-xs sm:text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-3xl leading-relaxed">
             {data.totalContributions.toLocaleString()} contributions in the last year
           </p>
         </div>
@@ -237,7 +237,7 @@ export function GitHubContributionGraph() {
       </motion.div>
 
       {/* Stats Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
@@ -308,7 +308,7 @@ export function GitHubContributionGraph() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
-        className="relative overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm"
+        className="relative overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 sm:p-4 md:p-6 shadow-sm"
       >
         {/* Tooltip */}
         {hoveredDay && (

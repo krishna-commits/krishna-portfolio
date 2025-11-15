@@ -11,15 +11,15 @@ export function PersonalNote() {
 				whileInView={{ opacity: 1, y: 0 }}
 				viewport={{ once: true }}
 				transition={{ duration: 0.5 }}
-				className="relative overflow-hidden rounded-2xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 sm:p-10 lg:p-12"
+				className="relative overflow-hidden rounded-xl sm:rounded-2xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 sm:p-6 md:p-8 lg:p-10 xl:p-12"
 			>
 				<div className="relative space-y-8">
 					{/* Header */}
-					<div className="flex items-center gap-4">
-						<div className="p-3 rounded-xl bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-500 shadow-md">
-							<Heart className="h-6 w-6 text-white" aria-hidden="true" />
+					<div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+						<div className="p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-500 shadow-md">
+							<Heart className="h-5 w-5 sm:h-6 sm:w-6 text-white" aria-hidden="true" />
 						</div>
-						<h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
+						<h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
 							What Drives Me
 						</h2>
 					</div>
@@ -27,16 +27,16 @@ export function PersonalNote() {
 					{/* Content */}
 					<div className="space-y-8">
 						{/* Main Statement */}
-						<div className="space-y-5 max-w-3xl">
-							<p className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-50 leading-tight tracking-tight">
+						<div className="space-y-4 sm:space-y-5 max-w-3xl">
+							<p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-slate-900 dark:text-slate-50 leading-tight tracking-tight">
 								I build <span className="bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 bg-clip-text text-transparent">secure, scalable cloud systems</span> that protect organizations from evolving threats.
 							</p>
-							<p className="text-base sm:text-lg md:text-xl text-slate-700 dark:text-slate-300 leading-relaxed">
+							<p className="text-sm sm:text-base md:text-lg lg:text-xl text-slate-700 dark:text-slate-300 leading-relaxed">
 								My passion lies in combining <span className="font-semibold text-slate-900 dark:text-slate-50">security engineering</span> with <span className="font-semibold text-slate-900 dark:text-slate-50">automation</span>, creating <span className="bg-gradient-to-r from-blue-400 to-sky-500 bg-clip-text text-transparent font-semibold">defense-in-depth architectures</span> that detect, prevent, and respond to attacks automatically.
 							</p>
 						</div>
 						
-						<div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
 							<motion.div
 								initial={{ opacity: 0, scale: 0.9 }}
 								whileInView={{ opacity: 1, scale: 1 }}

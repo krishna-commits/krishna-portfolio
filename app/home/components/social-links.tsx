@@ -98,20 +98,20 @@ export function SocialLinks() {
 				whileInView={{ opacity: 1, y: 0 }}
 				viewport={{ once: true }}
 				transition={{ duration: 0.5 }}
-				className="mb-8 sm:mb-10"
+				className="mb-6 sm:mb-8 md:mb-10"
 			>
-				<div className="inline-flex items-center gap-3 mb-3">
+				<div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
 					<motion.div
 						whileHover={{ scale: 1.1, rotate: 5 }}
-						className="p-3 rounded-xl bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-500 shadow-lg"
+						className="p-2.5 sm:p-3 rounded-xl bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-500 shadow-lg"
 					>
-						<Share2 className="h-5 w-5 text-white" />
+						<Share2 className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
 					</motion.div>
 					<div>
-						<h2 id="social-heading" className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
+						<h2 id="social-heading" className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
 							Connect & Collaborate
 						</h2>
-						<p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 font-medium max-w-3xl mt-2 leading-relaxed">
+						<p className="text-sm sm:text-base md:text-lg text-slate-600 dark:text-slate-400 font-medium max-w-3xl mt-2 leading-relaxed">
 							Let's build secure, scalable solutions together. Connect with me on these platforms or reach out directly.
 						</p>
 					</div>
@@ -119,7 +119,7 @@ export function SocialLinks() {
 			</motion.div>
 
 			{/* Social Links Grid - Enhanced Styling */}
-			<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-5 mb-8">
+			<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 md:gap-5 mb-6 sm:mb-8">
 				{socialLinks.map((social, idx) => {
 					const Icon = social.icon
 					const isComponent = social.iconType === "component"
@@ -151,7 +151,7 @@ export function SocialLinks() {
 								}}
 								whileTap={{ scale: 0.95 }}
 								className={cn(
-									"relative overflow-hidden rounded-2xl border-2 transition-all duration-300 shadow-lg hover:shadow-2xl p-5 sm:p-6 cursor-pointer",
+									"relative overflow-hidden rounded-xl sm:rounded-2xl border-2 transition-all duration-300 shadow-lg hover:shadow-2xl p-4 sm:p-5 md:p-6 cursor-pointer",
 									`bg-gradient-to-br ${social.bgGradient}`,
 									social.borderClass
 								)}
@@ -178,31 +178,31 @@ export function SocialLinks() {
 										whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}
 										transition={{ duration: 0.5 }}
 										className={cn(
-											"inline-flex p-3.5 rounded-xl bg-gradient-to-br shadow-lg group-hover/social:shadow-xl transition-all duration-300 mx-auto",
+											"inline-flex p-2.5 sm:p-3 md:p-3.5 rounded-lg sm:rounded-xl bg-gradient-to-br shadow-lg group-hover/social:shadow-xl transition-all duration-300 mx-auto",
 											social.gradient
 										)}
 									>
 										{isComponent ? (
 											<Icon className={cn(
-												"h-6 w-6 transition-colors duration-300",
+												"h-5 w-5 sm:h-6 sm:w-6 transition-colors duration-300",
 												social.name === "GitHub" 
 													? "text-slate-100 group-hover/social:text-white"
 													: "fill-current text-white"
 											)} />
 										) : (
-											<Icon className="h-6 w-6 text-white" />
+											<Icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
 										)}
 									</motion.div>
 									
 									{/* Text Content */}
 									<div className="space-y-1">
 										<h3 className={cn(
-											"text-sm sm:text-base font-bold transition-colors duration-300",
+											"text-xs sm:text-sm md:text-base font-bold transition-colors duration-300",
 											social.textClass
 										)}>
 											{social.name}
 										</h3>
-										<p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed">
+										<p className="text-[10px] sm:text-xs text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed">
 											{social.description}
 										</p>
 									</div>
@@ -226,7 +226,7 @@ export function SocialLinks() {
 				whileInView={{ opacity: 1, y: 0 }}
 				viewport={{ once: true }}
 				transition={{ duration: 0.5, delay: 0.5 }}
-				className="relative overflow-hidden rounded-2xl border-2 border-slate-200/80 dark:border-slate-800/80 bg-gradient-to-br from-white via-slate-50/80 to-white dark:from-slate-900 dark:via-slate-950/80 dark:to-slate-950 p-8 sm:p-10 shadow-xl"
+				className="relative overflow-hidden rounded-xl sm:rounded-2xl border-2 border-slate-200/80 dark:border-slate-800/80 bg-gradient-to-br from-white via-slate-50/80 to-white dark:from-slate-900 dark:via-slate-950/80 dark:to-slate-950 p-5 sm:p-6 md:p-8 lg:p-10 shadow-xl"
 			>
 				{/* Animated gradient top border */}
 				<div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-yellow-400 via-amber-500 via-orange-500 via-red-500 to-blue-400" />
@@ -265,19 +265,19 @@ export function SocialLinks() {
 				/>
 				
 				{/* Content */}
-				<div className="relative flex flex-col sm:flex-row items-center justify-between gap-6 z-10">
-					<div className="flex items-center gap-4">
+				<div className="relative flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 z-10">
+					<div className="flex items-center gap-3 sm:gap-4">
 						<motion.div
 							whileHover={{ scale: 1.1, rotate: 5 }}
-							className="p-4 rounded-xl bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-500 shadow-xl"
+							className="p-3 sm:p-4 rounded-lg sm:rounded-xl bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-500 shadow-xl"
 						>
-							<MessageSquare className="h-7 w-7 text-white" />
+							<MessageSquare className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-white" />
 						</motion.div>
 						<div>
-							<h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 mb-1">
+							<h3 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-50 mb-1">
 								Ready to Start a Project?
 							</h3>
-							<p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
+							<p className="text-xs sm:text-sm md:text-base text-slate-600 dark:text-slate-400">
 								Let's discuss how we can work together to build something amazing
 							</p>
 						</div>

@@ -44,18 +44,18 @@ export function SecurityFirstApproach() {
 				whileInView={{ opacity: 1, y: 0 }}
 				viewport={{ once: true }}
 				transition={{ duration: 0.5 }}
-				className="mb-10 sm:mb-12"
+				className="mb-6 sm:mb-8 md:mb-10 lg:mb-12"
 			>
-				<div className="inline-flex items-center gap-3 mb-4">
-					<div className="p-3 rounded-xl bg-gradient-to-br from-orange-500 via-red-500 to-orange-600 shadow-md">
-						<Shield className="h-6 w-6 text-white" aria-hidden="true" />
+				<div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-5">
+					<div className="p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-orange-500 via-red-500 to-orange-600 shadow-md">
+						<Shield className="h-5 w-5 sm:h-6 sm:w-6 text-white" aria-hidden="true" />
 					</div>
-					<h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
+					<h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
 						Security-First Approach
 					</h2>
 				</div>
-				<div className="space-y-5 max-w-3xl">
-					<p className="text-lg sm:text-xl md:text-2xl text-slate-700 dark:text-slate-300 leading-relaxed">
+				<div className="space-y-4 sm:space-y-5 max-w-3xl">
+					<p className="text-base sm:text-lg md:text-xl lg:text-2xl text-slate-700 dark:text-slate-300 leading-relaxed">
 						Integrating <span className="font-semibold text-slate-900 dark:text-slate-50">security at every stage</span>, from <span className="bg-gradient-to-r from-blue-400 to-sky-500 bg-clip-text text-transparent font-semibold">code commit</span> to <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent font-semibold">production monitoring</span>, using <span className="font-semibold text-slate-900 dark:text-slate-50">shift-left principles</span>, <span className="font-semibold text-slate-900 dark:text-slate-50">automated threat detection</span>, and <span className="font-semibold text-slate-900 dark:text-slate-50">continuous security validation</span> to build <span className="bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 bg-clip-text text-transparent font-semibold">resilient, attack-resistant systems</span>.
 					</p>
 				</div>
@@ -69,8 +69,8 @@ export function SecurityFirstApproach() {
 				transition={{ duration: 0.5, delay: 0.2 }}
 				className="mb-10 sm:mb-12"
 			>
-				<div className="relative overflow-hidden rounded-2xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 sm:p-10">
-					<h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 mb-8 text-center">
+				<div className="relative overflow-hidden rounded-xl sm:rounded-2xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 sm:p-6 md:p-8 lg:p-10">
+					<h3 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-50 mb-6 sm:mb-8 text-center">
 						Security Pipeline
 					</h3>
 					
@@ -79,7 +79,7 @@ export function SecurityFirstApproach() {
 						{/* Connection Line - Vibrant colors: Yellow, Gold, Orange, Red, Light Blue */}
 						<div className="hidden sm:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-400 via-yellow-400 via-amber-500 via-orange-500 via-red-500 to-blue-500 -translate-y-1/2 z-0 opacity-30" />
 						
-						<div className="grid grid-cols-2 sm:grid-cols-5 gap-6 sm:gap-8 relative z-10">
+						<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6 md:gap-8 relative z-10">
 							{securityPipeline.map((stage, idx) => {
 								const Icon = stage.icon
 								return (
@@ -121,7 +121,7 @@ export function SecurityFirstApproach() {
 			</motion.div>
 
 			{/* Methodologies Grid */}
-			<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
 				{methodologies.map((method, idx) => {
 					const Icon = method.icon
 					return (

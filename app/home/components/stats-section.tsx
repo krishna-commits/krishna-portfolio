@@ -427,18 +427,18 @@ function CategorySection({ title, icon: Icon, stats, chartData, colors, chartTyp
 				<motion.div
 					whileHover={{ rotate: 360, scale: 1.1 }}
 					transition={{ duration: 0.6 }}
-					className="p-2 sm:p-2.5 rounded-lg bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-500 shadow-md"
+					className="p-2 sm:p-2.5 md:p-3 rounded-lg bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-500 shadow-md"
 				>
-					<Icon className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
+					<Icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
 				</motion.div>
-				<h3 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 dark:text-slate-50">
+				<h3 className="text-base sm:text-lg md:text-xl font-bold text-slate-900 dark:text-slate-50">
 					{title}
 				</h3>
 			</div>
 			
 			{/* Chart and Stats Grid */}
 			{chartData && chartData.length > 0 ? (
-				<div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+				<div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
 					{/* Enhanced Chart */}
 					<div className="lg:col-span-1">
 						{chartType === 'donut' ? (
@@ -459,7 +459,7 @@ function CategorySection({ title, icon: Icon, stats, chartData, colors, chartTyp
 					</div>
 					
 					{/* Stats Grid */}
-					<div className="lg:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+					<div className="lg:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-5">
 						{stats.map((stat, idx) => (
 							<StatCard key={idx} stat={stat} index={idx} />
 						))}
@@ -467,7 +467,7 @@ function CategorySection({ title, icon: Icon, stats, chartData, colors, chartTyp
 				</div>
 			) : (
 				/* Stats Grid without Chart */
-				<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+				<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
 					{stats.map((stat, idx) => (
 						<StatCard key={idx} stat={stat} index={idx} />
 					))}
@@ -706,28 +706,28 @@ export const StatsSection = memo(function StatsSection() {
 				transition={{ duration: 0.6 }}
 				className="mb-6 sm:mb-8"
 			>
-				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-6">
-					<div className="space-y-4">
-						<div className="inline-flex items-center gap-4">
+				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6 mb-4 sm:mb-6">
+					<div className="space-y-3 sm:space-y-4">
+						<div className="inline-flex items-center gap-2 sm:gap-3 md:gap-4">
 					<motion.div
 						animate={{ rotate: [0, 360] }}
 						transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-						className="p-2 sm:p-3 rounded-xl bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-500 shadow-lg"
+						className="p-2 sm:p-2.5 md:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-500 shadow-lg"
 					>
 						<Zap className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
 					</motion.div>
-							<h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
+							<h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
 								Impact Metrics
 							</h2>
 						</div>
-						<p className="text-xs sm:text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-3xl leading-relaxed">
+						<p className="text-sm sm:text-base md:text-lg text-slate-600 dark:text-slate-400 max-w-3xl leading-relaxed">
 							Measurable security outcomes, research impact, and engineering achievements demonstrating DevSecOps expertise
 						</p>
 					</div>
 				</div>
 
 				{/* Featured Stats - Large Cards */}
-				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-5 mb-6 sm:mb-8 lg:mb-10">
+				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-5 mb-6 sm:mb-8 lg:mb-10">
 					{featuredStats.map((stat, idx) => (
 						<FeaturedStatCard key={idx} stat={stat} index={idx} />
 					))}
@@ -735,7 +735,7 @@ export const StatsSection = memo(function StatsSection() {
 			</motion.div>
 
 			{/* Category Sections */}
-			<div className="space-y-8 sm:space-y-10">
+			<div className="space-y-6 sm:space-y-8 md:space-y-10">
 				{/* Research Section */}
 				{researchStats.length > 0 && (
 					<CategorySection
