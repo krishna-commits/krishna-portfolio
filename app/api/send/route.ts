@@ -1,8 +1,25 @@
-import { Resend } from 'resend';
-import { NextRequest, NextResponse } from 'next/server';
-import MessageUsEmail from './email-template';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Route segment config - prevent static generation
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+export const fetchCache = 'force-no-store';
+
+// Lazy import to avoid build-time execution
+const getResend = async () => {
+  const { Resend } = await import('resend');
+  const resendApiKey = process.env.RESEND_API_KEY;
+  if (!resendApiKey) {
+    throw new Error('RESEND_API_KEY environment variable is not set');
+  }
+  return new Resend(resendApiKey);
+};
+
+const getEmailTemplate = async () => {
+  const { default: MessageUsEmail } = await import('./email-template');
+  return MessageUsEmail;
+};
 
 export async function POST(req: NextRequest) {
   try {
@@ -39,6 +56,10 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Lazy load Resend and email template
+    const resend = await getResend();
+    const MessageUsEmail = await getEmailTemplate();
 
     const data = await resend.emails.send({
       from: `${name} <portfolio@neupanekrishna.com.np>`,
