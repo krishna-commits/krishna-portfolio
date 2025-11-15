@@ -1,4 +1,4 @@
-import { SignJWT, jwtVerify } from 'jose';
+import { SignJWT, jwtVerify, JWTPayload } from 'jose';
 import { cookies } from 'next/headers';
 
 // IMPORTANT: Set AUTH_SECRET in your .env.local file
@@ -10,7 +10,7 @@ if (!secretKey && process.env.NODE_ENV === 'production') {
 }
 const key = new TextEncoder().encode(secretKey || 'dev-secret-change-in-production');
 
-export interface SessionPayload {
+export interface SessionPayload extends JWTPayload {
   userId: string;
   email: string;
   expiresAt: Date;
