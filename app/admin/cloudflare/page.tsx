@@ -370,7 +370,6 @@ export default function CloudflareAnalyticsPage() {
                 ]}
                 title=""
                 description=""
-                dataKey="value"
               />
             </CardContent>
           </Card>
@@ -399,7 +398,6 @@ export default function CloudflareAnalyticsPage() {
                 ]}
                 title=""
                 description=""
-                dataKey="value"
               />
             </CardContent>
           </Card>
