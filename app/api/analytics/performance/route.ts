@@ -1,12 +1,26 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from 'lib/prisma';
-import { isAuthenticated } from 'lib/auth';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
+// Route segment config - prevent static generation
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+export const fetchCache = 'force-no-store';
+
+// Lazy imports to avoid build-time execution
+const getPrisma = async () => {
+  const { prisma } = await import('lib/prisma');
+  return prisma;
+};
+
+const getIsAuthenticated = async () => {
+  const { isAuthenticated } = await import('lib/auth');
+  return isAuthenticated;
+};
 
 // POST - Store performance metrics
 export async function POST(request: NextRequest) {
   try {
+    const prisma = await getPrisma();
     if (!prisma) {
       return NextResponse.json({ success: true }); // Silent fail
     }
@@ -67,11 +81,22 @@ export async function POST(request: NextRequest) {
 // GET - Get performance metrics (admin only)
 export async function GET(request: NextRequest) {
   try {
-    const authenticated = await isAuthenticated();
+    // Lazy import to avoid build-time issues
+    const isAuthenticated = await getIsAuthenticated();
+    let authenticated = false;
+    try {
+      authenticated = await isAuthenticated();
+    } catch (authError) {
+      // If auth check fails, deny access
+      console.error('[Performance Metrics] Auth check failed:', authError);
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
     if (!authenticated) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const prisma = await getPrisma();
     if (!prisma) {
       return NextResponse.json({ error: 'Database not configured' }, { status: 500 });
     }

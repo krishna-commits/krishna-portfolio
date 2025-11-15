@@ -97,10 +97,16 @@ async function decrypt(input: string): Promise<SessionPayload> {
  * Check if user is authenticated
  */
 export async function isAuthenticated(): Promise<boolean> {
-  const session = await readSession();
-  if (!session) return false;
-  
-  // Check if session is expired
-  return new Date(session.expiresAt) > new Date();
+  try {
+    const session = await readSession();
+    if (!session) return false;
+    
+    // Check if session is expired
+    return new Date(session.expiresAt) > new Date();
+  } catch (error) {
+    // If cookies() fails (e.g., during build), return false
+    console.error('[Auth] Error checking authentication:', error);
+    return false;
+  }
 }
 
