@@ -245,7 +245,7 @@ export async function listMDXFiles(
   try {
     const files: string[] = [];
     
-    async function walkDir(dir: string, relativePath: string = '') {
+    const walkDir = async (dir: string, relativePath: string = '') => {
       const entries = await fs.readdir(dir, { withFileTypes: true });
       
       for (const entry of entries) {
@@ -258,7 +258,7 @@ export async function listMDXFiles(
           files.push(relative);
         }
       }
-    }
+    };
 
     await walkDir(searchDir);
     return files;
