@@ -1,26 +1,18 @@
 'use client'
 
 import Link from "next/link"
-import { buttonVariants } from "app/theme/components/ui/button"
 import { Navbar } from "./nav"
 import { siteConfig } from "config/site"
 import { Icons } from "app/theme/components/theme/icons"
 import { ThemeToggle } from "./theme-toggle"
 import { MobileNav } from "./mobile-nav"
 import { GlobalSearch } from "./global-search"
-import { motion, useScroll, useTransform } from "framer-motion"
+import { motion } from "framer-motion"
 import { Shield } from "lucide-react"
 import { useState, useEffect } from "react"
-import {
-	SidebarInset,
-	SidebarProvider,
-	SidebarTrigger,
-} from "app/theme/components/ui/sidebar"
-
 export function SiteHeader() {
 	const [scrolled, setScrolled] = useState(false)
 	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
-	const { scrollY } = useScroll()
 
 	useEffect(() => {
 		const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -186,7 +178,6 @@ export function SiteHeader() {
 								<div className="hidden xl:block 2xl:hidden h-5 w-px bg-slate-300 dark:bg-slate-700 mx-2" />
 								
 								<ThemeToggle />
-								<SidebarTrigger className="rotate-180 lg:hidden touch-target" aria-label="Open sidebar" />
 							</nav>
 						</div>
 					</div>

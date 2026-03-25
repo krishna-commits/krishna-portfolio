@@ -190,7 +190,7 @@ export const HeroSection = memo(function HeroSection() {
 	return (
 		<section
 			id="home"
-			className="relative w-full min-h-[60vh] flex items-center overflow-hidden pt-4"
+			className="relative w-full min-h-[60vh] flex items-center overflow-hidden scroll-mt-24 pt-4"
 			aria-label="Hero section"
 		>
 			<SecurityPatternBackground />

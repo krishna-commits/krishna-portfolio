@@ -96,9 +96,9 @@ export function MobileNav() {
 					whileHover={{ scale: 1.05 }}
 					whileTap={{ scale: 0.95 }}
 					aria-label="Open navigation menu"
-					className="lg:hidden touch-target relative p-1 rounded-md bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-500 shadow-sm hover:shadow-md transition-all"
+					className="lg:hidden inline-flex items-center justify-center min-h-11 min-w-11 rounded-md bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-500 shadow-sm hover:shadow-md transition-all touch-manipulation"
 				>
-					<Menu className="h-3 w-3 text-slate-700 dark:text-slate-300" />
+					<Menu className="h-5 w-5 text-slate-700 dark:text-slate-300" aria-hidden />
 				</motion.button>
 			</SheetTrigger>
 			<SheetContent side="left" className="w-[90%] sm:w-[420px] p-0 border-r-2 border-slate-200 dark:border-slate-800 bg-gradient-to-br from-white to-slate-50/50 dark:from-slate-950 dark:to-slate-900/50 overflow-y-auto">

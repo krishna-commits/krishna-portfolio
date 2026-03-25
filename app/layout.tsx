@@ -7,11 +7,6 @@ import { ScrollToTop } from './components/scroll-to-top';
 import { CustomCursor } from './components/custom-cursor';
 import { ReadingProgress } from './components/reading-progress';
 import { PageTransition } from './components/page-transitions';
-import {
-  SidebarInset,
-  SidebarProvider,
-} from "app/theme/components/ui/sidebar"
-import { AppSidebar } from './components/sidebar/sidebar';
 import { ClientLayoutWrapper } from './client-layout';
 import { PerformanceMonitor } from './components/performance-monitor';
 import { AdminRouteWrapper } from './components/admin-route-wrapper';
@@ -73,7 +68,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://api.github.com" />
         <link rel="dns-prefetch" href="https://github.com" />
       </head>
-      <body className="antialiased">
+      <body className="antialiased overflow-x-clip">
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-slate-900 focus:text-white focus:rounded-md focus:shadow-lg"
@@ -94,18 +89,13 @@ export default function RootLayout({
                 <>
                   <CustomCursor />
                   <ReadingProgress />
-                  <SidebarProvider>
-                    <SidebarInset>
-                      <SiteHeader />
-                      <Subheader />
-                      <main id="main-content">
-                        <PageTransition>
-                          {children}
-                        </PageTransition>
-                      </main>
-                    </SidebarInset>
-                    <AppSidebar side="right"/>
-                  </SidebarProvider>
+                  <SiteHeader />
+                  <Subheader />
+                  <main id="main-content">
+                    <PageTransition>
+                      {children}
+                    </PageTransition>
+                  </main>
                   <AnalyticsProvider />
                   <ScrollToTop />
                   <PerformanceMonitor />

@@ -6,10 +6,10 @@ import { cn } from 'app/theme/lib/utils'
 
 export function CustomCursor() {
 	const [mounted, setMounted] = useState(false)
+	const [showCursor, setShowCursor] = useState(false)
 	const [isHovering, setIsHovering] = useState(false)
 	const [isClicking, setIsClicking] = useState(false)
-	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
-	
+
 	const cursorX = useMotionValue(-100)
 	const cursorY = useMotionValue(-100)
 	const springConfig = { damping: 25, stiffness: 300 }
@@ -18,15 +18,23 @@ export function CustomCursor() {
 
 	useEffect(() => {
 		setMounted(true)
-		const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-		setPrefersReducedMotion(mediaQuery.matches)
-		
-		const handleChange = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches)
-		mediaQuery.addEventListener('change', handleChange)
-		
-		if (prefersReducedMotion || typeof window === 'undefined') {
-			return () => mediaQuery.removeEventListener('change', handleChange)
+		const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+		const finePointer = window.matchMedia('(pointer: fine)')
+
+		const sync = () => {
+			setShowCursor(finePointer.matches && !reduceMotion.matches)
 		}
+		sync()
+		reduceMotion.addEventListener('change', sync)
+		finePointer.addEventListener('change', sync)
+		return () => {
+			reduceMotion.removeEventListener('change', sync)
+			finePointer.removeEventListener('change', sync)
+		}
+	}, [])
+
+	useEffect(() => {
+		if (!showCursor) return
 
 		const updateCursor = (e: MouseEvent) => {
 			cursorX.set(e.clientX)
@@ -36,7 +44,6 @@ export function CustomCursor() {
 		const handleMouseDown = () => setIsClicking(true)
 		const handleMouseUp = () => setIsClicking(false)
 
-		// Check for interactive elements
 		const handleMouseEnter = (e: MouseEvent) => {
 			const target = e.target as HTMLElement
 			if (
@@ -66,17 +73,15 @@ export function CustomCursor() {
 			window.removeEventListener('mouseup', handleMouseUp)
 			document.removeEventListener('mouseenter', handleMouseEnter, true)
 			document.removeEventListener('mouseleave', handleMouseLeave, true)
-			mediaQuery.removeEventListener('change', handleChange)
 		}
-	}, [cursorX, cursorY, prefersReducedMotion])
+	}, [showCursor, cursorX, cursorY])
 
-	if (!mounted || prefersReducedMotion) {
+	if (!mounted || !showCursor) {
 		return null
 	}
 
 	return (
 		<>
-			{/* Main Cursor */}
 			<motion.div
 				className={cn(
 					"fixed top-0 left-0 w-6 h-6 rounded-full pointer-events-none z-[9999] mix-blend-difference",
@@ -92,8 +97,7 @@ export function CustomCursor() {
 					translateY: '-50%',
 				}}
 			/>
-			
-			{/* Cursor Trail */}
+
 			<motion.div
 				className={cn(
 					"fixed top-0 left-0 w-8 h-8 rounded-full pointer-events-none z-[9998]",
@@ -108,7 +112,6 @@ export function CustomCursor() {
 				}}
 			/>
 
-			{/* Ripple Effect on Click */}
 			{isClicking && (
 				<motion.div
 					className="fixed top-0 left-0 w-4 h-4 rounded-full pointer-events-none z-[9999] bg-yellow-400/50"
@@ -126,4 +129,3 @@ export function CustomCursor() {
 		</>
 	)
 }
-

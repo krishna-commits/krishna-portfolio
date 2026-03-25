@@ -9,6 +9,8 @@ interface Section {
 	id: string
 	label: string
 	href: string
+	/** In-app navigation (e.g. /research-core); scroll spy ignores this entry */
+	isRoute?: boolean
 }
 
 interface StickySidebarProps {
@@ -33,10 +35,13 @@ export function StickySidebar({ sections, className }: StickySidebarProps) {
 
 		const handleScroll = () => {
 			const scrollPosition = window.scrollY + 100
-			const sectionElements = sections.map(section => ({
-				id: section.id,
-				element: document.getElementById(section.id)
-			})).filter(item => item.element !== null)
+			const sectionElements = sections
+				.filter((section) => !section.isRoute)
+				.map((section) => ({
+					id: section.id,
+					element: document.getElementById(section.id),
+				}))
+				.filter((item) => item.element !== null)
 
 			for (let i = sectionElements.length - 1; i >= 0; i--) {
 				const element = sectionElements[i].element
@@ -94,6 +99,7 @@ export function StickySidebar({ sections, className }: StickySidebarProps) {
 									: "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
 							)}
 							onClick={(e) => {
+								if (section.isRoute) return
 								e.preventDefault()
 								const element = document.getElementById(section.id)
 								if (element) {

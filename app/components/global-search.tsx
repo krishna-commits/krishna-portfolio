@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { Search, X, FileText, BookOpen, Code, ArrowRight, Filter, Clock } from "lucide-react"
-import { allResearchCores, allProjects, allBlogPosts } from ".contentlayer/generated"
+import { allResearchCores, allProjects, allBlogPosts } from "contentlayer/generated"
 import useSWR from 'swr'
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
@@ -186,11 +186,12 @@ export function GlobalSearch() {
 		<div className="relative" ref={searchRef}>
 			{/* Search Button */}
 			<button
+				type="button"
 				onClick={() => setIsOpen(true)}
-				className="flex items-center gap-1 px-1.5 py-1 text-xs text-slate-600 dark:text-slate-400 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+				className="inline-flex items-center justify-center gap-1 min-h-11 min-w-11 sm:min-h-9 sm:min-w-9 px-2 sm:px-1.5 py-2 sm:py-1 text-xs text-slate-600 dark:text-slate-400 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors touch-manipulation"
 				aria-label="Search"
 			>
-				<Search className="h-3 w-3" />
+				<Search className="h-4 w-4 sm:h-3 sm:w-3 shrink-0" />
 				<span className="hidden 2xl:inline text-xs">⌘K</span>
 			</button>
 
@@ -209,9 +210,9 @@ export function GlobalSearch() {
 							initial={{ opacity: 0, y: -20, scale: 0.95 }}
 							animate={{ opacity: 1, y: 0, scale: 1 }}
 							exit={{ opacity: 0, y: -20, scale: 0.95 }}
-							className="fixed top-20 left-1/2 -translate-x-1/2 w-full max-w-2xl mx-4 z-50"
+							className="fixed left-1/2 top-[max(5rem,env(safe-area-inset-top,0px)+1rem)] z-50 w-[min(100%-1.5rem,42rem)] -translate-x-1/2 max-h-[min(85vh,32rem)] flex flex-col"
 						>
-							<div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden">
+							<div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col min-h-0 max-h-[inherit]">
 								{/* Search Input */}
 								<div className="flex items-center gap-3 p-4 border-b border-slate-200 dark:border-slate-800">
 									<Search className="h-5 w-5 text-slate-400" />
@@ -256,7 +257,7 @@ export function GlobalSearch() {
 								)}
 
 								{/* Results */}
-								<div className="max-h-96 overflow-y-auto">
+								<div className="min-h-0 flex-1 overflow-y-auto overscroll-contain max-h-[min(24rem,50vh)] sm:max-h-96">
 									{query && results.length === 0 ? (
 										<div className="p-8 text-center text-slate-500 dark:text-slate-400">
 											No results found

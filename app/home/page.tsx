@@ -58,9 +58,7 @@ import { Certifications } from "./components/certifications"
 import { Newsletter } from "../components/newsletter"
 import { EducationExperience } from "./components/education-experience"
 import { SecurityFirstApproach } from "./components/security-first-approach"
-import { PersonalNote } from "./components/personal-note"
 import { HobbiesSection } from "./components/hobbies-section"
-import { StickySidebarNav } from "../components/sticky-sidebar-nav"
 import { ScrollAnimation, StaggerContainer, StaggerItem } from "../components/scroll-animations"
 import { CopyrightFooter } from "../components/copyright-footer"
 
@@ -96,16 +94,13 @@ export default function HomePage() {
 			/>
 			
 			<div className="min-h-screen w-full bg-white dark:bg-slate-950 relative">
-				{/* Sticky Sidebar Navigation */}
-				<StickySidebarNav />
-				
 				{/* Hero Section - DevSecOps/Cybersecurity Focused */}
 				<HeroSection />
 
 				{/* Main Content - Clean, spacious layout */}
 				<main className="w-full relative" role="main" aria-label="Main content">
 					{/* Impact Metrics */}
-					<section id="stats-heading" className="relative w-full py-2 sm:py-3 lg:py-4" aria-labelledby="stats-heading">
+					<section id="stats-heading" className="relative w-full scroll-mt-24 py-2 sm:py-3 lg:py-4" aria-labelledby="stats-heading">
 						<div className="relative w-full">
 							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
 								<ScrollAnimation variant="fade">
@@ -116,7 +111,7 @@ export default function HomePage() {
 					</section>
 
 					{/* Technology Stack - Moved Up */}
-					<section id="skills" className="relative w-full py-6 sm:py-8 lg:py-10 bg-slate-50/30 dark:bg-slate-900/30 bg-gradient-mesh bg-noise" aria-labelledby="skills-heading">
+					<section id="skills" className="relative w-full scroll-mt-24 py-6 sm:py-8 lg:py-10 bg-slate-50/30 dark:bg-slate-900/30 bg-gradient-mesh bg-noise" aria-labelledby="skills-heading">
 						<div className="relative w-full">
 							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
 								<ScrollAnimation variant="slide-up" delay={0.1}>
@@ -127,7 +122,7 @@ export default function HomePage() {
 					</section>
 
 					{/* Background (Education & Experience) - Moved Up */}
-					<section className="relative w-full py-6 sm:py-8 lg:py-10" aria-labelledby="education-heading">
+					<section id="education-heading" className="relative w-full scroll-mt-24 py-6 sm:py-8 lg:py-10" aria-labelledby="education-heading">
 						<div className="relative w-full">
 							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
 								<EducationExperience />
@@ -136,7 +131,7 @@ export default function HomePage() {
 					</section>
 
 					{/* Certifications */}
-					<section className="relative w-full py-6 sm:py-8 lg:py-10" aria-labelledby="certifications-heading">
+					<section className="relative w-full scroll-mt-24 py-6 sm:py-8 lg:py-10" aria-labelledby="certifications-heading">
 						<div className="relative w-full">
 							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
 								<Certifications />
@@ -144,17 +139,8 @@ export default function HomePage() {
 						</div>
 					</section>
 
-					{/* Personal Note */}
-					<section id="about" className="relative w-full py-6 sm:py-8 lg:py-10 bg-slate-50/30 dark:bg-slate-900/30" aria-labelledby="about-heading">
-						<div className="relative w-full">
-							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
-								<PersonalNote />
-							</div>
-						</div>
-					</section>
-
 					{/* Security-First Approach */}
-					<section id="security" className="relative w-full py-6 sm:py-8 lg:py-10" aria-labelledby="security-heading">
+					<section id="security" className="relative w-full scroll-mt-24 py-6 sm:py-8 lg:py-10" aria-labelledby="security-heading">
 						<div className="relative w-full">
 							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
 								<SecurityFirstApproach />
@@ -163,7 +149,7 @@ export default function HomePage() {
 					</section>
 
 					{/* Featured Projects */}
-					<section id="projects" className="relative w-full py-6 sm:py-8 lg:py-10 bg-slate-50/30 dark:bg-slate-900/30 bg-gradient-mesh" aria-labelledby="projects-heading">
+					<section id="projects" className="relative w-full scroll-mt-24 py-6 sm:py-8 lg:py-10 bg-slate-50/30 dark:bg-slate-900/30 bg-gradient-mesh" aria-labelledby="projects-heading">
 						<div className="relative w-full">
 							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
 								<ErrorBoundary>
