@@ -15,42 +15,9 @@ import { VisitorTracker } from './components/visitor-tracker';
 import { PerformanceTracker } from './components/performance-tracker';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
+import { rootLayoutMetadata } from './metadata';
 
-export const metadata = {
-  metadataBase: new URL('https://krishnaneupane.com'),
-  title: {
-    default: 'Krishna Neupane - Senior DevSecOps Engineer | Cybersecurity Expert',
-    template: '%s | Krishna Neupane'
-  },
-  description: 'Senior DevSecOps Engineer | Cybersecurity Expert | Security Researcher. Building secure, scalable cloud infrastructure with automated threat detection, zero-trust architectures, and defense-in-depth security strategies.',
-  keywords: ['DevSecOps', 'DevOps', 'Cybersecurity', 'Cloud Security', 'Research', 'Krishna Neupane'],
-  authors: [{ name: 'Krishna Neupane' }],
-  creator: 'Krishna Neupane',
-  openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    url: 'https://krishnaneupane.com',
-    siteName: 'Krishna Neupane',
-    title: 'Krishna Neupane - Senior DevSecOps Engineer | Cybersecurity Expert',
-    description: 'Senior DevSecOps Engineer | Cybersecurity Expert | Security Researcher. Building secure cloud infrastructure with automated threat detection and zero-trust architectures.',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Krishna Neupane - Senior DevSecOps Engineer | Cybersecurity Expert',
-    description: 'Senior DevSecOps Engineer | Cybersecurity Expert | Security Researcher. Building secure cloud infrastructure with automated threat detection and zero-trust architectures.',
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
-}
+export const metadata = rootLayoutMetadata
 
 export default function RootLayout({
   children,

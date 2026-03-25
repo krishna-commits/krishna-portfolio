@@ -1,3 +1,8 @@
+/**
+ * Contentlayer + next-contentlayer are effectively in maintenance mode; keep versions
+ * aligned with `next` (see package.json `overrides`). Prefer small, local patches over
+ * major jumps — validate with `npm run build-only` and watch for MDX/rehype breakage.
+ */
 import { defineDocumentType, makeSource } from "contentlayer/source-files";
 import rehypePrettyCode from "rehype-pretty-code"
 import rehypeHighlight from 'rehype-highlight'

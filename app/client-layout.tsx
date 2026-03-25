@@ -16,6 +16,7 @@ const themeProviders: Record<string, typeof NoSideBarThemeProvider> = {
   'skill-lab': NoSideBarThemeProvider,
   'projects': NoSideBarThemeProvider,
   'home': NoSideBarThemeProvider,
+  'privacy': NoSideBarThemeProvider,
   'admin': NoSideBarThemeProvider, // Admin routes should not have portfolio layout
   '*': PortfolioThemeProvider,
 }

@@ -9,7 +9,7 @@ import { CheckCircle2, Shield, Cloud, Lock, Server } from "lucide-react"
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion"
 import { Icons } from "app/theme/components/theme/icons"
 import { useDeferredValue as useReactDeferredValue } from "react"
-import { TypewriterText, GradientText, RevealText, InteractiveText } from "../../components/animated-typography"
+import { RevealText } from "../../components/animated-typography"
 
 const VIEWS = ["Academic", "Enterprise"] as const
 type ViewType = (typeof VIEWS)[number]
@@ -63,74 +63,18 @@ const expertiseAreas = [
 const customTags = ["DevSecOps", "Cybersecurity", "Cloud Security", "Threat Detection", "Security Automation", "Zero Trust"]
 
 function SecurityPatternBackground() {
-	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
-
-	useEffect(() => {
-		const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-		setPrefersReducedMotion(mediaQuery.matches)
-		
-		const handleChange = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches)
-		mediaQuery.addEventListener('change', handleChange)
-		
-		return () => mediaQuery.removeEventListener('change', handleChange)
-	}, [])
-
 	return (
 		<div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-			{/* Animated Grid Pattern */}
-			<div 
-				className={cn(
-					"absolute inset-0 opacity-[0.015] dark:opacity-[0.025]",
-					!prefersReducedMotion && "animate-grid-move"
-				)}
+			<div
+				className="absolute inset-0 opacity-[0.35] dark:opacity-[0.2]"
 				style={{
 					backgroundImage: `
-						linear-gradient(to right, rgba(59, 130, 246, 0.03) 1px, transparent 1px),
-						linear-gradient(to bottom, rgba(59, 130, 246, 0.03) 1px, transparent 1px)
+						linear-gradient(to right, rgb(148 163 184 / 0.12) 1px, transparent 1px),
+						linear-gradient(to bottom, rgb(148 163 184 / 0.12) 1px, transparent 1px)
 					`,
-					backgroundSize: '60px 60px, 60px 60px',
+					backgroundSize: '48px 48px',
 				}}
 			/>
-			
-			{/* Gradient Mesh Background */}
-			<div 
-				className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]"
-				style={{
-					background: `
-						radial-gradient(circle at 20% 50%, rgba(250, 204, 21, 0.3), transparent 50%),
-						radial-gradient(circle at 80% 80%, rgba(249, 115, 22, 0.3), transparent 50%),
-						radial-gradient(circle at 40% 20%, rgba(56, 189, 248, 0.2), transparent 50%)
-					`
-				}}
-			/>
-			
-			{/* Floating Particles */}
-			{!prefersReducedMotion && (
-				<>
-					{[...Array(6)].map((_, i) => (
-						<motion.div
-							key={i}
-							className="absolute w-2 h-2 rounded-full bg-gradient-to-br from-yellow-400/20 via-amber-500/20 to-orange-500/20 blur-sm"
-							style={{
-								left: `${Math.random() * 100}%`,
-								top: `${Math.random() * 100}%`,
-							}}
-							animate={{
-								y: [0, -30, 0],
-								x: [0, Math.random() * 20 - 10, 0],
-								scale: [1, 1.2, 1],
-								opacity: [0.3, 0.6, 0.3],
-							}}
-							transition={{
-								duration: 4 + Math.random() * 2,
-								repeat: Infinity,
-								delay: Math.random() * 2,
-								ease: 'easeInOut'
-							}}
-						/>
-					))}
-				</>
-			)}
 		</div>
 	)
 }
@@ -190,7 +134,7 @@ export const HeroSection = memo(function HeroSection() {
 			<SecurityPatternBackground />
 			
 			<div className="relative w-full z-10">
-					<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl py-4 sm:py-6 md:py-8 lg:py-12 xl:py-16">
+					<div className="w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl py-12 md:py-16">
 					<div className="space-y-4 sm:space-y-6 md:space-y-8 lg:space-y-10">
 						<div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8 items-start">
 							<div className="lg:col-span-7 space-y-3 sm:space-y-4 md:space-y-5">
@@ -215,17 +159,15 @@ export const HeroSection = memo(function HeroSection() {
 									transition={prefersReducedMotion ? {} : { duration: 0.4, delay: 0.1, ease: "easeOut" }}
 									className="space-y-1.5 sm:space-y-2"
 								>
-									<h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-[1.2] tracking-tight">
-										<RevealText variant="slide-up" className="block text-slate-900 dark:text-slate-50 mb-1 sm:mb-2">
+									<h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight tracking-tight text-slate-900 dark:text-slate-50">
+										<RevealText variant="slide-up" className="block mb-1 sm:mb-2">
 											Securing Cloud Infrastructure
 										</RevealText>
-										<RevealText variant="slide-up" delay={0.1} className="block">
-											<GradientText gradient="from-yellow-400 via-amber-500 to-orange-500">
-												DevSecOps & Cybersecurity Expert
-											</GradientText>
+										<RevealText variant="slide-up" delay={0.1} className="block text-amber-600 dark:text-amber-400">
+											DevSecOps & Cybersecurity Expert
 										</RevealText>
 									</h1>
-									<p className="text-sm sm:text-base md:text-lg text-slate-600 dark:text-slate-400 font-medium leading-relaxed max-w-2xl mt-2 sm:mt-3">
+									<p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-prose mt-3 sm:mt-4">
 										6+ years building security-first cloud systems, automating threat detection, and implementing zero-trust architectures across AWS, GCP, Heroku, Azure, and Kubernetes.
 									</p>
 								</motion.div>
@@ -234,7 +176,7 @@ export const HeroSection = memo(function HeroSection() {
 									initial={prefersReducedMotion ? {} : { opacity: 0, y: 10 }}
 									animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
 									transition={prefersReducedMotion ? {} : { duration: 0.4, delay: 0.2, ease: "easeOut" }}
-									className="text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed max-w-3xl"
+									className="text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed max-w-prose"
 								>
 									{siteConfig.home.description.trim()}
 								</motion.p>
@@ -260,30 +202,17 @@ export const HeroSection = memo(function HeroSection() {
 
 							<div className="lg:col-span-5 space-y-3 sm:space-y-4 md:space-y-5">
 								<motion.div
-									initial={prefersReducedMotion ? {} : { opacity: 0, scale: 0.95, rotateY: -15 }}
-									animate={prefersReducedMotion ? {} : { opacity: 1, scale: 1, rotateY: 0 }}
-									transition={prefersReducedMotion ? {} : { duration: 0.6, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+									initial={prefersReducedMotion ? {} : { opacity: 0, y: 8 }}
+									animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+									transition={prefersReducedMotion ? {} : { duration: 0.45, delay: 0.15, ease: "easeOut" }}
 									style={prefersReducedMotion ? {} : { x, y }}
-									className="relative perspective-1000"
+									className="relative"
 								>
-									{/* Glow Effect */}
-									<motion.div
-										className="absolute inset-0 rounded-lg bg-gradient-to-br from-yellow-400/20 via-amber-500/20 to-orange-500/20 blur-2xl -z-10"
-										animate={prefersReducedMotion ? {} : {
-											scale: [1, 1.1, 1],
-											opacity: [0.5, 0.7, 0.5],
-										}}
-										transition={{
-											duration: 3,
-											repeat: Infinity,
-											ease: 'easeInOut'
-										}}
-									/>
 									<div className="relative w-full max-w-[240px] sm:max-w-[280px] md:max-w-[300px] mx-auto aspect-square">
 										<motion.div
-											className="relative w-full h-full rounded-xl overflow-hidden border-2 border-yellow-300 dark:border-yellow-700 shadow-2xl"
+											className="relative w-full h-full rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-600 shadow-md bg-card"
 											whileHover={prefersReducedMotion ? {} : { scale: 1.02 }}
-											transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+											transition={{ type: 'spring', stiffness: 400, damping: 28 }}
 										>
 											{siteConfig.profile_image ? (
 												<Image
@@ -310,13 +239,14 @@ export const HeroSection = memo(function HeroSection() {
 									transition={prefersReducedMotion ? {} : { duration: 0.4, delay: 0.4, ease: "easeOut" }}
 									className="space-y-2"
 								>
-									<div className="flex items-center justify-between p-0.5 rounded-md bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" role="tablist" aria-label="View toggle">
+									<div className="flex items-center justify-between p-1 rounded-xl bg-muted/60 border border-border" role="tablist" aria-label="View toggle">
 										{VIEWS.map((view) => (
 											<button
+												type="button"
 												key={view}
 												onClick={() => handleViewChange(view)}
 												className={cn(
-													"flex-1 px-3 py-1.5 rounded-md text-xs font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2",
+													"flex-1 min-h-11 px-3 rounded-lg text-xs font-semibold transition-colors duration-200",
 													activeView === view
 														? "bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-50 shadow-sm"
 														: "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-50"
@@ -337,12 +267,12 @@ export const HeroSection = memo(function HeroSection() {
 											animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
 											exit={prefersReducedMotion ? {} : { opacity: 0, y: -5 }}
 											transition={prefersReducedMotion ? {} : { duration: 0.2, ease: "easeInOut" }}
-											className="p-3 sm:p-4 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm"
+											className="p-3 sm:p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-card shadow-sm"
 											role="tabpanel"
 											id={`${deferredView.toLowerCase()}-panel`}
 											aria-labelledby={`${deferredView.toLowerCase()}-tab`}
 										>
-											<h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-50 mb-3">
+											<h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50 mb-3">
 												{viewContent[deferredView].headline}
 											</h3>
 											<ul className="space-y-2" role="list">
@@ -371,16 +301,16 @@ export const HeroSection = memo(function HeroSection() {
 								return (
 									<motion.div
 										key={idx}
-										whileHover={prefersReducedMotion ? {} : { scale: 1.02, y: -2 }}
-										className="p-4 sm:p-5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md transition-all duration-300"
+										whileHover={prefersReducedMotion ? {} : { y: -2 }}
+										className="p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-card shadow-sm hover:shadow-md transition-shadow duration-200"
 									>
-										<div className={cn("inline-flex p-2.5 sm:p-3 rounded-md bg-gradient-to-br", area.gradient, "mb-3 shadow-sm")}>
-											<Icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" aria-hidden="true" />
+										<div className="inline-flex p-2.5 rounded-lg bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 mb-3">
+											<Icon className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
 										</div>
-										<h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-50 mb-2">
+										<h3 className="text-base font-semibold text-slate-900 dark:text-slate-50 mb-2">
 											{area.title}
 										</h3>
-										<p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+										<p className="text-sm text-muted-foreground leading-relaxed max-w-prose">
 											{area.description}
 										</p>
 									</motion.div>

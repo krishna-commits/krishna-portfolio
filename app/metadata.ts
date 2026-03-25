@@ -1,8 +1,9 @@
 import { Metadata } from 'next'
 import { siteConfig } from 'config/site'
+import { canonicalUrl, getSiteOrigin } from 'lib/site-origin'
 
 export const defaultMetadata: Metadata = {
-	metadataBase: new URL(siteConfig.url),
+	metadataBase: new URL(getSiteOrigin()),
 	title: {
 		default: siteConfig.name,
 		template: `%s | ${siteConfig.name}`,
@@ -33,7 +34,7 @@ export const defaultMetadata: Metadata = {
 	openGraph: {
 		type: 'website',
 		locale: 'en_US',
-		url: siteConfig.url,
+		url: getSiteOrigin(),
 		title: siteConfig.name,
 		description: siteConfig.home.description.trim(),
 		siteName: siteConfig.name,
@@ -68,7 +69,40 @@ export const defaultMetadata: Metadata = {
 		google: process.env.GOOGLE_VERIFICATION,
 	},
 	alternates: {
-		canonical: siteConfig.url,
+		canonical: getSiteOrigin(),
+	},
+}
+
+/** Root `app/layout.tsx` — one place for default title/description/OG to avoid drift from `defaultMetadata`. */
+export const rootLayoutMetadata: Metadata = {
+	...defaultMetadata,
+	title: {
+		default:
+			'Krishna Neupane - Senior DevSecOps Engineer | Cybersecurity Expert',
+		template: `%s | ${siteConfig.name}`,
+	},
+	description:
+		'Senior DevSecOps Engineer | Cybersecurity Expert | Security Researcher. Building secure, scalable cloud infrastructure with automated threat detection, zero-trust architectures, and defense-in-depth security strategies.',
+	keywords: [
+		'DevSecOps',
+		'DevOps',
+		'Cybersecurity',
+		'Cloud Security',
+		'Research',
+		'Krishna Neupane',
+	],
+	openGraph: {
+		...defaultMetadata.openGraph,
+		url: getSiteOrigin(),
+		title: 'Krishna Neupane - Senior DevSecOps Engineer | Cybersecurity Expert',
+		description:
+			'Senior DevSecOps Engineer | Cybersecurity Expert | Security Researcher. Building secure cloud infrastructure with automated threat detection and zero-trust architectures.',
+	},
+	twitter: {
+		...defaultMetadata.twitter,
+		title: 'Krishna Neupane - Senior DevSecOps Engineer | Cybersecurity Expert',
+		description:
+			'Senior DevSecOps Engineer | Cybersecurity Expert | Security Researcher. Building secure cloud infrastructure with automated threat detection and zero-trust architectures.',
 	},
 }
 
@@ -85,16 +119,19 @@ export function generatePageMetadata({
 }): Metadata {
 	const fullTitle = title === 'Home' ? siteConfig.name : `${title} | ${siteConfig.name}`
 	const fullDescription = description || defaultMetadata.description as string
-	
+	// Root layout uses title.template '%s | …' — pass short page titles so the suffix is not doubled.
+	const documentTitle =
+		title === 'Home' ? { absolute: siteConfig.name as string } : title
+
 	return {
-		title: fullTitle,
+		title: documentTitle,
 		description: fullDescription,
 		keywords: keywords || defaultMetadata.keywords,
 		openGraph: {
 			...defaultMetadata.openGraph,
 			title: fullTitle,
 			description: fullDescription,
-			url: `${siteConfig.url}${path}`,
+			url: canonicalUrl(path),
 		},
 		twitter: {
 			...defaultMetadata.twitter,
@@ -102,7 +139,49 @@ export function generatePageMetadata({
 			description: fullDescription,
 		},
 		alternates: {
-			canonical: `${siteConfig.url}${path}`,
+			canonical: canonicalUrl(path),
+		},
+	}
+}
+
+/** Long-form MDX (research) — article OG + stable canonical; tab title uses root template once. */
+export function generateResearchArticleMetadata({
+	title,
+	description,
+	path,
+	publishedTime,
+	keywords,
+}: {
+	title: string
+	description?: string
+	path: string
+	publishedTime?: string
+	keywords?: string[]
+}): Metadata {
+	const fullDescription = (description || defaultMetadata.description) as string
+	const fullTitle = `${title} | ${siteConfig.name}`
+
+	return {
+		title,
+		description: fullDescription,
+		authors: [{ name: siteConfig.name, url: siteConfig.links.orcid }],
+		keywords: keywords?.length ? keywords : defaultMetadata.keywords,
+		openGraph: {
+			...defaultMetadata.openGraph,
+			type: 'article',
+			title: fullTitle,
+			description: fullDescription,
+			url: canonicalUrl(path),
+			publishedTime,
+			authors: [siteConfig.name],
+		},
+		twitter: {
+			...defaultMetadata.twitter,
+			title: fullTitle,
+			description: fullDescription,
+		},
+		alternates: {
+			canonical: canonicalUrl(path),
 		},
 	}
 }

@@ -166,7 +166,7 @@ function NavItem({ path, name, icon: Icon, ariaLabel, gradient, isAnchor }: {
 		>
 			<motion.div
 				className={cn(
-					"relative flex items-center gap-1 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-md transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 overflow-hidden",
+					"relative flex items-center gap-1 min-h-11 px-2.5 sm:px-3 rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background overflow-hidden",
 					isActive
 						? `bg-gradient-to-r ${gradient} text-white shadow-sm`
 						: "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-50 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700"

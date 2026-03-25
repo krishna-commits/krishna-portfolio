@@ -34,15 +34,15 @@ export function SiteHeader() {
 
 	return (
 		<header 
-			className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+			className={`sticky top-0 z-50 w-full transition-all duration-300 supports-[backdrop-filter]:backdrop-blur-md ${
 				scrolled 
-					? 'border-b-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-lg' 
-					: 'border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950'
+					? 'border-b border-slate-200/90 dark:border-slate-800/90 bg-white/92 dark:bg-slate-950/92 shadow-sm' 
+					: 'border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-slate-950/95'
 			}`}
 			role="banner"
 		>
-			{/* Vibrant gradient top border - Yellow, Gold, Orange, Red, Light Blue */}
-			<div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-yellow-400 via-amber-500 via-orange-500 via-red-500 to-blue-400" />
+			{/* Accent line */}
+			<div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-amber-400 via-orange-500 to-sky-500 opacity-90" />
 			
 			{/* Full width container */}
 			<div className="relative w-full">

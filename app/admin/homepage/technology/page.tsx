@@ -267,6 +267,7 @@ export default function TechnologyManagementPage() {
                                 src={item.imageUrl}
                                 alt={item.name}
                                 fill
+                                unoptimized
                                 className="object-contain p-2"
                               />
                             </div>
@@ -363,6 +364,7 @@ export default function TechnologyManagementPage() {
                         src={formData.imageUrl}
                         alt="Preview"
                         fill
+                        unoptimized
                         className="object-contain p-2"
                       />
                       <button

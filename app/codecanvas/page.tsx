@@ -3,12 +3,17 @@
 import { useGetGithubRepos } from "app/api/github"
 import { Badge } from "app/theme/components/ui/badge"
 import moment from 'moment'
-import { Icons } from "app/theme/components/theme/icons"
 import Link from "next/link"
 import { useMemo, useState } from "react"
 import { motion } from "framer-motion"
 import { Search, X, ExternalLink, Code2, Github } from "lucide-react"
 import { CopyrightFooter } from "../components/copyright-footer"
+import {
+	PAGE_H1,
+	PAGE_ICON_CHIP,
+	PAGE_LEAD,
+	PAGE_SHELL_WIDE,
+} from "lib/page-layout"
 
 export default function Page() {
 	const { repo, repoLoading, repoError, repoValidating, repoEmpty } = useGetGithubRepos()
@@ -17,7 +22,7 @@ export default function Page() {
 
 	if (repoLoading) {
 		return (
-			<div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+			<div className={`min-h-screen bg-background ${PAGE_SHELL_WIDE}`}>
 				<div className="space-y-8">
 					<div className="space-y-3">
 						<div className="h-8 w-48 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
@@ -48,24 +53,22 @@ export default function Page() {
 	}, [repo, query, lang])
 
 	return (
-		<main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+		<main className={`min-h-screen bg-background ${PAGE_SHELL_WIDE}`}>
 			{/* Header */}
 			<motion.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.5 }}
-				className="space-y-4 mb-8 sm:mb-10"
+				className="mb-10 space-y-4"
 			>
-				<div className="space-y-2">
-					<div className="inline-flex items-center gap-1.5 mb-2">
-						<div className="p-1.5 rounded-md bg-gradient-to-br from-slate-700 to-slate-900 dark:from-slate-100 dark:to-slate-200 shadow-sm">
-							<Code2 className="h-3 w-3 text-white dark:text-slate-900" />
-						</div>
-						<h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light tracking-tight text-slate-900 dark:text-slate-50 leading-[1.1]">
-							Code Canvas
-						</h1>
+				<div className="space-y-4">
+					<div className="flex flex-wrap items-center gap-3">
+						<span className={PAGE_ICON_CHIP}>
+							<Code2 className="h-5 w-5" aria-hidden />
+						</span>
+						<h1 className={PAGE_H1}>Code Canvas</h1>
 					</div>
-					<p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-light max-w-2xl leading-relaxed">
+					<p className={PAGE_LEAD}>
 						A curated collection of repositories demonstrating production-ready engineering practices, research implementations, and open-source contributions.
 					</p>
 				</div>
@@ -78,7 +81,7 @@ export default function Page() {
 							value={query}
 							onChange={(e) => setQuery(e.target.value)}
 							placeholder="Search repositories..."
-							className="w-full pl-8 pr-8 py-2 text-xs sm:text-sm border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all"
+							className="w-full pl-8 pr-8 py-2 text-xs sm:text-sm rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-all"
 						/>
 						{query && (
 							<button
@@ -92,7 +95,7 @@ export default function Page() {
 					<select
 						value={lang}
 						onChange={(e) => setLang(e.target.value)}
-						className="px-3 py-2 text-xs sm:text-sm border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all"
+						className="rounded-lg border border-border bg-background px-3 py-2 text-xs sm:text-sm text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-all"
 					>
 						<option value="">All languages</option>
 						{languages.map((l) => (
@@ -101,8 +104,9 @@ export default function Page() {
 					</select>
 					{(query || lang) && (
 						<button
+							type="button"
 							onClick={() => { setQuery(""); setLang("") }}
-							className="px-3 py-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors border border-slate-200 dark:border-slate-800 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900"
+							className="rounded-lg border border-border bg-background px-3 py-2 text-xs sm:text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
 						>
 							Clear
 						</button>
@@ -112,8 +116,8 @@ export default function Page() {
 
 			{/* Repository Grid */}
 			{repoEmpty ? (
-				<div className="text-center py-16">
-					<p className="text-sm text-slate-500 dark:text-slate-400">No repositories found.</p>
+				<div className="py-16 text-center">
+					<p className="text-sm text-muted-foreground">No repositories found.</p>
 				</div>
 			) : (
 				<motion.div
@@ -129,16 +133,13 @@ export default function Page() {
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ delay: index * 0.05, duration: 0.4 }}
 							whileHover={{ y: -2, scale: 1.01 }}
-							className="group relative overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-gradient-to-br from-white to-slate-50/50 dark:from-slate-900 dark:to-slate-950/50 p-4 shadow-sm hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-300"
+							className="group relative overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-sm transition-all duration-300 hover:shadow-md"
 						>
-							<div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-indigo-500" />
-							<div className="absolute inset-0 bg-[linear-gradient(to_right,#80808003_1px,transparent_1px),linear-gradient(to_bottom,#80808003_1px,transparent_1px)] bg-[size:16px_16px] opacity-10" />
-							
 							<div className="relative space-y-3">
-								<div className="flex items-start justify-between gap-3 mb-3">
-									<div className="flex items-center gap-2 min-w-0 flex-1">
-										<div className="p-1.5 rounded-md bg-gradient-to-br from-slate-700 to-slate-900 dark:from-slate-100 dark:to-slate-200 shadow-sm flex-shrink-0">
-											<Github className="h-3 w-3 text-white dark:text-slate-900" />
+								<div className="mb-3 flex min-w-0 flex-1 items-start justify-between gap-3">
+									<div className="flex min-w-0 flex-1 items-center gap-2">
+										<div className="flex-shrink-0 rounded-lg border border-border bg-muted p-1.5">
+											<Github className="h-3 w-3 text-foreground" aria-hidden />
 										</div>
 										<Link
 											href={repoItem.html_url}
@@ -146,28 +147,28 @@ export default function Page() {
 											rel="noopener noreferrer"
 											className="min-w-0 flex-1"
 										>
-											<h3 className="text-sm sm:text-base font-semibold text-slate-900 dark:text-slate-50 truncate hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+											<h3 className="truncate text-sm font-semibold text-foreground transition-colors hover:text-primary sm:text-base">
 												{repoItem.name}
 											</h3>
 										</Link>
 									</div>
-									<ExternalLink className="h-3.5 w-3.5 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 mt-1" />
+									<ExternalLink className="mt-1 h-3.5 w-3.5 flex-shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" aria-hidden />
 								</div>
 
 								{repoItem.description && (
-									<p className="text-xs text-slate-600 dark:text-slate-400 mb-3 line-clamp-2 leading-relaxed">
+									<p className="mb-3 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
 										{repoItem.description}
 									</p>
 								)}
 
-								<div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800">
+								<div className="flex items-center justify-between border-t border-border pt-3">
 									<div className="flex items-center gap-2">
 										{repoItem.language && (
-											<Badge variant="outline" className="text-[10px] font-mono border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
+											<Badge variant="outline" className="bg-muted/50 font-mono text-[10px]">
 												{repoItem.language}
 											</Badge>
 										)}
-										<span className="text-[10px] text-slate-500 dark:text-slate-500">
+										<span className="text-[10px] text-muted-foreground">
 											{moment(repoItem.updated_at).format("MMM YY")}
 										</span>
 									</div>
@@ -176,7 +177,7 @@ export default function Page() {
 											href={repoItem.homepage}
 											target="_blank"
 											rel="noopener noreferrer"
-											className="text-[10px] text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors font-medium"
+											className="text-[10px] font-medium text-primary transition-colors hover:underline"
 										>
 											Live
 										</Link>

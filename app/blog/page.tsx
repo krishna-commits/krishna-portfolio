@@ -10,6 +10,12 @@ import { StaggerContainer, StaggerItem } from "../components/scroll-animations"
 import { CopyrightFooter } from "../components/copyright-footer"
 import { ReadingTime, ShareButtons, RelatedArticles } from "../components/blog-enhancements"
 import { PullToRefresh } from "../components/mobile-interactions"
+import {
+	PAGE_H1,
+	PAGE_ICON_CHIP,
+	PAGE_LEAD,
+	PAGE_SHELL_MD,
+} from "lib/page-layout"
 
 export default function BlogPage() {
 	const [posts, setPosts] = useState<any[]>([])
@@ -53,7 +59,7 @@ export default function BlogPage() {
 
 	if (loading) {
 		return (
-			<main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+			<main className={`min-h-screen bg-background ${PAGE_SHELL_MD}`}>
 				<div className="space-y-8">
 					<div className="space-y-3">
 						<div className="h-8 w-48 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
@@ -71,7 +77,7 @@ export default function BlogPage() {
 
 	if (error) {
 		return (
-			<main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+			<main className={`min-h-screen bg-background ${PAGE_SHELL_MD}`}>
 				<div className="text-center py-16">
 					<p className="text-sm text-red-600 dark:text-red-400 mb-4">{error}</p>
 					<button
@@ -86,24 +92,22 @@ export default function BlogPage() {
 	}
 
 	return (
-		<main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+		<main className={`min-h-screen bg-background ${PAGE_SHELL_MD}`}>
 			{/* Header */}
 			<motion.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.5 }}
-				className="space-y-4 mb-8 sm:mb-10"
+				className="mb-10 space-y-4"
 			>
-				<div className="space-y-2">
-					<div className="inline-flex items-center gap-1.5 mb-2">
-						<div className="p-1.5 rounded-md bg-gradient-to-br from-blue-500 to-indigo-500 shadow-sm">
-							<BookOpen className="h-3 w-3 text-white" />
-						</div>
-						<h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light tracking-tight text-slate-900 dark:text-slate-50 leading-[1.1]">
-							Writing
-						</h1>
+				<div className="space-y-4">
+					<div className="flex flex-wrap items-center gap-3">
+						<span className={PAGE_ICON_CHIP}>
+							<BookOpen className="h-5 w-5" aria-hidden />
+						</span>
+						<h1 className={PAGE_H1}>Writing</h1>
 					</div>
-					<p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-light max-w-2xl leading-relaxed">
+					<p className={PAGE_LEAD}>
 						Technical insights, research reflections, and engineering practices documented for continuous learning and knowledge sharing.
 					</p>
 				</div>

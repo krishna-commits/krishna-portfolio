@@ -6,6 +6,13 @@ import { motion } from 'framer-motion';
 import { CheckCircle2, Loader2, Mail, MapPinned, Phone, Send, Shield, MessageSquare, Briefcase, Globe, Linkedin, Github, ExternalLink, BookOpen, ArrowRight, Instagram, FileText, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { siteConfig } from 'config/site';
+import {
+	PAGE_CARD,
+	PAGE_CONTAINER,
+	PAGE_ICON_CHIP,
+	PAGE_H1,
+	PAGE_LEAD,
+} from 'lib/page-layout';
 
 type FormInput = {
   name: string;
@@ -81,24 +88,18 @@ const contactMethods = [
 		icon: Mail,
 		title: 'Email',
 		description: 'Available upon request',
-		gradient: 'from-blue-600 to-cyan-600',
-		bgGradient: 'from-blue-50 to-cyan-50 dark:from-blue-950/30 dark:to-cyan-950/30',
 		clickable: true,
 	},
 	{
 		icon: Phone,
 		title: 'Phone',
 		description: 'Available upon request',
-		gradient: 'from-emerald-600 to-teal-600',
-		bgGradient: 'from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30',
 		clickable: true,
 	},
 	{
 		icon: MapPinned,
 		title: 'Location',
 		description: 'Kathmandu, Nepal',
-		gradient: 'from-amber-600 to-orange-600',
-		bgGradient: 'from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30',
 		clickable: false,
 	},
 ];
@@ -237,41 +238,37 @@ export default function ContactUsForm() {
   }
 
   return (
-		<main className="min-h-screen w-full bg-gradient-to-b from-white via-slate-50/30 to-white dark:from-slate-950 dark:via-slate-900/30 dark:to-slate-950">
-			{/* Hero Section - Improved Spacing */}
-			<section className="relative w-full pt-16 sm:pt-20 lg:pt-24 pb-12 sm:pb-16 lg:pb-20 xl:pb-24 overflow-hidden">
-				{/* Background Pattern */}
-				<div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(59,130,246,0.03)_1px,transparent_1px)] bg-[size:40px_40px] opacity-40" />
-				<div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-cyan-600 to-teal-600" />
-				
-				<div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 z-10">
+		<main className="min-h-screen w-full bg-background">
+			{/* Hero */}
+			<section className="relative w-full overflow-hidden pt-12 md:pt-16 pb-10 md:pb-12">
+				<div className={`relative z-10 ${PAGE_CONTAINER}`}>
 					<motion.div
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.6 }}
-						className="text-center mb-10 sm:mb-12 lg:mb-16"
+						className="text-center"
 					>
-						<div className="inline-flex items-center gap-3 mb-5 sm:mb-6">
-							<div className="p-3 sm:p-3.5 rounded-xl bg-gradient-to-br from-blue-400 to-sky-500 shadow-xl">
-								<MessageSquare className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
-							</div>
-							<div className="p-3 sm:p-3.5 rounded-xl bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-500 shadow-xl">
-								<Shield className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
-							</div>
+						<div className="mb-6 flex flex-wrap items-center justify-center gap-3">
+							<span className={PAGE_ICON_CHIP}>
+								<MessageSquare className="h-6 w-6 sm:h-7 sm:w-7" aria-hidden />
+							</span>
+							<span className={PAGE_ICON_CHIP}>
+								<Shield className="h-6 w-6 sm:h-7 sm:w-7" aria-hidden />
+							</span>
 						</div>
-						<h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight text-slate-900 dark:text-slate-50 leading-tight mb-5 sm:mb-6 bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 dark:from-slate-100 dark:via-blue-200 dark:to-slate-100 bg-clip-text text-transparent px-2">
-							Let's Connect
+						<h1 className={`${PAGE_H1} mx-auto mb-4 max-w-3xl`}>
+							Let&apos;s Connect
 						</h1>
-						<p className="text-lg sm:text-xl lg:text-2xl text-slate-600 dark:text-slate-400 font-medium max-w-4xl mx-auto leading-relaxed px-4">
-							Ready to collaborate on your next DevSecOps project, discuss cybersecurity solutions, or explore research opportunities? Let's build something secure and scalable together.
+						<p className={`${PAGE_LEAD} mx-auto max-w-3xl text-base sm:text-lg`}>
+							Ready to collaborate on your next DevSecOps project, discuss cybersecurity solutions, or explore research opportunities? Let&apos;s build something secure and scalable together.
 						</p>
 					</motion.div>
 				</div>
 			</section>
 
-			{/* Main Content - Enhanced Spacing */}
-			<section className="relative w-full py-12 sm:py-16 lg:py-20 xl:py-24">
-				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
+			{/* Main content */}
+			<section className="relative w-full py-12 md:py-16">
+				<div className={PAGE_CONTAINER}>
 					<div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 lg:gap-12 xl:gap-16">
 						{/* Left Column: Contact Info & Social */}
 						<motion.div
@@ -281,12 +278,9 @@ export default function ContactUsForm() {
 							className="lg:col-span-4 space-y-6 sm:space-y-8"
 						>
 							{/* Contact Methods */}
-							<div className="relative overflow-hidden rounded-2xl border-2 border-slate-200/80 dark:border-slate-800/80 bg-gradient-to-br from-white to-slate-50/50 dark:from-slate-900 dark:to-slate-950/50 p-6 sm:p-7 lg:p-8 shadow-xl">
-								<div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 via-cyan-600 to-teal-600" />
-								<div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(59,130,246,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(59,130,246,0.02)_1px,transparent_1px)] bg-[size:24px_24px] opacity-30" />
-								
-								<div className="relative space-y-5 sm:space-y-6">
-									<h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 dark:text-slate-50 mb-1">
+							<div className={`${PAGE_CARD} p-6 sm:p-6 lg:p-8`}>
+								<div className="space-y-5 sm:space-y-6">
+									<h2 className="text-xl font-semibold text-foreground sm:text-2xl">
 										Get In Touch
 									</h2>
 									{contactMethods.map((method, idx) => {
@@ -297,8 +291,8 @@ export default function ContactUsForm() {
 												initial={{ opacity: 0, y: 10 }}
 												animate={{ opacity: 1, y: 0 }}
 												transition={{ delay: 0.4 + idx * 0.1 }}
-												whileHover={{ x: 5, scale: 1.02 }}
-												className={`flex items-start gap-4 sm:gap-5 p-4 sm:p-5 rounded-xl bg-gradient-to-br ${method.bgGradient} border-2 border-slate-200/50 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-lg transition-all ${
+												whileHover={{ x: 4 }}
+												className={`flex items-start gap-4 rounded-xl border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50 sm:gap-5 sm:p-5 ${
 													method.clickable ? 'cursor-pointer group' : ''
 												}`}
 												onClick={method.clickable ? (e) => {
@@ -306,24 +300,25 @@ export default function ContactUsForm() {
 													scrollToMessage();
 												} : undefined}
 											>
-												<div className={`p-3 sm:p-3.5 rounded-xl bg-gradient-to-br ${method.gradient} shadow-lg flex-shrink-0 group-hover:scale-110 transition-transform`}>
-													<Icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+												<div className="flex-shrink-0 rounded-lg border border-border bg-background p-2.5 text-foreground">
+													<Icon className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden />
 												</div>
-												<div className="flex-1 min-w-0 pt-0.5">
-													<p className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-50 mb-1">{method.title}</p>
+												<div className="min-w-0 flex-1 pt-0.5">
+													<p className="mb-1 text-sm font-semibold text-foreground sm:text-base">{method.title}</p>
 													{method.clickable ? (
 														<button
+															type="button"
 															onClick={(e) => {
 																e.stopPropagation();
 																scrollToMessage();
 															}}
-															className="group/link flex items-center gap-1.5 text-xs sm:text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-bold transition-all"
+															className="group/link flex items-center gap-1.5 text-xs font-medium text-primary transition-colors hover:underline sm:text-sm"
 														>
-															<span className="hover:underline">Available upon request</span>
-															<ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform group-hover/link:translate-x-1.5 flex-shrink-0" />
+															<span>Available upon request</span>
+															<ArrowRight className="h-3.5 w-3.5 shrink-0 transition-transform group-hover/link:translate-x-1 sm:h-4 sm:w-4" aria-hidden />
 														</button>
 													) : (
-														<p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">{method.description}</p>
+														<p className="text-xs text-muted-foreground sm:text-sm">{method.description}</p>
 													)}
 												</div>
 											</motion.div>
@@ -333,37 +328,34 @@ export default function ContactUsForm() {
 							</div>
 
 							{/* Social Links */}
-							<div className="relative overflow-hidden rounded-2xl border-2 border-slate-200/80 dark:border-slate-800/80 bg-gradient-to-br from-white to-slate-50/50 dark:from-slate-900 dark:to-slate-950/50 p-6 sm:p-7 lg:p-8 shadow-xl">
-								<div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-yellow-400 via-amber-500 via-orange-500 via-red-500 to-blue-400" />
-								<div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(168,85,247,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(168,85,247,0.02)_1px,transparent_1px)] bg-[size:24px_24px] opacity-30" />
-								
-								<div className="relative">
-									<h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 dark:text-slate-50 mb-5 sm:mb-6">
-										Connect Socially
-									</h2>
-									<div className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-										{socialLinks.map((social, idx) => {
-											const Icon = social.icon;
-											return (
-												<Link
-													key={idx}
-													href={social.url}
-													target="_blank"
-													rel="noopener noreferrer"
-													className="block"
+							<div className={`${PAGE_CARD} p-6 sm:p-6 lg:p-8`}>
+								<h2 className="mb-5 text-xl font-semibold text-foreground sm:text-2xl sm:mb-6">
+									Connect Socially
+								</h2>
+								<div className="grid grid-cols-3 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+									{socialLinks.map((social, idx) => {
+										const Icon = social.icon;
+										return (
+											<Link
+												key={idx}
+												href={social.url}
+												target="_blank"
+												rel="noopener noreferrer"
+												className="block"
+											>
+												<motion.div
+													whileHover={{ scale: 1.02, y: -2 }}
+													whileTap={{ scale: 0.98 }}
+													className={`flex flex-col items-center gap-2 rounded-xl border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50 sm:gap-2.5 sm:p-5 ${
+														social.bgColor
+													}`}
 												>
-													<motion.div
-														whileHover={{ scale: 1.08, y: -3 }}
-														whileTap={{ scale: 0.95 }}
-														className={`flex flex-col items-center gap-2 sm:gap-2.5 p-4 sm:p-5 rounded-xl ${social.bgColor} hover:opacity-90 border-2 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-all shadow-md hover:shadow-lg`}
-													>
-														<Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${social.color}`} />
-														<span className="text-[10px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 text-center leading-tight">{social.name}</span>
-													</motion.div>
-												</Link>
-											);
-										})}
-									</div>
+													<Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${social.color}`} aria-hidden />
+													<span className="text-center text-[10px] font-semibold leading-tight text-foreground sm:text-xs">{social.name}</span>
+												</motion.div>
+											</Link>
+										);
+									})}
 								</div>
 							</div>
 						</motion.div>
@@ -377,23 +369,19 @@ export default function ContactUsForm() {
 							transition={{ duration: 0.6, delay: 0.4 }}
 							className="lg:col-span-8 scroll-mt-20 sm:scroll-mt-24"
 						>
-							<div className="relative overflow-hidden rounded-2xl border-2 border-slate-200/80 dark:border-slate-800/80 bg-gradient-to-br from-white to-slate-50/50 dark:from-slate-900 dark:to-slate-950/50 p-6 sm:p-8 md:p-10 lg:p-12 shadow-2xl">
-								{/* Background Pattern */}
-								<div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(59,130,246,0.03)_1px,transparent_1px)] bg-[size:32px_32px] opacity-40" />
-								<div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-600 via-cyan-600 to-teal-600" />
-								
-								<div className="relative space-y-7 sm:space-y-8 lg:space-y-10">
+							<div className={`${PAGE_CARD} p-6 sm:p-8 md:p-10 lg:p-12`}>
+								<div className="space-y-7 sm:space-y-8 lg:space-y-10">
 									<div className="space-y-3">
-										<div className="flex items-center gap-3 sm:gap-4">
-											<div className="p-2.5 sm:p-3 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-600 shadow-lg">
-												<Send className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-											</div>
-											<h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 dark:text-slate-50">
+										<div className="flex flex-wrap items-center gap-3 sm:gap-4">
+											<span className={PAGE_ICON_CHIP}>
+												<Send className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden />
+											</span>
+											<h2 className="text-2xl font-semibold text-foreground sm:text-3xl md:text-4xl">
 												Send a Message
 											</h2>
 										</div>
-										<p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 ml-0 sm:ml-14 leading-relaxed">
-											Fill out the form below and I'll get back to you within 24 hours. All fields marked with * are required.
+										<p className="text-sm leading-relaxed text-muted-foreground sm:ml-[3.5rem] sm:text-base">
+											Fill out the form below and I&apos;ll get back to you within 24 hours. All fields marked with * are required.
 										</p>
 									</div>
 
@@ -594,7 +582,7 @@ export default function ContactUsForm() {
             type="submit"
 													whileHover={{ scale: 1.02, y: -2 }}
 													whileTap={{ scale: 0.98 }}
-													className="flex items-center justify-center gap-3 w-full rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 px-6 sm:px-8 py-4 sm:py-5 text-center text-sm sm:text-base font-bold text-white shadow-xl hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition-all duration-300"
+													className="flex w-full items-center justify-center gap-3 rounded-xl bg-amber-600 px-6 py-4 text-center text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:bg-amber-700 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:px-8 sm:py-5 sm:text-base dark:bg-amber-600 dark:hover:bg-amber-500"
 												>
 													<Send className="h-5 w-5 sm:h-6 sm:w-6" />
 													Send Message

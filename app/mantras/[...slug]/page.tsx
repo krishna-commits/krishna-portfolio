@@ -1,9 +1,9 @@
-
 import { notFound } from "next/navigation"
 import { allMantras } from "contentlayer/generated"
 
 import { Metadata } from "next"
 import { Mdx } from "app/components/mdx"
+import { generatePageMetadata } from "app/metadata"
 
 interface PostProps {
   params: {
@@ -15,7 +15,7 @@ async function getPostFromParams(params: PostProps["params"]) {
   const slug = params?.slug?.join("/")
   const post = allMantras.find((post) => post.slugAsParams === slug)
   if (!post) {
-    null
+    return null
   }
   return post
 }
@@ -27,10 +27,12 @@ export async function generateMetadata({
   if (!post) {
     return {}
   }
-  return {
+  return generatePageMetadata({
     title: post.title,
     description: post.description,
-  }
+    path: post.url,
+    keywords: post.keywords,
+  })
 }
 
 export async function generateStaticParams(): Promise<PostProps["params"][]> {
@@ -48,6 +50,15 @@ export default async function PostPage({ params }: PostProps) {
     <div className="mx-auto max-w-5xl">
     <article className="py-6 prose dark:prose-invert max-w-6xl mb-10">
       <h1 className="mb-2">{post.title}</h1>
+      {post.date && (
+        <p className="text-sm not-prose text-slate-500 dark:text-slate-400 mt-1 mb-0">
+          {new Date(post.date).toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}
+        </p>
+      )}
       {post.description && (
         <p className="text-xl mt-0 text-slate-700 dark:text-slate-200">
           {post.description}

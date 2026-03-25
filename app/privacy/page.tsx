@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { generatePageMetadata } from "../metadata"
 import { siteConfig } from "config/site"
+import { PAGE_CARD, PAGE_H1, PAGE_SHELL_NARROW } from "lib/page-layout"
 
 export const metadata: Metadata = generatePageMetadata({
 	title: "Privacy Policy",
@@ -17,10 +18,10 @@ export default function PrivacyPage() {
 	).origin
 
 	return (
-		<div className="min-h-screen bg-white dark:bg-slate-950">
-			<div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-				<p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-					<Link href="/" className="text-blue-600 hover:underline dark:text-blue-400">
+		<div className="min-h-screen bg-background">
+			<div className={PAGE_SHELL_NARROW}>
+				<p className="text-sm font-medium text-muted-foreground">
+					<Link href="/" className="text-primary hover:underline">
 						Home
 					</Link>
 					<span className="mx-2" aria-hidden>
@@ -28,14 +29,14 @@ export default function PrivacyPage() {
 					</span>
 					Privacy
 				</p>
-				<h1 className="mt-4 text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-50 sm:text-4xl">
-					Privacy Policy
-				</h1>
-				<p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+				<h1 className={`mt-4 ${PAGE_H1}`}>Privacy Policy</h1>
+				<p className="mt-2 text-sm text-muted-foreground">
 					Last updated: {new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
 				</p>
 
-				<div className="prose prose-slate dark:prose-invert mt-10 max-w-none prose-headings:scroll-mt-24 prose-a:text-blue-600 dark:prose-a:text-blue-400">
+				<div
+					className={`prose prose-slate dark:prose-invert mt-10 max-w-none prose-headings:scroll-mt-24 prose-a:text-primary ${PAGE_CARD} p-8 sm:p-10`}
+				>
 					<p>
 						This policy describes how personal information is handled when you visit{" "}
 						<a href={siteUrl}>{siteUrl.replace(/^https?:\/\//, "")}</a> (the &quot;Site&quot;), operated by{" "}

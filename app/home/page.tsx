@@ -117,16 +117,16 @@ export default function HomePage() {
 				dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
 			/>
 			
-			<div className="min-h-screen w-full bg-white dark:bg-slate-950 relative">
+			<div className="min-h-screen w-full bg-background relative">
 				{/* Hero Section - DevSecOps/Cybersecurity Focused */}
 				<HeroSection />
 
 				{/* Main Content - Clean, spacious layout */}
 				<main className="w-full relative" role="main" aria-label="Main content">
 					{/* Impact Metrics */}
-					<section id="stats-heading" className="relative w-full scroll-mt-24 py-2 sm:py-3 lg:py-4" aria-labelledby="stats-heading">
+					<section id="stats-heading" className="relative w-full scroll-mt-24 py-12 md:py-16" aria-labelledby="stats-heading">
 						<div className="relative w-full">
-							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
+							<div className="w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
 								<ScrollAnimation variant="fade">
 									<StatsSection />
 								</ScrollAnimation>
@@ -135,9 +135,9 @@ export default function HomePage() {
 					</section>
 
 					{/* Technology Stack - Moved Up */}
-					<section id="skills" className="relative w-full scroll-mt-24 py-6 sm:py-8 lg:py-10 bg-slate-50/30 dark:bg-slate-900/30 bg-gradient-mesh bg-noise" aria-labelledby="skills-heading">
+					<section id="skills" className="relative w-full scroll-mt-24 py-12 md:py-16 bg-gradient-to-b from-slate-100/80 via-background to-background dark:from-slate-900/50 dark:via-background dark:to-background border-y border-border" aria-labelledby="technology-stack-heading">
 						<div className="relative w-full">
-							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
+							<div className="w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
 								<ScrollAnimation variant="slide-up" delay={0.1}>
 									<SkillsShowcase />
 								</ScrollAnimation>
@@ -146,36 +146,36 @@ export default function HomePage() {
 					</section>
 
 					{/* Background (Education & Experience) - Moved Up */}
-					<section id="education-heading" className="relative w-full scroll-mt-24 py-6 sm:py-8 lg:py-10" aria-labelledby="education-heading">
+					<section id="education-heading" className="relative w-full scroll-mt-24 py-12 md:py-16" aria-labelledby="education-heading">
 						<div className="relative w-full">
-							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
+							<div className="w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
 								<EducationExperience />
 							</div>
 						</div>
 					</section>
 
 					{/* Certifications */}
-					<section className="relative w-full scroll-mt-24 py-6 sm:py-8 lg:py-10" aria-labelledby="certifications-heading">
+					<section className="relative w-full scroll-mt-24 py-12 md:py-16" aria-labelledby="certifications-heading">
 						<div className="relative w-full">
-							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
+							<div className="w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
 								<Certifications />
 							</div>
 						</div>
 					</section>
 
 					{/* Security-First Approach */}
-					<section id="security" className="relative w-full scroll-mt-24 py-6 sm:py-8 lg:py-10" aria-labelledby="security-heading">
+					<section id="security" className="relative w-full scroll-mt-24 py-12 md:py-16" aria-labelledby="security-heading">
 						<div className="relative w-full">
-							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
+							<div className="w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
 								<SecurityFirstApproach />
 							</div>
 						</div>
 					</section>
 
 					{/* Featured Projects */}
-					<section id="projects" className="relative w-full scroll-mt-24 py-6 sm:py-8 lg:py-10 bg-slate-50/30 dark:bg-slate-900/30 bg-gradient-mesh" aria-labelledby="projects-heading">
+					<section id="projects" className="relative w-full scroll-mt-24 py-12 md:py-16 bg-muted/40 dark:bg-muted/20" aria-labelledby="projects-heading">
 						<div className="relative w-full">
-							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
+							<div className="w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
 								<ErrorBoundary>
 									<Suspense fallback={
 										<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -194,9 +194,9 @@ export default function HomePage() {
 					</section>
 
 					{/* GitHub Contribution Graph */}
-					<section className="relative w-full py-6 sm:py-8 lg:py-10 bg-slate-50/30 dark:bg-slate-900/30" aria-labelledby="github-contributions-heading">
+					<section className="relative w-full py-12 md:py-16 bg-muted/40 dark:bg-muted/20" aria-labelledby="github-contributions-heading">
 						<div className="relative w-full">
-							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
+							<div className="w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
 								<ErrorBoundary>
 									<Suspense fallback={<GitHubMetricsSkeleton />}>
 										<GitHubContributionGraph />
@@ -207,45 +207,45 @@ export default function HomePage() {
 					</section>
 
 					{/* GitHub */}
-					<section className="relative w-full py-6 sm:py-8 lg:py-10" aria-labelledby="github-heading">
+					<section className="relative w-full py-12 md:py-16" aria-labelledby="github-heading">
 						<div className="relative w-full">
-							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
+							<div className="w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
 								<GitHubContributions />
 							</div>
 						</div>
 					</section>
 
 					{/* Recommendations */}
-					<section className="relative w-full py-6 sm:py-8 lg:py-10 bg-slate-50/30 dark:bg-slate-900/30" aria-labelledby="recommendations-heading">
+					<section className="relative w-full py-12 md:py-16 bg-muted/40 dark:bg-muted/20" aria-labelledby="recommendations-heading">
 						<div className="relative w-full">
-							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
+							<div className="w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
 								<LinkedInRecommendations />
 							</div>
 						</div>
 					</section>
 
 					{/* Newsletter */}
-					<section className="relative w-full py-6 sm:py-8 lg:py-10" aria-labelledby="newsletter-heading">
+					<section className="relative w-full py-12 md:py-16" aria-labelledby="newsletter-heading">
 						<div className="relative w-full">
-							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
+							<div className="w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
 								<Newsletter />
 							</div>
 						</div>
 					</section>
 
 					{/* Hobbies */}
-					<section className="relative w-full py-6 sm:py-8 lg:py-10" aria-labelledby="hobbies-heading">
+					<section className="relative w-full py-12 md:py-16" aria-labelledby="hobbies-heading">
 						<div className="relative w-full">
-							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
+							<div className="w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
 								<HobbiesSection />
 							</div>
 						</div>
 					</section>
 
 					{/* Social Links */}
-					<section className="relative w-full py-6 sm:py-8 lg:py-10 bg-slate-50/30 dark:bg-slate-900/30" aria-labelledby="social-heading">
+					<section className="relative w-full py-12 md:py-16 bg-muted/40 dark:bg-muted/20" aria-labelledby="social-heading">
 						<div className="relative w-full">
-							<div className="w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 max-w-7xl">
+							<div className="w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
 								<SocialLinks />
 							</div>
 						</div>

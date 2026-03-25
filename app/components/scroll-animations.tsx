@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState, ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { motion, useInView, useScroll, useTransform, useSpring } from 'framer-motion'
 import { cn } from 'app/theme/lib/utils'
 
@@ -21,6 +21,19 @@ export function ScrollAnimation({
 }: ScrollAnimationProps) {
 	const ref = useRef(null)
 	const isInView = useInView(ref, { once: true, margin: '-100px' })
+	const [reduceMotion, setReduceMotion] = useState(false)
+
+	useEffect(() => {
+		const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+		setReduceMotion(mq.matches)
+		const fn = () => setReduceMotion(mq.matches)
+		mq.addEventListener('change', fn)
+		return () => mq.removeEventListener('change', fn)
+	}, [])
+
+	if (reduceMotion) {
+		return <div ref={ref} className={className}>{children}</div>
+	}
 
 	const variants = {
 		fade: {

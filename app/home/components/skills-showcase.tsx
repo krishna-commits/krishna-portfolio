@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useMemo, useCallback, memo, useRef, useEffect } from "react"
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion"
+import { useState, useMemo, useCallback, memo, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { siteConfig } from "config/site"
 import Image from "next/image"
-import { Code, Cloud, Database, Settings, Server, GitBranch, Zap, Shield, Container, Monitor, Search, X, Sparkles, Network, TrendingUp, Layers, Grid, List, BarChart3, ChevronDown, ChevronUp } from "lucide-react"
+import { Code, Cloud, Database, Settings, Server, GitBranch, Zap, Shield, Container, Monitor, Search, X, Network, Layers, Grid, List, ChevronDown, ChevronUp } from "lucide-react"
 import { cn } from "app/theme/lib/utils"
 import { Badge } from "app/theme/components/ui/badge"
 
@@ -67,7 +67,7 @@ const categories: Category[] = [
 	{ 
 		name: "Security Tools and Practices", 
 		icon: Shield, 
-		keywords: ["Sonarcloud", "Sonarqube", "1passsword", "Vault", "Cloudflare"], 
+		keywords: ["Sonarcloud", "Sonarqube", "1Password", "Vault", "Cloudflare"], 
 		gradient: "from-red-500 to-orange-500",
 		bgGradient: "from-red-50 to-orange-50 dark:from-red-950/20 dark:to-orange-950/20",
 		particleColor: "rgba(239, 68, 68, 0.25)",
@@ -76,7 +76,7 @@ const categories: Category[] = [
 	{ 
 		name: "Ci/Cd Code Repository", 
 		icon: Settings, 
-		keywords: ["Github Action", "Jenkins", "Gitlab pipelines", "Bitbucket Pipelines", "AWS CodeBuild", "AWS Codepipeline"], 
+		keywords: ["GitHub Actions", "Jenkins", "Gitlab pipelines", "Bitbucket Pipelines", "AWS CodeBuild", "AWS Codepipeline"], 
 		gradient: "from-amber-500 to-yellow-500",
 		bgGradient: "from-amber-50 to-yellow-50 dark:from-amber-950/20 dark:to-yellow-950/20",
 		particleColor: "rgba(245, 158, 11, 0.25)",
@@ -166,6 +166,13 @@ export const SkillsShowcase = memo(function SkillsShowcase() {
 		return () => mediaQuery.removeEventListener('change', handleChange)
 	}, [])
 
+	/* Calmer default on first paint for small screens */
+	useEffect(() => {
+		if (typeof window !== "undefined" && window.matchMedia("(max-width: 639px)").matches) {
+			setViewMode("compact")
+		}
+	}, [])
+
 	const categorizeSkill = useCallback((skillName: string): string => {
 		const lowerName = skillName.toLowerCase()
 		for (const category of categories) {
@@ -249,7 +256,8 @@ export const SkillsShowcase = memo(function SkillsShowcase() {
 	}, [categorizedSkills])
 
 	return (
-		<section id="technology-stack" className="relative w-full py-6 sm:py-8 lg:py-10" aria-label="Technology stack">
+		<section id="technology-stack" className="relative w-full" aria-labelledby="technology-stack-heading">
+			<div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-card shadow-sm p-4 sm:p-6 md:p-8">
 			{/* Header */}
 			<motion.div
 				initial={{ opacity: 0, y: 20 }}
@@ -261,59 +269,58 @@ export const SkillsShowcase = memo(function SkillsShowcase() {
 				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-5 mb-4 sm:mb-5">
 					<div className="space-y-2 sm:space-y-3">
 						<div className="inline-flex items-center gap-2 sm:gap-3">
-							<motion.div
-								animate={prefersReducedMotion ? {} : { rotate: [0, 360] }}
-								transition={prefersReducedMotion ? {} : { duration: 20, repeat: Infinity, ease: "linear" }}
-								className="p-2 sm:p-2.5 md:p-3 rounded-lg bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-500 shadow-lg"
-							>
-								<Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-							</motion.div>
-							<h2 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
+							<div className="p-2.5 rounded-xl bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-200 border border-amber-200/80 dark:border-amber-800/50">
+								<Layers className="h-5 w-5" aria-hidden />
+							</div>
+							<h2 id="technology-stack-heading" className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-50">
 								Technology Stack
 							</h2>
 						</div>
-						<p className="text-sm sm:text-base md:text-lg text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
+						<p className="text-sm sm:text-base text-muted-foreground max-w-prose leading-relaxed">
 							DevSecOps tools and security technologies I use to build, secure, and monitor cloud infrastructure from code to production
 						</p>
 					</div>
 					<div className="flex items-center gap-3">
 						{/* View Mode Toggle */}
-						<div className="flex items-center gap-1 p-1 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+						<div className="flex items-center gap-1 p-1 rounded-xl bg-muted/60 dark:bg-muted/30 border border-border">
 							<button
+								type="button"
 								onClick={() => setViewMode('grid')}
 								className={cn(
-									"p-1.5 rounded-md transition-all duration-200",
+									"inline-flex items-center justify-center min-h-11 min-w-11 sm:min-h-10 sm:min-w-10 rounded-lg transition-colors duration-200",
 									viewMode === 'grid'
-										? "bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-50 shadow-sm"
-										: "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-50"
+										? "bg-card text-foreground shadow-sm border border-border"
+										: "text-muted-foreground hover:text-foreground"
 								)}
 								aria-label="Grid view"
 							>
-								<Grid className="h-3 w-3 sm:h-4 sm:w-4" />
+								<Grid className="h-4 w-4" />
 							</button>
 							<button
+								type="button"
 								onClick={() => setViewMode('compact')}
 								className={cn(
-									"p-1.5 rounded-md transition-all duration-200",
+									"inline-flex items-center justify-center min-h-11 min-w-11 sm:min-h-10 sm:min-w-10 rounded-lg transition-colors duration-200",
 									viewMode === 'compact'
-										? "bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-50 shadow-sm"
-										: "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-50"
+										? "bg-card text-foreground shadow-sm border border-border"
+										: "text-muted-foreground hover:text-foreground"
 								)}
 								aria-label="Compact view"
 							>
-								<Layers className="h-3 w-3 sm:h-4 sm:w-4" />
+								<Layers className="h-4 w-4" />
 							</button>
 							<button
+								type="button"
 								onClick={() => setViewMode('list')}
 								className={cn(
-									"p-1.5 rounded-md transition-all duration-200",
+									"inline-flex items-center justify-center min-h-11 min-w-11 sm:min-h-10 sm:min-w-10 rounded-lg transition-colors duration-200",
 									viewMode === 'list'
-										? "bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-50 shadow-sm"
-										: "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-50"
+										? "bg-card text-foreground shadow-sm border border-border"
+										: "text-muted-foreground hover:text-foreground"
 								)}
 								aria-label="List view"
 							>
-								<List className="h-3 w-3 sm:h-4 sm:w-4" />
+								<List className="h-4 w-4" />
 							</button>
 						</div>
 						{/* Total Count Badge */}
@@ -322,10 +329,10 @@ export const SkillsShowcase = memo(function SkillsShowcase() {
 							whileInView={{ opacity: 1, scale: 1 }}
 							viewport={{ once: true }}
 							transition={{ delay: 0.2 }}
-							className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-950/20 dark:to-amber-950/20 border border-yellow-200 dark:border-yellow-800 shadow-md"
+							className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl border border-border bg-card shadow-sm"
 						>
-							<div className="p-1 rounded-md bg-gradient-to-br from-yellow-400 to-amber-500 shadow-sm">
-								<Zap className="h-3 w-3 text-white" />
+							<div className="p-1 rounded-md bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300">
+								<Zap className="h-3.5 w-3.5" />
 							</div>
 							<div className="flex flex-col">
 								<span className="text-sm font-bold text-slate-900 dark:text-slate-50 leading-none">{allSkills.length}</span>
@@ -350,7 +357,7 @@ export const SkillsShowcase = memo(function SkillsShowcase() {
 							placeholder="Search technologies..."
 							value={searchQuery}
 							onChange={(e) => setSearchQuery(e.target.value)}
-							className="w-full pl-10 pr-9 sm:pl-12 sm:pr-10 py-2.5 sm:py-3 text-sm sm:text-base rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400 transition-all duration-200 shadow-sm hover:shadow touch-target"
+							className="w-full pl-10 pr-9 sm:pl-12 sm:pr-10 py-3 sm:py-3 text-sm sm:text-base rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/80 focus-visible:ring-offset-2 focus-visible:ring-offset-background min-h-11 shadow-sm"
 						/>
 						{searchQuery && (
 							<button
@@ -373,14 +380,15 @@ export const SkillsShowcase = memo(function SkillsShowcase() {
 				>
 					<div className="flex flex-wrap gap-2 sm:gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1 sm:mx-0 sm:px-0">
 						<motion.button
-							whileHover={{ scale: 1.02 }}
-							whileTap={{ scale: 0.98 }}
+							type="button"
+							whileHover={prefersReducedMotion ? undefined : { scale: 1.01 }}
+							whileTap={prefersReducedMotion ? undefined : { scale: 0.99 }}
 							onClick={() => handleCategoryChange(null)}
 							className={cn(
-								"px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold transition-all duration-200 border rounded-lg shadow-sm hover:shadow relative overflow-hidden whitespace-nowrap touch-target",
+								"px-3 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold transition-colors duration-200 border rounded-xl shadow-sm whitespace-nowrap min-h-11 inline-flex items-center",
 								selectedCategory === null
-									? "bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 text-white border-transparent shadow-md"
-									: "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800"
+									? "bg-amber-600 text-white border-amber-600 dark:bg-amber-600 dark:border-amber-500"
+									: "bg-card text-muted-foreground border-border hover:bg-muted/60"
 							)}
 						>
 							<span className="relative flex items-center gap-1.5">
@@ -403,29 +411,23 @@ export const SkillsShowcase = memo(function SkillsShowcase() {
 							const skillCount = categorizedSkills[categoryName]?.length || 0
 							return (
 								<motion.button
+									type="button"
 									key={categoryName}
-									whileHover={{ scale: 1.02, y: -2 }}
-									whileTap={{ scale: 0.98 }}
+									whileHover={prefersReducedMotion ? undefined : { scale: 1.01 }}
+									whileTap={prefersReducedMotion ? undefined : { scale: 0.99 }}
 									onClick={() => handleCategoryChange(categoryName)}
-									initial={{ opacity: 0, y: 10 }}
-									animate={{ opacity: 1, y: 0 }}
+									initial={prefersReducedMotion ? false : { opacity: 0, y: 6 }}
+									animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
 									transition={{ delay: idx * 0.02 }}
 									className={cn(
-										"px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold transition-all duration-200 border rounded-lg shadow-sm hover:shadow-md flex items-center gap-1.5 sm:gap-2 relative overflow-hidden whitespace-nowrap touch-target",
+										"px-3 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold transition-colors duration-200 border rounded-xl shadow-sm flex items-center gap-1.5 sm:gap-2 whitespace-nowrap min-h-11",
 										selectedCategory === categoryName
-											? `bg-gradient-to-r ${category.gradient} text-white border-transparent shadow-lg`
-											: "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800"
+											? "bg-amber-600 text-white border-amber-600 dark:bg-amber-600"
+											: "bg-card text-muted-foreground border-border hover:bg-muted/60"
 									)}
 								>
-									{selectedCategory === categoryName && (
-										<motion.div
-											layoutId="activeCategory"
-											className={`absolute inset-0 bg-gradient-to-r ${category.gradient} rounded-lg`}
-											transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
-										/>
-									)}
-									<Icon className="h-3 w-3 flex-shrink-0 relative z-10" />
-									<span className="relative z-10">{categoryName}</span>
+									<Icon className="h-3.5 w-3.5 flex-shrink-0" />
+									<span>{categoryName}</span>
 									<Badge variant="secondary" className={cn(
 										"text-xs font-bold px-1.5 py-0 relative z-10",
 										selectedCategory === categoryName
@@ -519,6 +521,7 @@ export const SkillsShowcase = memo(function SkillsShowcase() {
 													onHoverStart={() => setHoveredSkill(skill.name)}
 													onHoverEnd={() => setHoveredSkill(null)}
 													viewMode={viewMode}
+													prefersReducedMotion={prefersReducedMotion}
 												/>
 											))}
 										</AnimatePresence>
@@ -557,20 +560,22 @@ export const SkillsShowcase = memo(function SkillsShowcase() {
 					</motion.div>
 				)}
 			</AnimatePresence>
+			</div>
 		</section>
 	)
 })
 
-// Enhanced Skill Card with impressive animations
-const SkillCard = memo(function SkillCard({ 
-	skill, 
-	index, 
+// Skill cards: single surface style (border + soft shadow), minimal motion
+const SkillCard = memo(function SkillCard({
+	skill,
+	index,
 	category,
 	isHovered,
 	onHoverStart,
 	onHoverEnd,
-	viewMode
-}: { 
+	viewMode,
+	prefersReducedMotion,
+}: {
 	skill: any
 	index: number
 	category?: Category
@@ -578,249 +583,78 @@ const SkillCard = memo(function SkillCard({
 	onHoverStart: () => void
 	onHoverEnd: () => void
 	viewMode: ViewMode
+	prefersReducedMotion: boolean
 }) {
 	const [imageError, setImageError] = useState(false)
-	const [rotation, setRotation] = useState({ x: 0, y: 0 })
-	const cardRef = useRef<HTMLDivElement>(null)
-	const mouseX = useMotionValue(0)
-	const mouseY = useMotionValue(0)
-
-	const categoryGradient = useMemo(() => category?.gradient || "from-slate-600 to-slate-700", [category])
-	const categoryBgGradient = useMemo(() => category?.bgGradient || "from-slate-50 to-slate-100 dark:from-slate-900/20 dark:to-slate-800/20", [category])
-	const categoryColor = useMemo(() => category?.color || "#64748b", [category])
-
-	const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-		if (!cardRef.current || !isHovered) return
-		const rect = cardRef.current.getBoundingClientRect()
-		const x = e.clientX - rect.left
-		const y = e.clientY - rect.top
-		const centerX = rect.width / 2
-		const centerY = rect.height / 2
-		mouseX.set((x - centerX) / centerX)
-		mouseY.set((y - centerY) / centerY)
-		const rotateX = ((y - centerY) / centerY) * -8
-		const rotateY = ((x - centerX) / centerX) * 8
-		setRotation({ x: rotateX, y: rotateY })
-	}, [isHovered, mouseX, mouseY])
-
-	const handleMouseLeave = useCallback(() => {
-		setRotation({ x: 0, y: 0 })
-		mouseX.set(0)
-		mouseY.set(0)
-		onHoverEnd()
-	}, [onHoverEnd, mouseX, mouseY])
-
-	const springConfig = { stiffness: 300, damping: 30 }
-	const rotateX = useSpring(useTransform(mouseY, [-1, 1], [8, -8]), springConfig)
-	const rotateY = useSpring(useTransform(mouseX, [-1, 1], [-8, 8]), springConfig)
+	const categoryBgGradient = useMemo(
+		() => category?.bgGradient || "from-slate-50 to-slate-100 dark:from-slate-900/40 dark:to-slate-800/40",
+		[category]
+	)
 
 	return (
 		<motion.div
-			ref={cardRef}
-			initial={{ opacity: 0, scale: 0.8, y: 20 }}
-			animate={{ opacity: 1, scale: 1, y: 0 }}
-			transition={{ 
-				delay: index * 0.02, 
-				duration: 0.4, 
-				ease: [0.21, 1.11, 0.81, 0.99] 
-			}}
-			whileHover={{ 
-				y: viewMode === 'compact' ? -4 : -8, 
-				scale: viewMode === 'compact' ? 1.05 : 1.1,
-				transition: { duration: 0.3 }
-			}}
-			onMouseMove={handleMouseMove}
+			initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
+			animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+			transition={{ delay: index * 0.015, duration: prefersReducedMotion ? 0 : 0.35 }}
+			whileHover={prefersReducedMotion ? undefined : { y: -2 }}
 			onMouseEnter={onHoverStart}
-			onMouseLeave={handleMouseLeave}
-			className="group relative"
-			style={{
-				perspective: "1000px",
-			}}
+			onMouseLeave={onHoverEnd}
+			className="group"
 		>
-			{/* Glow effect on hover */}
-			{isHovered && category && (
-				<motion.div
-					initial={{ opacity: 0, scale: 0.8 }}
-					animate={{ opacity: 0.4, scale: 1.2 }}
-					exit={{ opacity: 0, scale: 0.8 }}
-					className={`absolute -inset-1.5 bg-gradient-to-br ${categoryGradient} rounded-xl blur-xl opacity-30 -z-10`}
-				/>
-			)}
-
-			{/* Animated border gradient */}
-			{isHovered && category && (
-				<motion.div
-					initial={{ opacity: 0 }}
-					animate={{ opacity: 1 }}
-					exit={{ opacity: 0 }}
-					className={`absolute -inset-0.5 bg-gradient-to-br ${categoryGradient} rounded-xl blur-sm opacity-60 -z-10`}
-				/>
-			)}
-			
-			<motion.div
-				style={{
-					rotateX: isHovered ? rotateX : 0,
-					rotateY: isHovered ? rotateY : 0,
-					transformStyle: "preserve-3d",
-				}}
+			<div
 				className={cn(
-					"relative overflow-hidden rounded-lg border bg-white dark:bg-slate-900 p-2 sm:p-3 flex flex-col items-center justify-center gap-2 transition-all duration-200 cursor-pointer",
-					category
-						? `border-slate-200 dark:border-slate-800 group-hover:border-transparent bg-gradient-to-br ${categoryBgGradient}`
-						: "border-slate-200 dark:border-slate-800 group-hover:border-slate-300 dark:group-hover:border-slate-700",
-					"group-hover:shadow-xl group-hover:shadow-slate-200/50 dark:group-hover:shadow-slate-900/50",
-					viewMode === 'compact' && "aspect-square p-2",
-					viewMode === 'grid' && "aspect-square",
-					viewMode === 'list' && "aspect-square"
+					"relative flex flex-col items-center justify-center gap-2 overflow-hidden rounded-2xl border border-border bg-card p-2 sm:p-3 shadow-sm transition-shadow duration-200 hover:shadow-md",
+					category && `bg-gradient-to-br ${categoryBgGradient}`,
+					viewMode === "compact" && "aspect-square p-2",
+					(viewMode === "grid" || viewMode === "list") && "aspect-square"
 				)}
 			>
-				{/* Animated gradient overlay on hover */}
-				{isHovered && category && (
-					<motion.div
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 0.15 }}
-						exit={{ opacity: 0 }}
-						className={`absolute inset-0 bg-gradient-to-br ${categoryGradient} rounded-lg`}
-					/>
-				)}
-
-				{/* Animated particles around skill on hover */}
-				{isHovered && category && viewMode !== 'compact' && (
-					<div className="absolute inset-0 pointer-events-none overflow-hidden rounded-lg">
-						{Array.from({ length: 6 }).map((_, i) => (
-							<motion.div
-								key={i}
-								initial={{ opacity: 0, scale: 0, x: "50%", y: "50%" }}
-								animate={{
-									opacity: [0, 1, 0],
-									scale: [0, 1.2, 0],
-									x: `calc(50% + ${Math.cos((i * Math.PI * 2) / 6) * 30}px)`,
-									y: `calc(50% + ${Math.sin((i * Math.PI * 2) / 6) * 30}px)`,
-								}}
-								transition={{
-									duration: 2,
-									repeat: Infinity,
-									delay: i * 0.15,
-									ease: "easeOut",
-								}}
-								className="absolute w-1.5 h-1.5 rounded-full"
-								style={{
-									background: categoryColor,
-									boxShadow: `0 0 8px ${categoryColor}`,
-								}}
-							/>
-						))}
-					</div>
-				)}
-				
-				{/* Skill Image or Fallback */}
 				<div className="relative z-10">
 					{skill.imageUrl && !imageError ? (
-						<motion.div
-							animate={isHovered ? { 
-								scale: viewMode === 'compact' ? 1.1 : 1.2,
-								rotate: viewMode === 'compact' ? 0 : [0, 5, -5, 0],
-							} : { scale: 1 }}
-							transition={{ duration: 0.3 }}
+						<div
 							className={cn(
 								"relative flex items-center justify-center",
-								viewMode === 'compact' ? "w-8 h-8 sm:w-10 sm:h-10" : "w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14"
+								viewMode === "compact"
+									? "h-8 w-8 sm:h-10 sm:w-10"
+									: "h-10 w-10 sm:h-12 sm:h-12 md:h-14 md:w-14"
 							)}
 						>
 							<Image
 								src={skill.imageUrl}
 								alt={skill.name}
-								width={viewMode === 'compact' ? 40 : 56}
-								height={viewMode === 'compact' ? 40 : 56}
-								className="object-contain opacity-90 group-hover:opacity-100 transition-all duration-200"
+								width={viewMode === "compact" ? 40 : 56}
+								height={viewMode === "compact" ? 40 : 56}
+								unoptimized
+								className="object-contain opacity-90 transition-opacity duration-200 group-hover:opacity-100"
 								onError={() => setImageError(true)}
 							/>
-							{/* Glow effect on image */}
-							{isHovered && category && (
-								<motion.div
-									initial={{ opacity: 0, scale: 0.9 }}
-									animate={{ opacity: 0.5, scale: 1.15 }}
-									exit={{ opacity: 0, scale: 0.9 }}
-									className={`absolute inset-0 bg-gradient-to-br ${categoryGradient} rounded-full blur-lg -z-10`}
-								/>
-							)}
-						</motion.div>
+						</div>
 					) : (
-						<motion.div
-							animate={isHovered ? { 
-								scale: viewMode === 'compact' ? 1.1 : 1.2,
-								rotate: viewMode === 'compact' ? 0 : [0, 5, -5, 0],
-							} : { scale: 1 }}
-							transition={{ duration: 0.3 }}
+						<div
 							className={cn(
-								"rounded-lg flex items-center justify-center shadow-md transition-all duration-200 relative overflow-hidden",
-								category
-									? `bg-gradient-to-br ${categoryGradient}`
-									: "bg-slate-200 dark:bg-slate-800",
-								viewMode === 'compact' ? "w-8 h-8 sm:w-10 sm:h-10" : "w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14"
+								"flex items-center justify-center rounded-xl border border-border bg-muted font-semibold text-muted-foreground",
+								viewMode === "compact"
+									? "h-8 w-8 sm:h-10 sm:w-10 text-sm sm:text-base"
+									: "h-10 w-10 sm:h-12 sm:text-lg md:h-14 md:w-14"
 							)}
 						>
-							{/* Animated gradient background */}
-							{isHovered && category && (
-								<motion.div
-									animate={{
-										backgroundPosition: ["0% 0%", "100% 100%"],
-									}}
-									transition={{
-										duration: 2,
-										repeat: Infinity,
-										repeatType: "reverse",
-									}}
-									className={`absolute inset-0 bg-gradient-to-br ${categoryGradient} opacity-60`}
-								/>
-							)}
-							<span className={cn(
-								"font-bold transition-colors duration-200 relative z-10",
-								category
-									? "text-white"
-									: "text-slate-700 dark:text-slate-200",
-								viewMode === 'compact' ? "text-sm sm:text-base" : "text-base sm:text-lg md:text-xl"
-							)}>
-								{skill.name.charAt(0).toUpperCase()}
-							</span>
-						</motion.div>
+							{skill.name.charAt(0).toUpperCase()}
+						</div>
 					)}
 				</div>
-				
-				{/* Skill Name - Only show in grid and list mode */}
-				{(viewMode === 'grid' || viewMode === 'list') && (
+				{(viewMode === "grid" || viewMode === "list") && (
 					<div className="relative z-10 w-full">
-						<span className={cn(
-							"text-center font-medium leading-tight line-clamp-2 transition-colors duration-200 relative block",
-							category
-								? "text-slate-900 dark:text-slate-50"
-								: "text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-slate-50",
-							viewMode === 'list' ? "text-xs sm:text-sm" : "text-xs"
-						)}>
-							{skill.name}
-							{isHovered && category && (
-								<motion.div
-									initial={{ width: 0 }}
-									animate={{ width: "100%" }}
-									exit={{ width: 0 }}
-									className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r ${categoryGradient} rounded-full`}
-								/>
+						<span
+							className={cn(
+								"line-clamp-2 block text-center font-medium leading-tight text-foreground",
+								viewMode === "list" ? "text-xs sm:text-sm" : "text-xs"
 							)}
+						>
+							{skill.name}
 						</span>
 					</div>
 				)}
-				
-				{/* Hover indicator - animated dot */}
-				{isHovered && category && viewMode !== 'compact' && (
-					<motion.div
-						initial={{ scale: 0, opacity: 0 }}
-						animate={{ scale: [1, 1.2, 1], opacity: [1, 0.8, 1] }}
-						exit={{ scale: 0, opacity: 0 }}
-						transition={{ duration: 1.5, repeat: Infinity }}
-						className={`absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-gradient-to-br ${categoryGradient} rounded-full shadow-md z-20`}
-					/>
-				)}
-			</motion.div>
+			</div>
 		</motion.div>
 	)
 }, (prevProps, nextProps) => {
@@ -829,6 +663,7 @@ const SkillCard = memo(function SkillCard({
 		prevProps.index === nextProps.index &&
 		prevProps.category?.name === nextProps.category?.name &&
 		prevProps.isHovered === nextProps.isHovered &&
-		prevProps.viewMode === nextProps.viewMode
+		prevProps.viewMode === nextProps.viewMode &&
+		prevProps.prefersReducedMotion === nextProps.prefersReducedMotion
 	)
 })

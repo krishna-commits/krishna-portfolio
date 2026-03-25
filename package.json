@@ -56,7 +56,6 @@
     "contentlayer": "^0.3.4",
     "dotenv": "^16.3.1",
     "framer-motion": "^10.16.5",
-    "fs": "0.0.1-security",
     "geist": "1.1.0",
     "gsap": "^3.13.0",
     "jose": "^6.1.1",

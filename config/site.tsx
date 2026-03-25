@@ -1,7 +1,7 @@
 export const siteConfig = {
   name: "Krishna Neupane",
   title: "कृष्ण",
-  url: "https://Krishnaneupane.com",
+  url: "https://krishnaneupane.com",
   links: {
     orcid: "https://orcid.org/0009-0004-7787-1573",
     researchgate: "https://www.researchgate.net/profile/Krishna-Neupane",
@@ -228,7 +228,7 @@ export const siteConfig = {
     },
     {
       name: 'Bash',
-      imageUrl: 'https://cdn.simpleicons.org/gnubash/4EAA25',
+      imageUrl: '/gnubash.svg',
     },
     // Version Control
     {
@@ -271,7 +271,7 @@ export const siteConfig = {
     },
     {
       name: 'Heroku',
-      imageUrl: 'https://cdn.simpleicons.org/heroku/430098',
+      imageUrl: '/heroku.svg',
     },
     // Database Management
     {
@@ -284,7 +284,7 @@ export const siteConfig = {
     },
     {
       name: 'MongoDB',
-      imageUrl: 'https://cdn.simpleicons.org/mongodb/47A248',
+      imageUrl: '/mongodb.svg',
     },
     {
       name: 'Dynamo DB',
@@ -297,28 +297,28 @@ export const siteConfig = {
     // Security Tools and Practices
     {
       name: 'Sonarcloud',
-      imageUrl: 'https://cdn.simpleicons.org/sonarsource/F3702A',
+      imageUrl: '/sonarcloud.svg',
     },
     {
       name: 'Sonarqube',
-      imageUrl: 'https://cdn.simpleicons.org/sonarsource/4E9BCD',
+      imageUrl: '/sonarqube.svg',
     },
     {
-      name: '1passsword',
-      imageUrl: 'https://cdn.simpleicons.org/1password/0094F5',
+      name: '1Password',
+      imageUrl: '/1password.svg',
     },
     {
       name: 'Vault',
-      imageUrl: 'https://cdn.simpleicons.org/hashicorp/000000',
+      imageUrl: '/vault.svg',
     },
     {
       name: 'Cloudflare',
-      imageUrl: 'https://cdn.simpleicons.org/cloudflare/F38020',
+      imageUrl: '/cloudflare.svg',
     },
     // Ci/Cd Code Repository
     {
-      name: 'Github Action',
-      imageUrl: '/github-logo-1.png',
+      name: 'GitHub Actions',
+      imageUrl: '/githubactions.svg',
     },
     {
       name: 'Jenkins',
@@ -347,7 +347,7 @@ export const siteConfig = {
     },
     {
       name: 'Terragrunt',
-      imageUrl: 'https://cdn.simpleicons.org/hashicorp/000000',
+      imageUrl: '/hashicorp.svg',
     },
     {
       name: 'Cloudformation',
@@ -356,19 +356,19 @@ export const siteConfig = {
     // Logging and Monitoring
     {
       name: 'Elastic Search',
-      imageUrl: 'https://cdn.simpleicons.org/elasticsearch/005571',
+      imageUrl: '/elasticsearch.svg',
     },
     {
       name: 'Fluentd/Fluentbit',
-      imageUrl: 'https://cdn.simpleicons.org/fluentd/0E83C8',
+      imageUrl: '/fluentd.svg',
     },
     {
       name: 'Kibana',
-      imageUrl: 'https://cdn.simpleicons.org/kibana/005571',
+      imageUrl: '/kibana.svg',
     },
     {
       name: 'Prometheus',
-      imageUrl: 'https://cdn.simpleicons.org/prometheus/E6522C',
+      imageUrl: '/prometheus.svg',
     },
     {
       name: 'Grafana',
@@ -376,7 +376,7 @@ export const siteConfig = {
     },
     {
       name: 'AlertManager',
-      imageUrl: 'https://cdn.simpleicons.org/prometheus/E6522C',
+      imageUrl: '/prometheus.svg',
     },
     {
       name: 'Cloudwatch',
@@ -384,7 +384,7 @@ export const siteConfig = {
     },
     {
       name: 'Loki stack',
-      imageUrl: 'https://cdn.simpleicons.org/grafana/F46800',
+      imageUrl: '/grafana.svg',
     },
     // Serverless
     {
@@ -414,7 +414,7 @@ export const siteConfig = {
     },
     {
       name: 'firewalls',
-      imageUrl: 'https://cdn.simpleicons.org/fortinet/EE3124',
+      imageUrl: '/fortinet.svg',
     },
     {
       name: 'WAF',
@@ -427,7 +427,7 @@ export const siteConfig = {
     },
     {
       name: 'Confluence',
-      imageUrl: 'https://cdn.simpleicons.org/confluence/172B4D',
+      imageUrl: '/confluence.svg',
     },
     {
       name: 'jira',
@@ -435,28 +435,28 @@ export const siteConfig = {
     },
     {
       name: 'Teams',
-      imageUrl: 'https://cdn.simpleicons.org/microsoftteams/6264A7',
+      imageUrl: '/microsoftteams.svg',
     },
     {
       name: 'Zoom',
-      imageUrl: 'https://cdn.simpleicons.org/zoom/2D8CFF',
+      imageUrl: '/zoom.svg',
     },
     {
       name: 'Twilio',
-      imageUrl: 'https://cdn.simpleicons.org/twilio/F22F46',
+      imageUrl: '/twilio.svg',
     },
     {
       name: 'Sendgrid',
-      imageUrl: 'https://cdn.simpleicons.org/sendgrid/1A82E2',
+      imageUrl: '/sendgrid.svg',
     },
     // Message Queqe
     {
       name: 'Kafka',
-      imageUrl: 'https://cdn.simpleicons.org/apachekafka/231F20',
+      imageUrl: '/apachekafka.svg',
     },
     {
       name: 'RabbitMQ',
-      imageUrl: 'https://cdn.simpleicons.org/rabbitmq/FF6600',
+      imageUrl: '/rabbitmq.svg',
     },
     {
       name: 'Redis',
