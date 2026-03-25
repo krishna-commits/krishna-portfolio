@@ -3,10 +3,9 @@ import { useState, useRef, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
 import { motion } from 'framer-motion';
-import { CheckCircle2, Loader2, Mail, MapPinned, Phone, Send, Shield, MessageSquare, Calendar, Briefcase, Globe, Linkedin, Github, ExternalLink, BookOpen, Sparkles, ArrowRight, Instagram, FileText, ChevronDown } from 'lucide-react';
+import { CheckCircle2, Loader2, Mail, MapPinned, Phone, Send, Shield, MessageSquare, Briefcase, Globe, Linkedin, Github, ExternalLink, BookOpen, ArrowRight, Instagram, FileText, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { siteConfig } from 'config/site';
-import { Button } from 'app/theme/components/ui/button';
 
 type FormInput = {
   name: string;
@@ -111,12 +110,6 @@ const socialLinks = [
 	{ name: 'ORCID', url: siteConfig.links.orcid, icon: ExternalLink, color: 'text-amber-600 dark:text-amber-400', bgColor: 'bg-amber-100 dark:bg-amber-900/30' },
 	{ name: 'Medium', url: siteConfig.links.medium, icon: FileText, color: 'text-slate-700 dark:text-slate-300', bgColor: 'bg-slate-100 dark:bg-slate-800' },
 	{ name: 'Instagram', url: siteConfig.links.instagram, icon: Instagram, color: 'text-orange-600 dark:text-orange-400', bgColor: 'bg-orange-100 dark:bg-orange-900/30' },
-];
-
-const ctaButtons = [
-	{ label: 'Schedule a Call', icon: Calendar, href: '/contact?type=call', gradient: 'from-blue-400 to-sky-500' },
-	{ label: 'Interview Packet', icon: Briefcase, href: '/contact?type=interview', gradient: 'from-yellow-400 via-amber-500 to-yellow-600' },
-	{ label: 'Collaboration', icon: Sparkles, href: '/contact?type=collaboration', gradient: 'from-orange-500 via-red-500 to-orange-600' },
 ];
 
 export default function ContactUsForm() {
@@ -272,33 +265,6 @@ export default function ContactUsForm() {
 						<p className="text-lg sm:text-xl lg:text-2xl text-slate-600 dark:text-slate-400 font-medium max-w-4xl mx-auto leading-relaxed px-4">
 							Ready to collaborate on your next DevSecOps project, discuss cybersecurity solutions, or explore research opportunities? Let's build something secure and scalable together.
 						</p>
-					</motion.div>
-
-					{/* CTA Buttons - Improved Spacing */}
-					<motion.div
-						initial={{ opacity: 0, y: 20 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.6, delay: 0.2 }}
-						className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 px-4"
-					>
-						{ctaButtons.map((cta, idx) => {
-							const Icon = cta.icon;
-							return (
-								<Link key={idx} href={cta.href} className="w-full sm:w-auto">
-									<motion.div
-										whileHover={{ scale: 1.05, y: -3 }}
-										whileTap={{ scale: 0.95 }}
-										className="w-full"
-									>
-										<Button className={`w-full sm:w-auto bg-gradient-to-r ${cta.gradient} text-white border-0 shadow-xl hover:shadow-2xl px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-bold justify-center transition-all duration-300`}>
-											<Icon className="h-4 w-4 sm:h-5 sm:w-5 mr-2.5" />
-											{cta.label}
-											<ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 ml-2.5" />
-										</Button>
-									</motion.div>
-								</Link>
-							);
-						})}
 					</motion.div>
 				</div>
 			</section>

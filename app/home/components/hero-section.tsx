@@ -1,12 +1,11 @@
 'use client'
 
 import { useState, useEffect, useMemo, useCallback, memo } from "react"
-import Link from "next/link"
 import Image from "next/image"
 import { siteConfig } from "config/site"
 import { cn } from "app/theme/lib/utils"
 import { Badge } from "app/theme/components/ui/badge"
-import { ArrowRight, CheckCircle2, Shield, Cloud, Lock, Server } from "lucide-react"
+import { CheckCircle2, Shield, Cloud, Lock, Server } from "lucide-react"
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion"
 import { Icons } from "app/theme/components/theme/icons"
 import { useDeferredValue as useReactDeferredValue } from "react"
@@ -33,11 +32,6 @@ const viewContent: Record<ViewType, { headline: string; bullets: string[] }> = {
 		],
 	},
 }
-
-const CTA_LINKS = [
-	{ label: "Interview Packet", href: "/contact?type=interview", icon: ArrowRight },
-	{ label: "Request Collaboration Brief", href: "/contact?type=collaboration", icon: ArrowRight },
-]
 
 const expertiseAreas = [
 	{
@@ -261,43 +255,6 @@ export const HeroSection = memo(function HeroSection() {
 											{tag}
 										</Badge>
 									))}
-								</motion.div>
-
-								<motion.div
-									initial={prefersReducedMotion ? {} : { opacity: 0, y: 10 }}
-									animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
-									transition={prefersReducedMotion ? {} : { duration: 0.4, delay: 0.4, ease: "easeOut" }}
-									className="flex flex-wrap gap-2 sm:gap-3 pt-2 sm:pt-3"
-								>
-									{CTA_LINKS.map((cta, idx) => {
-										const Icon = cta.icon
-										return (
-											<motion.div
-												key={idx}
-												whileHover={prefersReducedMotion ? {} : { scale: 1.05, y: -2 }}
-												whileTap={prefersReducedMotion ? {} : { scale: 0.95 }}
-												transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-											>
-												<Link
-													href={cta.href}
-													className={cn(
-														"group relative inline-flex items-center gap-1.5 sm:gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-md font-semibold text-sm sm:text-base transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 overflow-hidden touch-target",
-														idx === 0
-															? "bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 text-white shadow-sm hover:shadow-lg shadow-colored"
-															: "bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-50 border border-orange-300 dark:border-orange-700 hover:border-orange-500 dark:hover:border-orange-500 hover:bg-orange-50/50 dark:hover:bg-orange-950/20 shadow-hover"
-													)}
-													aria-label={cta.label}
-												>
-													{/* Ripple Effect Background */}
-													<span className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-													<span className="relative z-10 flex items-center gap-1.5 sm:gap-2">
-														{cta.label}
-														<Icon className="h-4 w-4 sm:h-4 sm:w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
-													</span>
-												</Link>
-											</motion.div>
-										)
-									})}
 								</motion.div>
 							</div>
 

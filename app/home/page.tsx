@@ -68,21 +68,45 @@ export const metadata: Metadata = generatePageMetadata({
 	path: '/',
 })
 
+const siteOrigin = new URL(
+	siteConfig.url.startsWith("http") ? siteConfig.url : `https://${siteConfig.url}`,
+).origin
+const personId = `${siteOrigin}/#person`
+const websiteId = `${siteOrigin}/#website`
+const homeDescription = siteConfig.home.description.trim()
+
 const structuredData = {
 	"@context": "https://schema.org",
-	"@type": "Person",
-	"name": siteConfig.name,
-	"jobTitle": siteConfig.bio,
-	"description": siteConfig.home.description,
-	"url": siteConfig.url,
-	"image": siteConfig.profile_image,
-	"sameAs": [
-		siteConfig.links.github,
-		siteConfig.links.linkedIn,
-		siteConfig.links.researchgate,
-		siteConfig.links.orcid,
+	"@graph": [
+		{
+			"@type": "WebSite",
+			"@id": websiteId,
+			url: siteOrigin,
+			name: siteConfig.name,
+			description: homeDescription,
+			inLanguage: "en-US",
+			publisher: { "@id": personId },
+		},
+		{
+			"@type": "Person",
+			"@id": personId,
+			name: siteConfig.name,
+			jobTitle: siteConfig.bio,
+			description: homeDescription,
+			url: siteOrigin,
+			image: siteConfig.profile_image,
+			sameAs: [
+				siteConfig.links.github,
+				siteConfig.links.linkedIn,
+				siteConfig.links.researchgate,
+				siteConfig.links.orcid,
+				siteConfig.links.medium,
+				siteConfig.links.instagram,
+			].filter(Boolean),
+			knowsAbout: siteConfig.talks_about.split(",").map((tag) => tag.trim()),
+			mainEntityOfPage: { "@id": websiteId },
+		},
 	],
-	"knowsAbout": siteConfig.talks_about.split(',').map(tag => tag.trim()),
 }
 
 export default function HomePage() {

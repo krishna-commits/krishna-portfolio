@@ -1,4 +1,5 @@
 import './globals.css';
+import { Suspense } from 'react';
 import { AnalyticsProvider } from './components/analytics-provider';
 import { ThemeProvider } from "./components/theme-provider"
 import { SiteHeader } from './components/site-header';
@@ -99,7 +100,9 @@ export default function RootLayout({
                   <AnalyticsProvider />
                   <ScrollToTop />
                   <PerformanceMonitor />
-                  <VisitorTracker />
+                  <Suspense fallback={null}>
+                    <VisitorTracker />
+                  </Suspense>
                   <PerformanceTracker />
                   <SpeedInsights />
                   <Analytics />

@@ -1,6 +1,8 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Link from 'next/link'
+import { siteConfig } from 'config/site'
 import { cn } from 'app/theme/lib/utils'
 
 interface CopyrightFooterProps {
@@ -21,10 +23,16 @@ export function CopyrightFooter({ className }: CopyrightFooterProps) {
 			)}
 		>
 			<div className="w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 max-w-7xl">
-				<div className="flex items-center justify-center">
+				<div className="flex flex-col items-center justify-center gap-2 sm:flex-row sm:gap-4">
 					<p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 text-center font-medium">
-						© Krishna Neupane Since @ 1995. All rights reserved.
+						{siteConfig.copyright.text}
 					</p>
+					<Link
+						href="/privacy"
+						className="text-xs sm:text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
+					>
+						{siteConfig.copyright.privacy}
+					</Link>
 				</div>
 			</div>
 		</motion.footer>

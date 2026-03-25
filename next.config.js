@@ -3,7 +3,6 @@ const { createContentlayerPlugin } = require("next-contentlayer");
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   images: {
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
@@ -68,10 +67,9 @@ const nextConfig = {
       "prisma",
       "@vercel/postgres",
       "@neondatabase/serverless",
+      "@vercel/blob",
+      "undici",
     ],
-    // Enable React Server Components
-    serverActions: true,
-    // Enable optimized package imports
     optimizePackageImports: ['lucide-react', 'framer-motion', 'recharts'],
   },
   // Compiler optimizations
