@@ -65,7 +65,6 @@ const nextConfig = {
     serverComponentsExternalPackages: [
       "@prisma/client",
       "prisma",
-      "@vercel/postgres",
       "@neondatabase/serverless",
       "@vercel/blob",
       "undici",

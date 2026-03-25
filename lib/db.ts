@@ -1,51 +1,56 @@
 /**
- * Database utility for Vercel Postgres
- * 
- * IMPORTANT: This module must only be imported in server-side code (API routes, Server Components)
- * 
- * The @vercel/postgres package uses @neondatabase/serverless which requires Node.js APIs
- * that aren't available during webpack bundling. By using require() instead of import,
- * we ensure the package is loaded at runtime, not build time.
+ * Serverless Postgres via Neon (replaces deprecated @vercel/postgres).
+ *
+ * Use only in server-side code (API routes, Server Components). Loaded with require()
+ * so webpack does not bundle the driver at build time.
  */
 
-// Type for the sql function from @vercel/postgres
 type SqlFunction = (strings: TemplateStringsArray, ...values: any[]) => Promise<{ rows: any[] }>;
 
 let sql: SqlFunction | null = null;
 
 /**
- * Get the SQL function from @vercel/postgres
- * Uses require() to ensure the package is loaded at runtime, not build time
+ * Tagged-template SQL compatible with prior `getSql()` shape: `{ rows }`.
  */
 export function getSql(): SqlFunction | null {
 	if (!sql) {
 		try {
-			// Check if POSTGRES_URL is configured
-			if (!process.env.POSTGRES_URL && !process.env.POSTGRES_HOST) {
-				// Silently return null - no database configured
+			const url =
+				process.env.POSTGRES_URL ||
+				process.env.DATABASE_URL ||
+				(process.env.POSTGRES_HOST ? buildUrlFromParts() : null);
+			if (!url) {
 				return null;
 			}
 
-			// Use require() for server-side only imports to avoid webpack bundling
 			// eslint-disable-next-line @typescript-eslint/no-require-imports
-			const postgres = require('@vercel/postgres');
-			sql = postgres.sql;
-		} catch (error: any) {
-			// Silently fail - database is optional
+			const { neon } = require('@neondatabase/serverless') as typeof import('@neondatabase/serverless');
+			const raw = neon(url);
+			sql = async (strings: TemplateStringsArray, ...values: any[]) => {
+				const result = await raw(strings, ...values);
+				const rows = Array.isArray(result) ? result : [];
+				return { rows };
+			};
+		} catch {
 			return null;
 		}
 	}
 	return sql;
 }
 
+function buildUrlFromParts(): string | null {
+	const host = process.env.POSTGRES_HOST;
+	const user = process.env.POSTGRES_USER;
+	const password = process.env.POSTGRES_PASSWORD;
+	const database = process.env.POSTGRES_DATABASE;
+	if (!host || !user || !database) return null;
+	const auth = password ? `${encodeURIComponent(user)}:${encodeURIComponent(password)}` : encodeURIComponent(user);
+	return `postgres://${auth}@${host}/${database}`;
+}
+
 /**
  * Check if database is available
  */
 export function isDatabaseAvailable(): boolean {
-	try {
-		getSql();
-		return true;
-	} catch {
-		return false;
-	}
+	return getSql() !== null;
 }
