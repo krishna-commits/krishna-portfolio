@@ -2,6 +2,12 @@
 
 import { useState, useMemo } from "react"
 import { cn } from "app/theme/lib/utils"
+import {
+	PAGE_CARD,
+	PAGE_FILTER_ACTIVE,
+	PAGE_FILTER_INACTIVE,
+	PAGE_INPUT,
+} from "lib/page-layout"
 import { allResearchCores } from "contentlayer/generated"
 import { Badge } from "app/theme/components/ui/badge"
 import Link from "next/link"
@@ -83,7 +89,7 @@ export default function ResearchCoreCard() {
 						value={searchQuery}
 						onChange={(e) => setSearchQuery(e.target.value)}
 						placeholder="Search research..."
-						className="w-full pl-8 pr-8 py-2 text-xs sm:text-sm border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-transparent transition-all"
+						className={cn(PAGE_INPUT, "pl-8 pr-8")}
 					/>
 					{searchQuery && (
 						<button
@@ -108,10 +114,8 @@ export default function ResearchCoreCard() {
 							<button
 								onClick={() => setSelectedVenue(null)}
 								className={cn(
-									"px-2.5 py-1.5 text-xs font-medium rounded-lg border transition-all duration-300",
-									selectedVenue === null
-										? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-transparent shadow-sm"
-										: "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
+									"transition-all duration-300",
+									selectedVenue === null ? PAGE_FILTER_ACTIVE : PAGE_FILTER_INACTIVE,
 								)}
 							>
 								All Venues
@@ -121,10 +125,8 @@ export default function ResearchCoreCard() {
 									key={venue}
 									onClick={() => setSelectedVenue(venue)}
 									className={cn(
-										"px-2.5 py-1.5 text-xs font-medium rounded-lg border transition-all duration-300",
-										selectedVenue === venue
-											? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-transparent shadow-sm"
-											: "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
+										"transition-all duration-300",
+										selectedVenue === venue ? PAGE_FILTER_ACTIVE : PAGE_FILTER_INACTIVE,
 									)}
 								>
 									{venue}
@@ -139,10 +141,8 @@ export default function ResearchCoreCard() {
 							<button
 								onClick={() => setSelectedYear(null)}
 								className={cn(
-									"px-2.5 py-1.5 text-xs font-medium rounded-lg border transition-all duration-300",
-									selectedYear === null
-										? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-transparent shadow-sm"
-										: "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
+									"transition-all duration-300",
+									selectedYear === null ? PAGE_FILTER_ACTIVE : PAGE_FILTER_INACTIVE,
 								)}
 							>
 								All Years
@@ -152,10 +152,8 @@ export default function ResearchCoreCard() {
 									key={year}
 									onClick={() => setSelectedYear(year)}
 									className={cn(
-										"px-2.5 py-1.5 text-xs font-medium rounded-lg border transition-all duration-300",
-										selectedYear === year
-											? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-transparent shadow-sm"
-											: "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
+										"transition-all duration-300",
+										selectedYear === year ? PAGE_FILTER_ACTIVE : PAGE_FILTER_INACTIVE,
 									)}
 								>
 									{year}
@@ -169,7 +167,7 @@ export default function ResearchCoreCard() {
 						<select
 							value={sortBy}
 							onChange={(e) => setSortBy(e.target.value as "date" | "citations" | "title")}
-							className="px-2.5 py-1.5 text-xs border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-transparent transition-all"
+							className={PAGE_INPUT}
 						>
 							<option value="date">Sort by Date</option>
 							<option value="citations">Sort by Citations</option>
@@ -181,8 +179,8 @@ export default function ResearchCoreCard() {
 
 			{/* Research Items */}
 			{filteredItems.length === 0 ? (
-				<div className="text-center py-16">
-					<p className="text-sm text-slate-500 dark:text-slate-400">No research items found.</p>
+				<div className="py-16 text-center">
+					<p className="text-sm text-muted-foreground">No research items found.</p>
 				</div>
 			) : (
 				<div className="grid grid-cols-1 gap-3 sm:gap-4">
@@ -192,55 +190,56 @@ export default function ResearchCoreCard() {
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ delay: index * 0.05, duration: 0.4 }}
-							whileHover={{ y: -2, scale: 1.01 }}
+							whileHover={{ y: -2 }}
 						>
 							<Link
 								href={item.url}
-								className="group relative overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-gradient-to-br from-white to-slate-50/50 dark:from-slate-900 dark:to-slate-950/50 hover:shadow-md transition-all duration-300 block"
+								className={cn(
+									PAGE_CARD,
+									"group no-underline relative block overflow-hidden transition-shadow hover:shadow-md",
+								)}
+								data-cursor="pointer"
 							>
-								<div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-500 to-teal-500" />
-								<div className="absolute inset-0 bg-[linear-gradient(to_right,#80808003_1px,transparent_1px),linear-gradient(to_bottom,#80808003_1px,transparent_1px)] bg-[size:16px_16px] opacity-10" />
-								
-								<div className="p-4 sm:p-5 relative space-y-3">
+								<div className="relative space-y-3 p-4 sm:p-5">
 									<div className="flex items-start justify-between gap-3">
-										<div className="flex items-start gap-3 flex-1 min-w-0">
-											<div className="p-1.5 rounded-md bg-gradient-to-br from-emerald-500 to-teal-500 text-white flex-shrink-0 shadow-sm">
-												<BookOpen className="h-3 w-3" />
+										<div className="flex min-w-0 flex-1 items-start gap-3">
+											<div className="flex-shrink-0 rounded-lg border border-border bg-muted p-1.5">
+												<BookOpen className="h-3 w-3 text-foreground" aria-hidden />
 											</div>
-											<div className="flex-1 min-w-0">
-												<h2 className="text-sm sm:text-base md:text-lg font-semibold text-slate-900 dark:text-slate-50 tracking-tight group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors mb-1.5">
-                {item.title}
+											<div className="min-w-0 flex-1">
+												<h2 className="mb-1.5 text-sm font-semibold tracking-tight text-foreground transition-colors group-hover:text-primary sm:text-base md:text-lg">
+													{item.title}
 												</h2>
 												{item.description && (
-													<p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-2">
-                {item.description}
-              </p>
+													<p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground sm:text-sm">
+														{item.description}
+													</p>
 												)}
 											</div>
 										</div>
-										<ArrowRight className="h-3.5 w-3.5 text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 flex-shrink-0 transition-colors mt-1" />
+										<ArrowRight className="mt-1 h-3.5 w-3.5 flex-shrink-0 text-muted-foreground transition-colors group-hover:text-primary" aria-hidden />
 									</div>
 
-									<div className="flex items-center gap-2 flex-wrap pt-2 border-t border-slate-100 dark:border-slate-800">
+									<div className="flex flex-wrap items-center gap-2 border-t border-border pt-2">
 										{item.venue && (
-											<Badge variant="secondary" className="text-[10px] font-normal bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-0">
+											<Badge variant="outline" className="bg-muted/50 text-[10px] font-normal">
 												{item.venue}
 											</Badge>
 										)}
 										{item.citationCount !== undefined && item.citationCount > 0 && (
-											<span className="flex items-center gap-1 text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 px-2 py-0.5 rounded-full font-semibold">
-												<TrendingUp className="h-2.5 w-2.5" />
+											<span className="flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-400">
+												<TrendingUp className="h-2.5 w-2.5" aria-hidden />
 												{item.citationCount}
 											</span>
 										)}
 										{item.date && (
-											<span className="flex items-center gap-1 text-[10px] text-slate-500 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
-												<Calendar className="h-2.5 w-2.5" />
+											<span className="flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
+												<Calendar className="h-2.5 w-2.5" aria-hidden />
 												{new Date(item.date).getFullYear()}
 											</span>
 										)}
 										{item.highlight && (
-											<Badge className="text-[10px] bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0">
+											<Badge className="border-0 bg-amber-600 text-[10px] text-white">
 												Featured
 											</Badge>
 										)}

@@ -5,12 +5,14 @@ import { toast } from 'react-hot-toast';
 import { motion } from 'framer-motion';
 import { CheckCircle2, Loader2, Mail, MapPinned, Phone, Send, Shield, MessageSquare, Briefcase, Globe, Linkedin, Github, ExternalLink, BookOpen, ArrowRight, Instagram, FileText, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
+import { cn } from 'app/theme/lib/utils';
 import { siteConfig } from 'config/site';
 import {
 	PAGE_CARD,
 	PAGE_CONTAINER,
 	PAGE_ICON_CHIP,
 	PAGE_H1,
+	PAGE_INPUT_LG,
 	PAGE_LEAD,
 } from 'lib/page-layout';
 
@@ -394,7 +396,7 @@ export default function ContactUsForm() {
             </label>
             <input
 													id="your-name"
-													className="block w-full rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 sm:px-5 py-3.5 sm:py-4 text-sm sm:text-base text-slate-900 dark:text-slate-50 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 transition-all shadow-sm"
+													className={PAGE_INPUT_LG}
               type='text'
 													placeholder='John Doe'
               required
@@ -412,7 +414,7 @@ export default function ContactUsForm() {
             </label>
             <input
 													id="email"
-													className="block w-full rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 sm:px-5 py-3.5 sm:py-4 text-sm sm:text-base text-slate-900 dark:text-slate-50 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 transition-all shadow-sm"
+													className={PAGE_INPUT_LG}
               type='email'
 													placeholder='john@example.com'
               required
@@ -508,7 +510,7 @@ export default function ContactUsForm() {
 														id="phone-number"
                 autoComplete="tel"
                 {...register('phone')}
-														className="block w-full rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 sm:px-5 py-3.5 sm:py-4 pl-24 sm:pl-28 md:pl-32 text-sm sm:text-base text-slate-900 dark:text-slate-50 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 transition-all shadow-sm"
+														className={cn(PAGE_INPUT_LG, "pl-24 sm:pl-28 md:pl-32")}
 														placeholder="Phone number (optional)"
               />
             </div>
@@ -528,7 +530,7 @@ export default function ContactUsForm() {
                 name="company"
                 id="company"
                 autoComplete="organization"
-													className="block w-full rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 sm:px-5 py-3.5 sm:py-4 text-sm sm:text-base text-slate-900 dark:text-slate-50 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 transition-all shadow-sm"
+													className={PAGE_INPUT_LG}
 													placeholder="Your company (optional)"
               />
 												<p className="mt-2 text-xs sm:text-sm text-slate-500 dark:text-slate-500">
@@ -544,7 +546,7 @@ export default function ContactUsForm() {
 											</label>
             <textarea
 												id="message"
-												className="block w-full rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 sm:px-5 py-3.5 sm:py-4 text-sm sm:text-base text-slate-900 dark:text-slate-50 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 transition-all resize-none shadow-sm"
+												className={cn(PAGE_INPUT_LG, "resize-none")}
 												placeholder='Tell me about your project, question, or how we can collaborate. Be as detailed as possible...'
 												rows={8}
               required

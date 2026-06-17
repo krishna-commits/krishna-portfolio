@@ -316,28 +316,38 @@
 
 	/* Focus States for Accessibility */
 	*:focus-visible {
-		@apply outline-none ring-2 ring-blue-500 dark:ring-blue-400 ring-offset-2 ring-offset-white dark:ring-offset-slate-950;
+		@apply outline-none ring-2 ring-amber-500/80 dark:ring-amber-400/80 ring-offset-2 ring-offset-background;
 	}
 
-	/* Touch Target Sizes (Minimum 36x36px for better mobile UX with smaller fonts) */
-	button, a, input, select, textarea {
+	/* Touch targets — opt-in via .touch-target (not every link) */
+	button,
+	input,
+	select,
+	textarea {
 		min-height: 36px;
-		min-width: 36px;
+	}
+
+	.touch-target {
+		min-height: 44px;
+		min-width: 44px;
 	}
 
 	/* Better Link Styling */
 	a {
-		@apply transition-all duration-200;
+		@apply transition-colors duration-200;
 		text-decoration: none;
+	}
+
+	a:not(.no-underline):not(nav a):hover {
+		@apply text-foreground;
+	}
+
+	/* Animated underline — prose / explicit links only */
+	a.link-underline {
 		position: relative;
 	}
 
-	a:hover {
-		@apply text-slate-900 dark:text-slate-50;
-	}
-
-	/* Animated Link Underline */
-	a:not(.no-underline)::after {
+	a.link-underline::after {
 		content: '';
 		position: absolute;
 		bottom: -2px;
@@ -348,7 +358,7 @@
 		transition: width var(--duration-normal) ease-out;
 	}
 
-	a:not(.no-underline):hover::after {
+	a.link-underline:hover::after {
 		width: 100%;
 	}
 }
@@ -415,7 +425,7 @@
 	
 	/* Focus Visible for Accessibility */
 	.focus-visible-ring {
-		@apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:focus-visible:ring-blue-400 focus-visible:ring-offset-2;
+		@apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/80 dark:focus-visible:ring-amber-400/80 focus-visible:ring-offset-2 focus-visible:ring-offset-background;
 	}
 
 	/* 3D Perspective */

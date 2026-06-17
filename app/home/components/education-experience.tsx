@@ -7,6 +7,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
 import { cn } from "app/theme/lib/utils"
+import { PAGE_CARD, PAGE_ICON_CHIP } from "lib/page-layout"
 import { Badge } from "app/theme/components/ui/badge"
 import useSWR from 'swr'
 
@@ -32,19 +33,15 @@ export function EducationExperience() {
 				transition={{ duration: 0.5 }}
 				className="mb-6 sm:mb-8"
 			>
-				<div className="inline-flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-					<motion.div
-						animate={{ rotate: [0, 360] }}
-						transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-						className="p-2 sm:p-2.5 rounded-lg bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-500 shadow-lg"
-					>
-						<TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
-					</motion.div>
-					<h2 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
+				<div className="mb-3 inline-flex items-center gap-2 sm:mb-4 sm:gap-3">
+					<span className={PAGE_ICON_CHIP}>
+						<TrendingUp className="h-4 w-4" aria-hidden />
+					</span>
+					<h2 className="text-lg font-semibold tracking-tight text-foreground sm:text-xl md:text-2xl">
 						Background
 					</h2>
 				</div>
-				<p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-3xl leading-relaxed">
+				<p className="max-w-3xl text-xs leading-relaxed text-muted-foreground sm:text-sm">
 					Education and work experience
 				</p>
 			</motion.div>
@@ -70,13 +67,13 @@ function EducationCard({ education }: { education: any[] }) {
 			transition={{ delay: 0.1, duration: 0.5 }}
 			className="group"
 		>
-			<div className="relative h-full p-4 sm:p-5 md:p-6 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-lg transition-all duration-300">
+			<div className={cn(PAGE_CARD, "relative h-full p-4 transition-shadow hover:shadow-md sm:p-5 md:p-6")}>
 				<div className="space-y-4 sm:space-y-5">
 					<div className="flex items-center gap-2 sm:gap-3">
-						<div className="p-2 sm:p-2.5 rounded-lg bg-gradient-to-br from-blue-400 to-sky-500 shadow-md">
-							<GraduationCap className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
-						</div>
-						<h3 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 dark:text-slate-50">
+						<span className="inline-flex rounded-lg border border-border bg-muted p-2 sm:p-2.5">
+							<GraduationCap className="h-3 w-3 text-foreground sm:h-4 sm:w-4" aria-hidden />
+						</span>
+						<h3 className="text-sm font-semibold text-foreground sm:text-base md:text-lg">
 							Education
 						</h3>
 					</div>
@@ -170,7 +167,7 @@ function EducationCard({ education }: { education: any[] }) {
 							<motion.div
 								whileHover={{ scale: 1.02 }}
 								whileTap={{ scale: 0.98 }}
-								className="p-6 rounded-lg border-2 border-dashed border-blue-300 dark:border-blue-700 bg-gradient-to-br from-blue-50/50 to-sky-50/50 dark:from-blue-950/30 dark:to-sky-950/30 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50/70 dark:hover:bg-blue-950/40 text-center transition-all duration-300 cursor-pointer"
+								className="cursor-pointer rounded-lg border border-dashed border-border bg-muted/30 p-6 text-center transition-colors hover:bg-muted/50"
 							>
 								<p className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 group-hover/link:text-blue-600 dark:group-hover/link:text-blue-400 transition-colors flex items-center justify-center gap-2">
 									<span>Available upon request</span>
@@ -194,13 +191,13 @@ function WorkExperienceCard({ workExperience }: { workExperience: any[] }) {
 			transition={{ delay: 0.15, duration: 0.5 }}
 			className="group"
 		>
-			<div className="relative h-full p-4 sm:p-5 md:p-6 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-lg transition-all duration-300">
+			<div className={cn(PAGE_CARD, "relative h-full p-4 transition-shadow hover:shadow-md sm:p-5 md:p-6")}>
 				<div className="space-y-4 sm:space-y-5">
 					<div className="flex items-center gap-2 sm:gap-3">
-						<div className="p-2 sm:p-2.5 rounded-lg bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-600 shadow-md">
-							<Briefcase className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
-						</div>
-						<h3 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 dark:text-slate-50">
+						<span className="inline-flex rounded-lg border border-border bg-muted p-2 sm:p-2.5">
+							<Briefcase className="h-3 w-3 text-foreground sm:h-4 sm:w-4" aria-hidden />
+						</span>
+						<h3 className="text-sm font-semibold text-foreground sm:text-base md:text-lg">
 							Work Experience
 						</h3>
 					</div>
@@ -255,7 +252,7 @@ function WorkExperienceCard({ workExperience }: { workExperience: any[] }) {
 							<motion.div
 								whileHover={{ scale: 1.02 }}
 								whileTap={{ scale: 0.98 }}
-								className="p-6 rounded-lg border-2 border-dashed border-yellow-300 dark:border-yellow-700 bg-gradient-to-br from-yellow-50/50 to-amber-50/50 dark:from-yellow-950/30 dark:to-amber-950/30 hover:border-yellow-400 dark:hover:border-yellow-500 hover:bg-yellow-50/70 dark:hover:bg-yellow-950/40 text-center transition-all duration-300 cursor-pointer"
+								className="cursor-pointer rounded-lg border border-dashed border-border bg-muted/30 p-6 text-center transition-colors hover:bg-muted/50"
 							>
 								<p className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 group-hover/link:text-yellow-600 dark:group-hover/link:text-yellow-400 transition-colors flex items-center justify-center gap-2">
 									<span>Available upon request</span>
@@ -279,13 +276,13 @@ function VolunteeringCard({ volunteering }: { volunteering: any[] }) {
 			transition={{ delay: 0.2, duration: 0.5 }}
 			className="group"
 		>
-			<div className="relative h-full p-4 sm:p-5 md:p-6 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-lg transition-all duration-300">
+			<div className={cn(PAGE_CARD, "relative h-full p-4 transition-shadow hover:shadow-md sm:p-5 md:p-6")}>
 				<div className="space-y-4 sm:space-y-5">
 					<div className="flex items-center gap-2 sm:gap-3">
-						<div className="p-2 sm:p-2.5 rounded-lg bg-gradient-to-br from-rose-500 to-pink-500 shadow-md">
-							<Heart className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
-						</div>
-						<h3 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 dark:text-slate-50">
+						<span className="inline-flex rounded-lg border border-border bg-muted p-2 sm:p-2.5">
+							<Heart className="h-3 w-3 text-foreground sm:h-4 sm:w-4" aria-hidden />
+						</span>
+						<h3 className="text-sm font-semibold text-foreground sm:text-base md:text-lg">
 							Volunteering
 						</h3>
 					</div>
@@ -340,7 +337,7 @@ function VolunteeringCard({ volunteering }: { volunteering: any[] }) {
 							<motion.div
 								whileHover={{ scale: 1.02 }}
 								whileTap={{ scale: 0.98 }}
-								className="p-6 rounded-lg border-2 border-dashed border-rose-300 dark:border-rose-700 bg-gradient-to-br from-rose-50/50 to-pink-50/50 dark:from-rose-950/30 dark:to-pink-950/30 hover:border-rose-400 dark:hover:border-rose-500 hover:bg-rose-50/70 dark:hover:bg-rose-950/40 text-center transition-all duration-300 cursor-pointer"
+								className="cursor-pointer rounded-lg border border-dashed border-border bg-muted/30 p-6 text-center transition-colors hover:bg-muted/50"
 							>
 								<p className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 group-hover/link:text-rose-600 dark:group-hover/link:text-rose-400 transition-colors flex items-center justify-center gap-2">
 									<span>Available upon request</span>

@@ -7,13 +7,19 @@ import { Search, ExternalLink, Github, Filter, X } from "lucide-react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { cn } from "app/theme/lib/utils"
+import {
+	PAGE_CARD,
+	PAGE_FILTER_ACTIVE,
+	PAGE_FILTER_INACTIVE,
+	PAGE_INPUT,
+} from "lib/page-layout"
 
 export default function ProjectsCard() {
 	const [searchQuery, setSearchQuery] = useState("")
 	const [selectedKeyword, setSelectedKeyword] = useState<string | null>(null)
 
 	// Debug: Log projects to console
-	console.log("All Projects:", allProjects)
+	// console.log("All Projects:", allProjects)
 
 	const sortedProjects = useMemo(() => {
 		return [...allProjects].sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
@@ -44,8 +50,7 @@ export default function ProjectsCard() {
 		}, [sortedProjects, searchQuery, selectedKeyword])
 
 	// Debug: Log filtered projects
-	console.log("Filtered Projects:", filteredProjects)
-	console.log("Total Projects:", allProjects.length)
+	// console.log("Filtered Projects:", filteredProjects)
 
   return (
 		<div className="space-y-4 sm:space-y-6">
@@ -63,12 +68,13 @@ export default function ProjectsCard() {
 						value={searchQuery}
 						onChange={(e) => setSearchQuery(e.target.value)}
 						placeholder="Search projects..."
-						className="w-full pl-8 pr-8 py-2 text-xs sm:text-sm border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all"
+						className={cn(PAGE_INPUT, "pl-8 pr-8")}
 					/>
 					{searchQuery && (
 						<button
+							type="button"
 							onClick={() => setSearchQuery("")}
-							className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+							className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
 						>
 							<X className="h-3.5 w-3.5" />
 						</button>
@@ -78,12 +84,11 @@ export default function ProjectsCard() {
 					<div className="flex items-center gap-1.5 flex-wrap">
 						<Filter className="h-3 w-3 text-slate-400" />
 						<button
+							type="button"
 							onClick={() => setSelectedKeyword(null)}
 							className={cn(
-								"px-2.5 py-1.5 text-xs font-medium rounded-lg border transition-all duration-300",
-								selectedKeyword === null
-									? "bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 text-white border-transparent shadow-sm"
-									: "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
+								"transition-all duration-300",
+								selectedKeyword === null ? PAGE_FILTER_ACTIVE : PAGE_FILTER_INACTIVE,
 							)}
 						>
 							All
@@ -91,12 +96,11 @@ export default function ProjectsCard() {
 						{allKeywords.slice(0, 8).map((keyword) => (
 							<button
 								key={keyword}
+								type="button"
 								onClick={() => setSelectedKeyword(keyword)}
 								className={cn(
-									"px-2.5 py-1.5 text-xs font-medium rounded-lg border transition-all duration-300",
-									selectedKeyword === keyword
-										? "bg-gradient-to-r from-orange-500 via-red-500 to-orange-600 text-white border-transparent shadow-sm"
-										: "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
+									"transition-all duration-300",
+									selectedKeyword === keyword ? PAGE_FILTER_ACTIVE : PAGE_FILTER_INACTIVE,
 								)}
 							>
 								{keyword}
@@ -108,55 +112,49 @@ export default function ProjectsCard() {
 
 			{/* Projects Grid */}
 			{filteredProjects.length === 0 ? (
-				<div className="text-center py-16">
-					<p className="text-sm text-slate-500 dark:text-slate-400">No projects found.</p>
+				<div className="py-16 text-center">
+					<p className="text-sm text-muted-foreground">No projects found.</p>
 				</div>
 			) : (
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+				<div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
 					{filteredProjects.map((project: any, index: number) => (
 						<motion.div
 							key={project._id || index}
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ delay: index * 0.05, duration: 0.4 }}
-							whileHover={{ y: -2, scale: 1.02 }}
-							className="group relative overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-gradient-to-br from-white to-slate-50/50 dark:from-slate-900 dark:to-slate-950/50 hover:shadow-md transition-all duration-300"
+							whileHover={{ y: -2 }}
+							className={cn(PAGE_CARD, "group overflow-hidden transition-shadow hover:shadow-md")}
+							data-cursor="pointer"
 						>
-							<div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500" />
-							<div className="absolute inset-0 bg-[linear-gradient(to_right,#80808003_1px,transparent_1px),linear-gradient(to_bottom,#80808003_1px,transparent_1px)] bg-[size:16px_16px] opacity-10" />
-							
 							{project.link ? (
 								<Link
 									href={project.link}
 									target="_blank"
 									rel="noopener noreferrer"
-									className="block p-4 sm:p-5 relative"
+									className="no-underline relative block p-4 sm:p-5"
 								>
-									<div className="flex items-start justify-between mb-3">
-										<div className="p-1.5 rounded-md bg-gradient-to-br from-blue-400 to-sky-500 text-white shadow-sm">
-											<Github className="h-3 w-3" />
+									<div className="mb-3 flex items-start justify-between">
+										<div className="rounded-lg border border-border bg-muted p-1.5">
+											<Github className="h-3 w-3 text-foreground" aria-hidden />
 										</div>
-										<ExternalLink className="h-3.5 w-3.5 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+										<ExternalLink className="h-3.5 w-3.5 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" aria-hidden />
 									</div>
-									
-									<h3 className="text-sm sm:text-base font-semibold text-slate-900 dark:text-slate-50 mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+
+									<h3 className="mb-2 line-clamp-2 text-sm font-semibold text-foreground transition-colors group-hover:text-primary sm:text-base">
 										{project.title}
 									</h3>
-									
+
 									{project.description && (
-										<p className="text-xs text-slate-600 dark:text-slate-400 mb-3 line-clamp-2 leading-relaxed">
+										<p className="mb-3 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
 											{project.description}
 										</p>
 									)}
 
 									{project.keywords && project.keywords.length > 0 && (
-										<div className="flex flex-wrap gap-1.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+										<div className="flex flex-wrap gap-1.5 border-t border-border pt-2">
 											{project.keywords.slice(0, 3).map((keyword: string, kIdx: number) => (
-												<Badge
-													key={kIdx}
-													variant="secondary"
-													className="text-[10px] font-normal bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-0"
-												>
+												<Badge key={kIdx} variant="outline" className="bg-muted/50 text-[10px] font-normal">
 													{keyword}
 												</Badge>
 											))}
@@ -164,31 +162,27 @@ export default function ProjectsCard() {
 									)}
 								</Link>
 							) : (
-								<div className="p-4 sm:p-5 relative">
-									<div className="flex items-start justify-between mb-3">
-										<div className="p-1.5 rounded-md bg-gradient-to-br from-blue-400 to-sky-500 text-white shadow-sm">
-											<Github className="h-3 w-3" />
+								<div className="relative p-4 sm:p-5">
+									<div className="mb-3 flex items-start justify-between">
+										<div className="rounded-lg border border-border bg-muted p-1.5">
+											<Github className="h-3 w-3 text-foreground" aria-hidden />
 										</div>
 									</div>
-									
-									<h3 className="text-sm sm:text-base font-semibold text-slate-900 dark:text-slate-50 mb-2">
+
+									<h3 className="mb-2 text-sm font-semibold text-foreground sm:text-base">
 										{project.title}
 									</h3>
-									
+
 									{project.description && (
-										<p className="text-xs text-slate-600 dark:text-slate-400 mb-3 line-clamp-2 leading-relaxed">
+										<p className="mb-3 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
 											{project.description}
 										</p>
 									)}
 
 									{project.keywords && project.keywords.length > 0 && (
-										<div className="flex flex-wrap gap-1.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+										<div className="flex flex-wrap gap-1.5 border-t border-border pt-2">
 											{project.keywords.slice(0, 3).map((keyword: string, kIdx: number) => (
-												<Badge
-													key={kIdx}
-													variant="secondary"
-													className="text-[10px] font-normal bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-0"
-												>
+												<Badge key={kIdx} variant="outline" className="bg-muted/50 text-[10px] font-normal">
 													{keyword}
 												</Badge>
 											))}

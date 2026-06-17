@@ -2,66 +2,67 @@
 
 import { motion } from "framer-motion"
 import { Shield, Code, Cloud, Server, Eye, Container, CheckCircle2, ArrowRight } from "lucide-react"
+import { PAGE_CARD, PAGE_ICON_CHIP } from "lib/page-layout"
+import { cn } from "app/theme/lib/utils"
 
 export function SecurityFirstApproach() {
 	const methodologies = [
 		{
 			icon: Code,
 			title: "Shift Left Security",
-			description: "Automated SAST/DAST scanning in CI/CD pipelines, secret detection, dependency vulnerability scanning, and security policy enforcement before code reaches production.",
-			gradient: "from-blue-400 to-sky-500",
+			description:
+				"Automated SAST/DAST scanning in CI/CD pipelines, secret detection, dependency vulnerability scanning, and security policy enforcement before code reaches production.",
 			delay: 0,
 		},
 		{
 			icon: Server,
 			title: "Infrastructure Hardening",
-			description: "IaC security scanning (Trivy, Terrascan), CIS benchmark compliance, network segmentation, least-privilege IAM, and container security hardening.",
-			gradient: "from-orange-500 via-red-500 to-orange-600",
+			description:
+				"IaC security scanning (Trivy, Terrascan), CIS benchmark compliance, network segmentation, least-privilege IAM, and container security hardening.",
 			delay: 0.1,
 		},
 		{
 			icon: Eye,
 			title: "Continuous Security Monitoring",
-			description: "Real-time threat detection using SIEM integration, automated incident response playbooks, security event correlation, and runtime application self-protection (RASP).",
-			gradient: "from-sky-400 to-blue-500",
+			description:
+				"Real-time threat detection using SIEM integration, automated incident response playbooks, security event correlation, and runtime application self-protection (RASP).",
 			delay: 0.2,
 		},
 	]
 
 	const securityPipeline = [
-		{ stage: "Code", icon: Code, description: "SAST, Secret Detection", color: "from-blue-400 to-sky-500" }, // Light Blue vibrant
-		{ stage: "Build", icon: Container, description: "Container Scanning", color: "from-yellow-400 via-amber-500 to-yellow-600" }, // Yellow, Gold, Mustard vibrant
-		{ stage: "Test", icon: CheckCircle2, description: "DAST, Security Tests", color: "from-sky-400 to-blue-500" }, // Light Blue vibrant
-		{ stage: "Deploy", icon: Cloud, description: "IaC Validation", color: "from-orange-500 via-red-500 to-orange-600" }, // Orange, Red, Gold vibrant
-		{ stage: "Monitor", icon: Eye, description: "Runtime Protection", color: "from-blue-400 to-sky-500" }, // Light Blue vibrant
+		{ stage: "Code", icon: Code, description: "SAST, Secret Detection" },
+		{ stage: "Build", icon: Container, description: "Container Scanning" },
+		{ stage: "Test", icon: CheckCircle2, description: "DAST, Security Tests" },
+		{ stage: "Deploy", icon: Cloud, description: "IaC Validation" },
+		{ stage: "Monitor", icon: Eye, description: "Runtime Protection" },
 	]
 
 	return (
 		<section id="security-approach" className="relative w-full" aria-label="Security-first approach">
-			{/* Header */}
 			<motion.div
 				initial={{ opacity: 0, y: 20 }}
 				whileInView={{ opacity: 1, y: 0 }}
 				viewport={{ once: true }}
 				transition={{ duration: 0.5 }}
-				className="mb-6 sm:mb-8 md:mb-10 lg:mb-12"
+				className="mb-8 sm:mb-10 md:mb-12"
 			>
-				<div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-5">
-					<div className="p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-orange-500 via-red-500 to-orange-600 shadow-md">
-						<Shield className="h-5 w-5 sm:h-6 sm:w-6 text-white" aria-hidden="true" />
-					</div>
-					<h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
+				<div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+					<span className={PAGE_ICON_CHIP}>
+						<Shield className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden />
+					</span>
+					<h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl md:text-4xl">
 						Security-First Approach
 					</h2>
 				</div>
-				<div className="space-y-4 sm:space-y-5 max-w-3xl">
-					<p className="text-base sm:text-lg md:text-xl lg:text-2xl text-slate-700 dark:text-slate-300 leading-relaxed">
-						Integrating <span className="font-semibold text-slate-900 dark:text-slate-50">security at every stage</span>, from <span className="bg-gradient-to-r from-blue-400 to-sky-500 bg-clip-text text-transparent font-semibold">code commit</span> to <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent font-semibold">production monitoring</span>, using <span className="font-semibold text-slate-900 dark:text-slate-50">shift-left principles</span>, <span className="font-semibold text-slate-900 dark:text-slate-50">automated threat detection</span>, and <span className="font-semibold text-slate-900 dark:text-slate-50">continuous security validation</span> to build <span className="bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 bg-clip-text text-transparent font-semibold">resilient, attack-resistant systems</span>.
-					</p>
-				</div>
+				<p className="max-w-3xl text-base leading-relaxed text-muted-foreground sm:text-lg md:text-xl">
+					Integrating <span className="font-semibold text-foreground">security at every stage</span>, from{" "}
+					<span className="font-semibold text-primary">code commit</span> to{" "}
+					<span className="font-semibold text-primary">production monitoring</span>, using shift-left principles,
+					automated threat detection, and continuous validation to build resilient systems.
+				</p>
 			</motion.div>
 
-			{/* Security Pipeline Visualization */}
 			<motion.div
 				initial={{ opacity: 0, y: 20 }}
 				whileInView={{ opacity: 1, y: 0 }}
@@ -69,47 +70,47 @@ export function SecurityFirstApproach() {
 				transition={{ duration: 0.5, delay: 0.2 }}
 				className="mb-10 sm:mb-12"
 			>
-				<div className="relative overflow-hidden rounded-xl sm:rounded-2xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 sm:p-6 md:p-8 lg:p-10">
-					<h3 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-50 mb-6 sm:mb-8 text-center">
+				<div className={cn(PAGE_CARD, "p-5 sm:p-6 md:p-8 lg:p-10")}>
+					<h3 className="mb-6 text-center text-lg font-semibold text-foreground sm:mb-8 sm:text-xl md:text-2xl">
 						Security Pipeline
 					</h3>
-					
-					{/* Pipeline Stages */}
+
 					<div className="relative">
-						{/* Connection Line - Vibrant colors: Yellow, Gold, Orange, Red, Light Blue */}
-						<div className="hidden sm:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-400 via-yellow-400 via-amber-500 via-orange-500 via-red-500 to-blue-500 -translate-y-1/2 z-0 opacity-30" />
-						
-						<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6 md:gap-8 relative z-10">
+						<div
+							className="absolute top-1/2 left-0 right-0 z-0 hidden h-px -translate-y-1/2 bg-border sm:block"
+							aria-hidden
+						/>
+
+						<div className="relative z-10 grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6 md:gap-8 lg:grid-cols-5">
 							{securityPipeline.map((stage, idx) => {
 								const Icon = stage.icon
 								return (
 									<motion.div
 										key={idx}
-										initial={{ opacity: 0, scale: 0.9 }}
+										initial={{ opacity: 0, scale: 0.95 }}
 										whileInView={{ opacity: 1, scale: 1 }}
 										viewport={{ once: true }}
 										transition={{ delay: idx * 0.1, duration: 0.4 }}
-										whileHover={{ scale: 1.05, y: -4 }}
+										whileHover={{ y: -2 }}
 										className="relative"
+										data-cursor="pointer"
 									>
-										<div className={`relative p-6 rounded-xl bg-gradient-to-br ${stage.color} shadow-sm hover:shadow-md transition-all duration-300`}>
-											<div className="flex flex-col items-center text-center space-y-3">
-												<div className="p-3 rounded-lg bg-white/20 backdrop-blur-sm">
-													<Icon className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
-												</div>
+										<div className="rounded-xl border border-border bg-muted/30 p-4 transition-shadow hover:shadow-sm sm:p-5">
+											<div className="flex flex-col items-center space-y-3 text-center">
+												<span className="inline-flex rounded-lg border border-border bg-background p-2.5 text-foreground">
+													<Icon className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden />
+												</span>
 												<div>
-													<div className="text-sm sm:text-base font-bold text-white mb-1">
+													<div className="mb-1 text-sm font-semibold text-foreground sm:text-base">
 														{stage.stage}
 													</div>
-													<div className="text-xs text-white/90">
-														{stage.description}
-													</div>
+													<div className="text-xs text-muted-foreground">{stage.description}</div>
 												</div>
 											</div>
 										</div>
 										{idx < securityPipeline.length - 1 && (
-											<div className="hidden sm:block absolute top-1/2 -right-4 w-8 h-8 bg-white dark:bg-slate-900 rounded-full border border-slate-300 dark:border-slate-700 flex items-center justify-center z-20">
-												<ArrowRight className="h-4 w-4 text-slate-400" />
+											<div className="absolute top-1/2 -right-3 z-20 hidden h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background sm:flex">
+												<ArrowRight className="h-3 w-3 text-muted-foreground" aria-hidden />
 											</div>
 										)}
 									</motion.div>
@@ -120,8 +121,7 @@ export function SecurityFirstApproach() {
 				</div>
 			</motion.div>
 
-			{/* Methodologies Grid */}
-			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
+			<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 md:gap-6 lg:grid-cols-3">
 				{methodologies.map((method, idx) => {
 					const Icon = method.icon
 					return (
@@ -131,21 +131,17 @@ export function SecurityFirstApproach() {
 							whileInView={{ opacity: 1, y: 0 }}
 							viewport={{ once: true, margin: "-50px" }}
 							transition={{ delay: method.delay, duration: 0.5 }}
-							whileHover={{ scale: 1.02, y: -4 }}
-							className="relative p-6 rounded-xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-lg transition-all duration-300"
+							whileHover={{ y: -2 }}
+							className={cn(PAGE_CARD, "p-6 transition-shadow hover:shadow-md")}
+							data-cursor="pointer"
 						>
 							<div className="space-y-4">
-								<div className={`inline-flex p-3 rounded-lg bg-gradient-to-br ${method.gradient} shadow-md`}>
-									<Icon className="h-6 w-6 text-white" aria-hidden="true" />
-								</div>
-								
+								<span className="inline-flex rounded-lg border border-border bg-muted p-3 text-foreground">
+									<Icon className="h-6 w-6" aria-hidden />
+								</span>
 								<div className="space-y-3">
-									<h3 className="text-xl font-bold text-slate-900 dark:text-slate-50">
-										{method.title}
-									</h3>
-									<p className="text-base text-slate-600 dark:text-slate-400 leading-relaxed">
-										{method.description}
-									</p>
+									<h3 className="text-xl font-semibold text-foreground">{method.title}</h3>
+									<p className="text-base leading-relaxed text-muted-foreground">{method.description}</p>
 								</div>
 							</div>
 						</motion.div>

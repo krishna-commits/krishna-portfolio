@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import useSWR from 'swr'
 import { Activity, Calendar, TrendingUp, Clock } from 'lucide-react'
 import { cn } from 'app/theme/lib/utils'
+import { PAGE_CARD, PAGE_H1, PAGE_ICON_CHIP, PAGE_LEAD } from 'lib/page-layout'
 import Link from 'next/link'
 import { siteConfig } from 'config/site'
 import moment from 'moment'
@@ -205,101 +206,74 @@ export function GitHubContributionGraph() {
         className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6"
       >
         <div className="space-y-2">
-          <div className="inline-flex items-center gap-3">
-            <div className="p-3 rounded-xl bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-500 shadow-md">
-              <Activity className="h-6 w-6 text-white" />
-            </div>
+          <div className="flex flex-wrap items-start gap-3">
+            <span className={PAGE_ICON_CHIP}>
+              <Activity className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden />
+            </span>
             <div>
-              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
-                GitHub Public Contributions
+              <h2 id="github-contributions-heading" className={PAGE_H1}>
+                GitHub Activity
               </h2>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-500 mt-1 sm:mt-2 flex items-center gap-2">
-                <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
-                Last updated: {data.timestamp ? moment(data.timestamp).fromNow() : 'Never'}
+              <p className="mt-1 flex items-center gap-2 text-xs text-muted-foreground sm:text-sm">
+                <Clock className="h-3 w-3 sm:h-4 sm:w-4" aria-hidden />
+                Updated {data.timestamp ? moment(data.timestamp).fromNow() : 'recently'}
               </p>
             </div>
           </div>
-          <p className="text-xs sm:text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-3xl leading-relaxed">
+          <p className={PAGE_LEAD}>
             {data.totalContributions.toLocaleString()} contributions in the last year
           </p>
         </div>
-        <Link
-          href={siteConfig.links.github}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
-        >
-          View GitHub
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-          </svg>
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href="/codecanvas"
+            className="no-underline flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-muted"
+          >
+            Code Canvas
+          </Link>
+          <Link
+            href={siteConfig.links.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="no-underline flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-muted"
+          >
+            View GitHub
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </Link>
+        </div>
       </motion.div>
 
       {/* Stats Summary */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.3 }}
-          className="relative overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-gradient-to-br from-blue-50 to-sky-50 dark:from-blue-950/20 dark:to-sky-950/20 p-4 shadow-sm hover:shadow-md transition-all duration-300"
-        >
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 to-sky-500" />
-          <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">Total Contributions</p>
-              <p className="text-2xl font-bold bg-gradient-to-br from-blue-400 to-sky-500 bg-clip-text text-transparent">
-                {data.totalContributions.toLocaleString()}
-              </p>
-            </div>
-            <div className="p-2 rounded-lg bg-gradient-to-br from-blue-400 to-sky-500 shadow-sm">
-              <TrendingUp className="h-5 w-5 text-white" />
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.3, delay: 0.1 }}
-          className="relative overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-950/20 dark:to-amber-950/20 p-4 shadow-sm hover:shadow-md transition-all duration-300"
-        >
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600" />
-          <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">Longest Streak</p>
-              <p className="text-2xl font-bold bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-600 bg-clip-text text-transparent">
-                {data.longestStreak} days
-              </p>
-            </div>
-            <div className="p-2 rounded-lg bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-600 shadow-sm">
-              <Calendar className="h-5 w-5 text-white" />
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.3, delay: 0.2 }}
-          className="relative overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 p-4 shadow-sm hover:shadow-md transition-all duration-300"
-        >
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-400 to-emerald-500" />
-          <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">Current Streak</p>
-              <p className="text-2xl font-bold bg-gradient-to-br from-green-400 to-emerald-500 bg-clip-text text-transparent">
-                {data.currentStreak} days
-              </p>
-            </div>
-            <div className="p-2 rounded-lg bg-gradient-to-br from-green-400 to-emerald-500 shadow-sm">
-              <Activity className="h-5 w-5 text-white" />
-            </div>
-          </div>
-        </motion.div>
+      <div className="mb-4 grid grid-cols-1 gap-3 sm:mb-6 sm:grid-cols-3 sm:gap-4">
+        {[
+          { label: 'Total Contributions', value: data.totalContributions.toLocaleString(), icon: TrendingUp },
+          { label: 'Longest Streak', value: `${data.longestStreak} days`, icon: Calendar },
+          { label: 'Current Streak', value: `${data.currentStreak} days`, icon: Activity },
+        ].map((stat, i) => {
+          const Icon = stat.icon
+          return (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.3, delay: i * 0.05 }}
+              className={cn(PAGE_CARD, 'p-4 transition-shadow hover:shadow-md')}
+            >
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <p className="text-xs font-medium text-muted-foreground">{stat.label}</p>
+                  <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+                </div>
+                <span className="rounded-lg border border-border bg-muted p-2 text-amber-600 dark:text-amber-400">
+                  <Icon className="h-5 w-5" aria-hidden />
+                </span>
+              </div>
+            </motion.div>
+          )
+        })}
       </div>
 
       {/* Contribution Graph */}
@@ -308,7 +282,7 @@ export function GitHubContributionGraph() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
-        className="relative overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 sm:p-4 md:p-6 shadow-sm"
+        className={cn(PAGE_CARD, 'relative overflow-x-auto p-3 sm:p-4 md:p-6')}
       >
         {/* Tooltip */}
         {hoveredDay && (

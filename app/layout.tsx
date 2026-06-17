@@ -5,7 +5,6 @@ import { ThemeProvider } from "./components/theme-provider"
 import { SiteHeader } from './components/site-header';
 import { Subheader } from './components/subheader';
 import { ScrollToTop } from './components/scroll-to-top';
-import { CustomCursor } from './components/custom-cursor';
 import { ReadingProgress } from './components/reading-progress';
 import { PageTransition } from './components/page-transitions';
 import { ClientLayoutWrapper } from './client-layout';
@@ -55,7 +54,6 @@ export default function RootLayout({
               adminContent={children}
               siteContent={
                 <>
-                  <CustomCursor />
                   <ReadingProgress />
                   <SiteHeader />
                   <Subheader />

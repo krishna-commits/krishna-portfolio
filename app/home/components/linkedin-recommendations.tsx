@@ -5,6 +5,8 @@ import { Quote, Linkedin, ExternalLink, Users } from "lucide-react"
 import Link from "next/link"
 import { siteConfig } from "config/site"
 import useSWR from 'swr'
+import { PAGE_CARD, PAGE_H1, PAGE_ICON_CHIP, PAGE_LEAD } from "lib/page-layout"
+import { cn } from "app/theme/lib/utils"
 
 interface Recommendation {
 	name: string
@@ -41,15 +43,13 @@ export function LinkedInRecommendations() {
 			>
 				<div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
 					<div className="space-y-3">
-						<div className="inline-flex items-center gap-3">
-							<div className="p-3 rounded-xl bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-500">
-								<Users className="h-6 w-6 text-white" />
-							</div>
-							<h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
-								Recommendations
-							</h2>
+						<div className="flex flex-wrap items-center gap-3">
+							<span className={PAGE_ICON_CHIP}>
+								<Users className="h-5 w-5" aria-hidden />
+							</span>
+							<h2 className={PAGE_H1}>Recommendations</h2>
 						</div>
-						<p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-3xl leading-relaxed">
+						<p className={cn(PAGE_LEAD, "text-base sm:text-lg")}>
 							What colleagues and collaborators say
 						</p>
 					</div>
@@ -57,7 +57,7 @@ export function LinkedInRecommendations() {
 						href={siteConfig.links.linkedIn}
 						target="_blank"
 						rel="noopener noreferrer"
-						className="hidden lg:flex items-center gap-2 px-5 py-3 text-base font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-50 border-2 border-slate-300 dark:border-slate-700 rounded-lg hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 transition-all duration-300 group shadow-md hover:shadow-lg"
+						className="no-underline hidden items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-muted lg:flex"
 					>
 						View on LinkedIn
 						<ExternalLink className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
@@ -98,42 +98,34 @@ function RecommendationCard({ rec, index }: { rec: Recommendation; index: number
 			whileHover={{ y: -4 }}
 			className="group relative"
 		>
-			<div className="relative h-full overflow-hidden rounded-xl border-2 border-yellow-200 dark:border-yellow-800 bg-gradient-to-br from-yellow-50/30 to-amber-50/30 dark:from-yellow-950/20 dark:to-amber-950/20 p-6 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:border-yellow-400 dark:group-hover:border-yellow-500">
-				<div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500" />
-				
-				<div className="relative space-y-4 h-full flex flex-col">
-					<div className="inline-flex p-3 rounded-lg bg-gradient-to-br from-yellow-200 to-amber-200 dark:from-yellow-900/40 dark:to-amber-900/40 shadow-md w-fit">
-						<Quote className="h-5 w-5 text-yellow-700 dark:text-yellow-400" />
-					</div>
-					
-					<p className="text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed flex-1 line-clamp-6">
-						"{rec.text}"
+			<div className={cn(PAGE_CARD, "relative flex h-full flex-col overflow-hidden p-6 transition-shadow hover:shadow-md")}>
+				<div className="relative flex h-full flex-col space-y-4">
+					<span className="inline-flex w-fit rounded-lg border border-border bg-muted p-2.5 text-foreground">
+						<Quote className="h-5 w-5" aria-hidden />
+					</span>
+
+					<p className="line-clamp-6 flex-1 text-sm leading-relaxed text-muted-foreground sm:text-base">
+						&ldquo;{rec.text}&rdquo;
 					</p>
-					
-					<div className="pt-4 border-t border-yellow-200 dark:border-yellow-800 mt-auto">
+
+					<div className="mt-auto border-t border-border pt-4">
 						<div className="flex items-center justify-between gap-3">
-							<div className="space-y-1 flex-1 min-w-0">
-								<p className="font-bold text-slate-900 dark:text-slate-50 text-sm sm:text-base">
-									{rec.name}
-								</p>
-								<p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
+							<div className="min-w-0 flex-1 space-y-1">
+								<p className="text-sm font-semibold text-foreground sm:text-base">{rec.name}</p>
+								<p className="line-clamp-2 text-xs text-muted-foreground sm:text-sm">
 									{rec.title} {rec.company && `at ${rec.company}`}
 								</p>
-								{rec.date && (
-									<p className="text-xs text-slate-500 dark:text-slate-500">
-										{rec.date}
-									</p>
-								)}
+								{rec.date && <p className="text-xs text-muted-foreground">{rec.date}</p>}
 							</div>
 							{rec.linkedinUrl && (
 								<Link
 									href={rec.linkedinUrl}
 									target="_blank"
 									rel="noopener noreferrer"
-									className="p-2.5 rounded-lg bg-gradient-to-br from-yellow-100 to-amber-100 dark:from-yellow-800 dark:to-amber-800 text-yellow-700 dark:text-yellow-400 hover:text-yellow-800 dark:hover:text-yellow-300 hover:bg-yellow-200 dark:hover:bg-yellow-900/40 transition-all flex-shrink-0"
+									className="no-underline shrink-0 rounded-lg border border-border bg-muted p-2.5 text-foreground transition-colors hover:bg-muted/80"
 									aria-label={`View ${rec.name}'s LinkedIn profile`}
 								>
-									<Linkedin className="h-5 w-5" />
+									<Linkedin className="h-5 w-5" aria-hidden />
 								</Link>
 							)}
 						</div>

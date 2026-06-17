@@ -21,7 +21,7 @@ export default function PrivacyPage() {
 		<div className="min-h-screen bg-background">
 			<div className={PAGE_SHELL_NARROW}>
 				<p className="text-sm font-medium text-muted-foreground">
-					<Link href="/" className="text-primary hover:underline">
+					<Link href="/" className="link-underline text-primary hover:underline">
 						Home
 					</Link>
 					<span className="mx-2" aria-hidden>

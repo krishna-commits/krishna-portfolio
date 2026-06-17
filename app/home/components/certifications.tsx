@@ -9,6 +9,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Button } from "app/theme/components/ui/button"
 import { useState } from "react"
 import useSWR from 'swr'
+import { PAGE_CARD, PAGE_H1, PAGE_ICON_CHIP, PAGE_LEAD } from "lib/page-layout"
+import { cn } from "app/theme/lib/utils"
 
 const fetcher = (url: string) => fetch(url).then(res => res.json())
 
@@ -146,40 +148,33 @@ function CertificationItem({ cert }: { cert: any }) {
 function CertificationProviderCard({
 	provider,
 	certifications,
-	gradient,
-	bgGradient,
 }: {
 	provider: string
 	certifications: any[]
-	gradient: string
-	bgGradient: string
 }) {
 	return (
 		<motion.div
 			initial={{ opacity: 0, y: 20 }}
 			whileInView={{ opacity: 1, y: 0 }}
 			viewport={{ once: true }}
-			whileHover={{ scale: 1.02, y: -4 }}
+			whileHover={{ y: -2 }}
 			transition={{ duration: 0.3 }}
-			className="relative p-6 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-lg transition-all duration-300"
+			className={cn(PAGE_CARD, "p-6 transition-shadow hover:shadow-md")}
 		>
 			<div className="space-y-6">
-				{/* Provider Name */}
 				<div className="flex items-center justify-center">
-					<div className={`px-5 py-2.5 rounded-lg bg-gradient-to-r ${gradient} text-white font-bold text-base`}>
+					<span className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white dark:bg-amber-600">
 						{provider}
-					</div>
+					</span>
 				</div>
 
-				{/* Certifications Count */}
 				<div className="text-center">
-					<p className="text-3xl font-bold text-slate-900 dark:text-slate-50 mb-1">{certifications.length}</p>
-					<p className="text-sm text-slate-500 dark:text-slate-500">
+					<p className="mb-1 text-3xl font-bold text-foreground">{certifications.length}</p>
+					<p className="text-sm text-muted-foreground">
 						{certifications.length === 1 ? 'Certification' : 'Certifications'}
 					</p>
 				</div>
 
-				{/* Certifications List */}
 				<div className="space-y-3">
 					{certifications.map((cert: any, idx: number) => (
 						<CertificationItem key={`${cert.title}-${idx}`} cert={cert} />
@@ -208,15 +203,15 @@ export function Certifications() {
 				transition={{ duration: 0.5 }}
 				className="mb-12"
 			>
-				<div className="inline-flex items-center gap-3 mb-4">
-					<div className="p-3 rounded-xl bg-gradient-to-br from-orange-500 via-red-500 to-orange-600">
-						<Award className="h-6 w-6 text-white" aria-hidden="true" />
-					</div>
-					<h2 id="certifications-heading" className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
+				<div className="mb-10 flex flex-wrap items-center gap-3">
+					<span className={PAGE_ICON_CHIP}>
+						<Award className="h-5 w-5" aria-hidden />
+					</span>
+					<h2 id="certifications-heading" className={PAGE_H1}>
 						Professional Certifications
 					</h2>
 				</div>
-				<p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-3xl leading-relaxed">
+				<p className={cn(PAGE_LEAD, "mb-10 text-base sm:text-lg")}>
 					Industry-recognized certifications and credentials
 				</p>
 			</motion.div>
@@ -224,57 +219,27 @@ export function Certifications() {
 			{/* Certification Providers Grid */}
 			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
 				{certifications.aws.length > 0 && (
-					<CertificationProviderCard
-						provider="AWS"
-						certifications={certifications.aws}
-						gradient="from-orange-500 via-red-500 to-orange-600"
-						bgGradient="from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/20"
-					/>
+					<CertificationProviderCard provider="AWS" certifications={certifications.aws} />
 				)}
 
 				{certifications.google.length > 0 && (
-					<CertificationProviderCard
-						provider="Google"
-						certifications={certifications.google}
-						gradient="from-yellow-400 via-amber-500 to-yellow-600"
-						bgGradient="from-yellow-50 to-amber-50 dark:from-yellow-950/20 dark:to-amber-950/20"
-					/>
+					<CertificationProviderCard provider="Google" certifications={certifications.google} />
 				)}
 
 				{certifications.coursera.length > 0 && (
-					<CertificationProviderCard
-						provider="Coursera"
-						certifications={certifications.coursera}
-						gradient="from-blue-500 to-indigo-600"
-						bgGradient="from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20"
-					/>
+					<CertificationProviderCard provider="Coursera" certifications={certifications.coursera} />
 				)}
 
 				{certifications.okta.length > 0 && (
-					<CertificationProviderCard
-						provider="Okta"
-						certifications={certifications.okta}
-						gradient="from-blue-400 to-sky-500"
-						bgGradient="from-blue-50 to-sky-50 dark:from-blue-950/20 dark:to-sky-950/20"
-					/>
+					<CertificationProviderCard provider="Okta" certifications={certifications.okta} />
 				)}
 
 				{certifications.icsi.length > 0 && (
-					<CertificationProviderCard
-						provider="ICSI"
-						certifications={certifications.icsi}
-						gradient="from-sky-400 to-blue-500"
-						bgGradient="from-sky-50 to-blue-50 dark:from-sky-950/20 dark:to-blue-950/20"
-					/>
+					<CertificationProviderCard provider="ICSI" certifications={certifications.icsi} />
 				)}
 
 				{certifications.other.length > 0 && (
-					<CertificationProviderCard
-						provider="Other"
-						certifications={certifications.other}
-						gradient="from-slate-500 to-slate-700"
-						bgGradient="from-slate-50 to-slate-100 dark:from-slate-950/20 dark:to-slate-900/20"
-					/>
+					<CertificationProviderCard provider="Other" certifications={certifications.other} />
 				)}
 			</div>
 		</section>

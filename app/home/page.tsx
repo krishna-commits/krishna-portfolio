@@ -53,13 +53,10 @@ const GitHubContributionGraph = dynamic(() => import("./components/github-contri
 // Static imports for components that don't need optimization
 import { SocialLinks } from "./components/social-links"
 import { LinkedInRecommendations } from "./components/linkedin-recommendations"
-import { GitHubContributions } from "./components/github-contributions"
 import { Certifications } from "./components/certifications"
-import { Newsletter } from "../components/newsletter"
 import { EducationExperience } from "./components/education-experience"
 import { SecurityFirstApproach } from "./components/security-first-approach"
-import { HobbiesSection } from "./components/hobbies-section"
-import { ScrollAnimation, StaggerContainer, StaggerItem } from "../components/scroll-animations"
+import { ScrollAnimation } from "../components/scroll-animations"
 import { CopyrightFooter } from "../components/copyright-footer"
 
 export const metadata: Metadata = generatePageMetadata({
@@ -193,7 +190,7 @@ export default function HomePage() {
 						</div>
 					</section>
 
-					{/* GitHub Contribution Graph */}
+					{/* GitHub activity */}
 					<section className="relative w-full py-12 md:py-16 bg-muted/40 dark:bg-muted/20" aria-labelledby="github-contributions-heading">
 						<div className="relative w-full">
 							<div className="w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
@@ -206,38 +203,11 @@ export default function HomePage() {
 						</div>
 					</section>
 
-					{/* GitHub */}
-					<section className="relative w-full py-12 md:py-16" aria-labelledby="github-heading">
-						<div className="relative w-full">
-							<div className="w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-								<GitHubContributions />
-							</div>
-						</div>
-					</section>
-
 					{/* Recommendations */}
 					<section className="relative w-full py-12 md:py-16 bg-muted/40 dark:bg-muted/20" aria-labelledby="recommendations-heading">
 						<div className="relative w-full">
 							<div className="w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
 								<LinkedInRecommendations />
-							</div>
-						</div>
-					</section>
-
-					{/* Newsletter */}
-					<section className="relative w-full py-12 md:py-16" aria-labelledby="newsletter-heading">
-						<div className="relative w-full">
-							<div className="w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-								<Newsletter />
-							</div>
-						</div>
-					</section>
-
-					{/* Hobbies */}
-					<section className="relative w-full py-12 md:py-16" aria-labelledby="hobbies-heading">
-						<div className="relative w-full">
-							<div className="w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-								<HobbiesSection />
 							</div>
 						</div>
 					</section>

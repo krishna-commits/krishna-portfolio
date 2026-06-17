@@ -478,11 +478,11 @@ export const SkillsShowcase = memo(function SkillsShowcase() {
 											className="flex items-center justify-between pb-3 border-b-2 border-slate-200 dark:border-slate-800"
 										>
 											<div className="flex items-center gap-3">
-												<div className={`p-2.5 rounded-xl bg-gradient-to-br ${category.gradient} shadow-lg`}>
-													<category.icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-												</div>
+												<span className="inline-flex rounded-xl border border-border bg-muted p-2.5 text-foreground">
+													<category.icon className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden />
+												</span>
 												<div>
-													<h3 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 dark:text-slate-50 mb-0.5">
+													<h3 className="mb-0.5 text-sm font-semibold text-foreground sm:text-base md:text-lg">
 														{categoryName}
 													</h3>
 													<p className="text-xs text-slate-600 dark:text-slate-400 font-medium">
@@ -586,10 +586,6 @@ const SkillCard = memo(function SkillCard({
 	prefersReducedMotion: boolean
 }) {
 	const [imageError, setImageError] = useState(false)
-	const categoryBgGradient = useMemo(
-		() => category?.bgGradient || "from-slate-50 to-slate-100 dark:from-slate-900/40 dark:to-slate-800/40",
-		[category]
-	)
 
 	return (
 		<motion.div
@@ -604,7 +600,6 @@ const SkillCard = memo(function SkillCard({
 			<div
 				className={cn(
 					"relative flex flex-col items-center justify-center gap-2 overflow-hidden rounded-2xl border border-border bg-card p-2 sm:p-3 shadow-sm transition-shadow duration-200 hover:shadow-md",
-					category && `bg-gradient-to-br ${categoryBgGradient}`,
 					viewMode === "compact" && "aspect-square p-2",
 					(viewMode === "grid" || viewMode === "list") && "aspect-square"
 				)}

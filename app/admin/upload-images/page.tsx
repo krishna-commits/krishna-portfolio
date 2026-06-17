@@ -68,11 +68,16 @@ export default function ImageUploadPage(): JSX.Element {
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
   const [folderPath, setFolderPath] = useState<string>('mantra');
   const [customFolder, setCustomFolder] = useState<string>('');
-  const [selectedFolderFilter, setSelectedFolderFilter] = useState<string>('');
+  const [selectedFolderFilter, setSelectedFolderFilter] = useState<string>('all');
+
+  const blobListUrl =
+    selectedFolderFilter && selectedFolderFilter !== 'all'
+      ? `/api/admin/blob/list?folder=${encodeURIComponent(selectedFolderFilter)}`
+      : '/api/admin/blob/list';
 
   // Fetch existing images from blob store
   const { data: blobData, error: blobError, isLoading: blobLoading, mutate: refetchBlobs } = useSWR<BlobListResponse>(
-    `/api/admin/blob/list${selectedFolderFilter ? `?folder=${selectedFolderFilter}` : ''}`,
+    blobListUrl,
     fetcher,
     {
       refreshInterval: 30000, // Refresh every 30 seconds
@@ -421,7 +426,7 @@ export default function ImageUploadPage(): JSX.Element {
                     <SelectValue placeholder="All folders" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All folders</SelectItem>
+                    <SelectItem value="all">All folders</SelectItem>
                     {Object.keys(blobData?.folders || {}).map((folder) => (
                       <SelectItem key={folder} value={folder}>
                         <div className="flex items-center gap-2">
@@ -487,7 +492,7 @@ export default function ImageUploadPage(): JSX.Element {
               {blobData && blobData.total === 0 && !blobLoading && (
                 <div className="text-center py-12 text-slate-500 dark:text-slate-400">
                   <ImageIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p className="mb-2">No images found in blob store{selectedFolderFilter ? ` in "${selectedFolderFilter}" folder` : ''}.</p>
+                  <p className="mb-2">No images found in blob store{selectedFolderFilter !== 'all' ? ` in "${selectedFolderFilter}" folder` : ''}.</p>
                   <p className="text-xs">Upload images using the forms above to get started.</p>
                 </div>
               )}
@@ -498,7 +503,7 @@ export default function ImageUploadPage(): JSX.Element {
                   {Object.keys(blobData.folders || {}).length > 0 && (
                     <div className="space-y-6">
                       {Object.entries(blobData.folders || {})
-                        .filter(([folder]) => !selectedFolderFilter || folder === selectedFolderFilter)
+                        .filter(([folder]) => selectedFolderFilter === 'all' || folder === selectedFolderFilter)
                         .map(([folder, files]) => (
                           <div key={folder} className="space-y-3">
                             <div className="flex items-center gap-2 pb-2 border-b border-slate-200 dark:border-slate-700">

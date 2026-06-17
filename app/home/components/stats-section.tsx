@@ -10,6 +10,7 @@ import useSWR from 'swr'
 import { BookOpen, Code, Award, FileText, Zap, Github, Star, GitFork, TrendingUp, Layers, Eye, Book, BookMarked, MessageSquare, BarChart3, Target, Users, Rocket } from "lucide-react"
 import { ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid, RadialBarChart, RadialBar, LineChart, Line } from 'recharts'
 import { cn } from "app/theme/lib/utils"
+import { PAGE_CARD, PAGE_ICON_CHIP, PAGE_H1, PAGE_LEAD } from "lib/page-layout"
 
 const fetcher = async (url: string) => {
 	const res = await fetch(url)
@@ -67,60 +68,36 @@ function FeaturedStatCard({ stat, index }: { stat: any; index: number }) {
 			className="group relative"
 		>
 			<div className={cn(
-				"relative h-full overflow-hidden rounded-xl border-2 p-4 sm:p-5 md:p-6 transition-all duration-500",
-				"bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-950",
-				"border-slate-200 dark:border-slate-800",
-				"hover:border-transparent hover:shadow-2xl"
+				PAGE_CARD,
+				"relative h-full overflow-hidden p-4 transition-shadow duration-300 hover:shadow-md sm:p-5 md:p-6",
 			)}>
-				{/* Gradient overlay on hover */}
-				<div className={cn(
-					"absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity duration-500 rounded-2xl",
-					stat.gradient,
-					"group-hover:opacity-10"
-				)} />
-				
-				{/* Content */}
 				<div className="relative z-10 space-y-3 sm:space-y-4">
-					{/* Icon */}
 					<motion.div
-						animate={isHovered ? { rotate: [0, -10, 10, -10, 0], scale: 1.1 } : {}}
-						transition={{ duration: 0.5 }}
-						className={cn(
-							"inline-flex p-2 sm:p-2.5 rounded-lg bg-gradient-to-br shadow-md",
-							stat.gradient
-						)}>
-						<stat.icon className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
+						animate={isHovered ? { scale: 1.05 } : {}}
+						transition={{ duration: 0.3 }}
+						className="inline-flex rounded-lg border border-border bg-muted p-2 sm:p-2.5"
+					>
+						<stat.icon className="h-3 w-3 text-amber-600 dark:text-amber-400 sm:h-4 sm:w-4" />
 					</motion.div>
-					
-					{/* Value */}
+
 					<div className="space-y-1.5">
 						{stat.loading ? (
-							<div className={cn(
-								"text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-br bg-clip-text text-transparent leading-none animate-pulse",
-								stat.gradient
-							)}>
+							<div className="text-2xl font-bold leading-none text-muted-foreground animate-pulse sm:text-3xl md:text-4xl">
 								--
 							</div>
 						) : (
-							<div className={cn(
-								"text-2xl sm:text-3xl md:text-4xl font-extrabold bg-gradient-to-br bg-clip-text text-transparent leading-none",
-								stat.gradient
-							)}>
+							<div className="text-2xl font-bold leading-none text-foreground sm:text-3xl md:text-4xl">
 								<AnimatedCounter value={stat.value} />
 							</div>
 						)}
-						<div className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-50">
+						<div className="text-sm font-semibold text-foreground sm:text-base">
 							{stat.label}
 						</div>
-						<div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+						<div className="text-xs text-muted-foreground sm:text-sm">
 							{stat.description}
 						</div>
 					</div>
 				</div>
-				
-				{/* Decorative elements */}
-				<div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-slate-100/50 to-transparent dark:from-slate-800/50 rounded-full blur-3xl -mr-16 -mt-16" />
-				<div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-slate-100/50 to-transparent dark:from-slate-800/50 rounded-full blur-2xl -ml-12 -mb-12" />
 			</div>
 		</motion.div>
 	)
@@ -167,66 +144,36 @@ function StatCard({ stat, index }: { stat: any; index: number }) {
 			onHoverEnd={() => setIsHovered(false)}
 			className="group relative"
 		>
-			<div className={cn(
-				"relative h-full overflow-hidden rounded-lg border-2 p-4 sm:p-5 transition-all duration-300",
-				"bg-white dark:bg-slate-900",
-				"border-slate-200 dark:border-slate-800",
-				"hover:border-transparent hover:shadow-xl"
-			)}>
-				{/* Top gradient bar */}
-				<div className={cn(
-					"absolute top-0 left-0 right-0 h-1 bg-gradient-to-r transition-all duration-300",
-					stat.gradient,
-					"group-hover:h-1.5"
-				)} />
-				
+			<div className={cn(PAGE_CARD, "relative h-full overflow-hidden p-4 transition-shadow hover:shadow-md sm:p-5")}>
 				<div className="relative space-y-4">
-					{/* Icon */}
 					<motion.div
-						animate={isHovered ? { rotate: 360 } : {}}
-						transition={{ duration: 0.6, ease: "easeInOut" }}
-						className={cn(
-							"inline-flex p-3 rounded-xl bg-gradient-to-br shadow-md transition-all duration-300",
-							stat.gradient,
-							"group-hover:shadow-lg group-hover:scale-110"
-						)}>
-						<stat.icon className="h-5 w-5 text-white" />
+						animate={isHovered ? { scale: 1.05 } : {}}
+						transition={{ duration: 0.3 }}
+						className="inline-flex rounded-lg border border-border bg-muted p-3"
+					>
+						<stat.icon className="h-5 w-5 text-amber-600 dark:text-amber-400" />
 					</motion.div>
-					
-					{/* Value and Label */}
+
 					<div className="space-y-2">
 						{stat.loading ? (
-							<div className={cn(
-								"text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-br bg-clip-text text-transparent leading-none animate-pulse",
-								stat.gradient
-							)}>
+							<div className="text-xl font-bold leading-none text-muted-foreground animate-pulse sm:text-2xl md:text-3xl">
 								--
 							</div>
 						) : (
-							<div className={cn(
-								"text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-br bg-clip-text text-transparent leading-none",
-								stat.gradient
-							)}>
+							<div className="text-xl font-bold leading-none text-foreground sm:text-2xl md:text-3xl">
 								{displayValue.toLocaleString()}
 							</div>
 						)}
 						<div className="space-y-1">
-							<div className="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-50">
+							<div className="text-xs font-semibold text-foreground sm:text-sm">
 								{stat.label}
 							</div>
-							<div className="text-xs text-slate-500 dark:text-slate-400">
+							<div className="text-xs text-muted-foreground">
 								{stat.description}
 							</div>
 						</div>
 					</div>
 				</div>
-				
-				{/* Hover glow effect */}
-				<div className={cn(
-					"absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity duration-300 rounded-xl blur-xl -z-10",
-					stat.gradient,
-					"group-hover:opacity-20"
-				)} />
 			</div>
 		</motion.div>
 	)
@@ -248,7 +195,7 @@ function EnhancedDonutChart({ data, colors, centerValue, centerLabel, title }: {
 			whileInView={{ opacity: 1, scale: 1 }}
 			viewport={{ once: true }}
 			transition={{ duration: 0.5 }}
-			className="relative rounded-xl border-2 border-slate-200 dark:border-slate-800 bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-950 p-4 sm:p-5 shadow-lg hover:shadow-xl transition-shadow duration-300"
+			className={cn(PAGE_CARD, "relative p-4 transition-shadow hover:shadow-md sm:p-5")}
 		>
 			<h4 className="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 mb-3 sm:mb-4 text-center">
 				{title}
@@ -356,7 +303,7 @@ function RadialProgressChart({ data, colors, title }: {
 			whileInView={{ opacity: 1, scale: 1 }}
 			viewport={{ once: true }}
 			transition={{ duration: 0.5 }}
-			className="relative rounded-xl border-2 border-slate-200 dark:border-slate-800 bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-950 p-4 sm:p-5 shadow-lg hover:shadow-xl transition-shadow duration-300"
+			className={cn(PAGE_CARD, "relative p-4 transition-shadow hover:shadow-md sm:p-5")}
 		>
 			<h4 className="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 mb-3 sm:mb-4 text-center">
 				{title}
@@ -708,20 +655,14 @@ export const StatsSection = memo(function StatsSection() {
 			>
 				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6 mb-4 sm:mb-6">
 					<div className="space-y-3 sm:space-y-4">
-						<div className="inline-flex items-center gap-2 sm:gap-3 md:gap-4">
-					<motion.div
-						animate={{ rotate: [0, 360] }}
-						transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-						className="p-2 sm:p-2.5 md:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-500 shadow-lg"
-					>
-						<Zap className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-					</motion.div>
-							<h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
-								Impact Metrics
-							</h2>
+						<div className="flex flex-wrap items-center gap-2 sm:gap-3">
+							<span className={PAGE_ICON_CHIP}>
+								<Zap className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden />
+							</span>
+							<h2 className={PAGE_H1}>Impact Metrics</h2>
 						</div>
-						<p className="text-sm sm:text-base md:text-lg text-slate-600 dark:text-slate-400 max-w-3xl leading-relaxed">
-							Measurable security outcomes, research impact, and engineering achievements demonstrating DevSecOps expertise
+						<p className={cn(PAGE_LEAD, "text-sm sm:text-base md:text-lg")}>
+							Measurable security outcomes, research impact, and engineering achievements
 						</p>
 					</div>
 				</div>
@@ -746,15 +687,6 @@ export const StatsSection = memo(function StatsSection() {
 						colors={researchChartColors}
 					/>
 				)}
-
-				{/* Development Section */}
-				<CategorySection
-					title="Development & Open Source"
-					icon={Code}
-					stats={developmentStats}
-					chartData={developmentChartData}
-					colors={developmentChartColors}
-				/>
 
 				{/* Community Section */}
 				<CategorySection

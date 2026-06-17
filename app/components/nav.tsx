@@ -159,7 +159,7 @@ function NavItem({ path, name, icon: Icon, ariaLabel, gradient, isAnchor }: {
 			href={path}
 			aria-label={ariaLabel}
 			aria-current={isActive ? 'page' : undefined}
-			className="relative group"
+			className="no-underline relative group touch-target"
 			onMouseEnter={() => setIsHovered(true)}
 			onMouseLeave={() => setIsHovered(false)}
 			onClick={handleClick}
@@ -168,8 +168,8 @@ function NavItem({ path, name, icon: Icon, ariaLabel, gradient, isAnchor }: {
 				className={cn(
 					"relative flex items-center gap-1 min-h-11 px-2.5 sm:px-3 rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background overflow-hidden",
 					isActive
-						? `bg-gradient-to-r ${gradient} text-white shadow-sm`
-						: "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-50 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700"
+						? "bg-amber-600 text-white shadow-sm dark:bg-amber-600"
+						: "border border-border bg-muted/50 text-foreground hover:bg-muted"
 				)}
 				whileHover={prefersReducedMotion ? {} : { scale: 1.03, y: -1 }}
 				whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
@@ -178,7 +178,7 @@ function NavItem({ path, name, icon: Icon, ariaLabel, gradient, isAnchor }: {
 				{/* Active state background */}
 				{isActive && (
 					<motion.div
-						className={`absolute inset-0 bg-gradient-to-r ${gradient} rounded-lg`}
+						className="absolute inset-0 rounded-lg bg-amber-600 dark:bg-amber-600"
 						layoutId="navbar-active"
 						transition={prefersReducedMotion ? {} : {
 							type: 'spring',
