@@ -1,54 +1,27 @@
 'use client'
 
-import { motion, AnimatePresence } from 'framer-motion'
-import { usePathname } from 'next/navigation'
+import { motion } from 'framer-motion'
 import { ReactNode } from 'react'
 
 interface PageTransitionProps {
 	children: ReactNode
 }
 
-const pageVariants = {
-	initial: {
-		opacity: 0,
-		y: 20,
-		scale: 0.98
-	},
-	animate: {
-		opacity: 1,
-		y: 0,
-		scale: 1
-	},
-	exit: {
-		opacity: 0,
-		y: -20,
-		scale: 0.98
-	}
-}
-
-const pageTransition = {
-	type: 'tween',
-	ease: [0.25, 0.1, 0.25, 1],
-	duration: 0.4
-}
-
+/**
+ * Lightweight enter animation only.
+ * Do not use AnimatePresence / exit animations on layout {children} —
+ * that unmounts Next.js App Router slots and throws parallelRouterKey errors.
+ */
 export function PageTransition({ children }: PageTransitionProps) {
-	const pathname = usePathname()
-
 	return (
-		<AnimatePresence mode="wait" initial={false}>
-			<motion.div
-				key={pathname}
-				initial="initial"
-				animate="animate"
-				exit="exit"
-				variants={pageVariants}
-				transition={pageTransition}
-				className="w-full"
-			>
-				{children}
-			</motion.div>
-		</AnimatePresence>
+		<motion.div
+			initial={{ opacity: 0, y: 8 }}
+			animate={{ opacity: 1, y: 0 }}
+			transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+			className="w-full"
+		>
+			{children}
+		</motion.div>
 	)
 }
 
@@ -65,11 +38,10 @@ export function SharedElement({ children, className }: SharedElementProps) {
 			transition={{
 				type: 'spring',
 				stiffness: 300,
-				damping: 30
+				damping: 30,
 			}}
 		>
 			{children}
 		</motion.div>
 	)
 }
-

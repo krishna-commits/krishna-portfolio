@@ -7,7 +7,6 @@ import {
 	GitHubMetricsSkeleton, 
 	SkillsShowcaseSkeleton, 
 	HeroSkeleton,
-	ProjectCardSkeleton,
 	StatsCardSkeleton 
 } from "../components/skeleton-loaders"
 import { ErrorBoundary } from "../components/error-boundary"
@@ -34,28 +33,31 @@ const SkillsShowcase = dynamic(() => import("./components/skills-showcase").then
 	ssr: true,
 })
 
-const FeaturedProjects = dynamic(() => import("./components/featured-projects").then(mod => ({ default: mod.FeaturedProjects })), {
-	loading: () => (
-		<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-			{Array.from({ length: 6 }).map((_, i) => (
-				<ProjectCardSkeleton key={i} />
-			))}
-		</div>
-	),
+const GitHubContributionGraph = dynamic(() => import("./components/github-contribution-graph").then(mod => ({ default: mod.GitHubContributionGraph })), {
+	loading: () => <GitHubMetricsSkeleton />,
+	ssr: false,
+})
+
+const EducationExperience = dynamic(() => import("./components/education-experience").then(mod => ({ default: mod.EducationExperience })), {
 	ssr: true,
 })
 
-const GitHubContributionGraph = dynamic(() => import("./components/github-contribution-graph").then(mod => ({ default: mod.GitHubContributionGraph })), {
-	loading: () => <GitHubMetricsSkeleton />,
-	ssr: false, // Client-side only (uses SWR)
+const Certifications = dynamic(() => import("./components/certifications").then(mod => ({ default: mod.Certifications })), {
+	ssr: true,
 })
 
-// Static imports for components that don't need optimization
-import { SocialLinks } from "./components/social-links"
-import { LinkedInRecommendations } from "./components/linkedin-recommendations"
-import { Certifications } from "./components/certifications"
-import { EducationExperience } from "./components/education-experience"
-import { SecurityFirstApproach } from "./components/security-first-approach"
+const SecurityFirstApproach = dynamic(() => import("./components/security-first-approach").then(mod => ({ default: mod.SecurityFirstApproach })), {
+	ssr: true,
+})
+
+const LinkedInRecommendations = dynamic(() => import("./components/linkedin-recommendations").then(mod => ({ default: mod.LinkedInRecommendations })), {
+	ssr: true,
+})
+
+const SocialLinks = dynamic(() => import("./components/social-links").then(mod => ({ default: mod.SocialLinks })), {
+	ssr: true,
+})
+
 import { ScrollAnimation } from "../components/scroll-animations"
 import { CopyrightFooter } from "../components/copyright-footer"
 
@@ -132,7 +134,7 @@ export default function HomePage() {
 					</section>
 
 					{/* Technology Stack - Moved Up */}
-					<section id="skills" className="relative w-full scroll-mt-24 py-12 md:py-16 bg-gradient-to-b from-slate-100/80 via-background to-background dark:from-slate-900/50 dark:via-background dark:to-background border-y border-border" aria-labelledby="technology-stack-heading">
+					<section id="skills" className="relative w-full scroll-mt-24 border-y border-border py-12 md:py-16" aria-labelledby="technology-stack-heading">
 						<div className="relative w-full">
 							<div className="w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
 								<ScrollAnimation variant="slide-up" delay={0.1}>
@@ -165,27 +167,6 @@ export default function HomePage() {
 						<div className="relative w-full">
 							<div className="w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
 								<SecurityFirstApproach />
-							</div>
-						</div>
-					</section>
-
-					{/* Featured Projects */}
-					<section id="projects" className="relative w-full scroll-mt-24 py-12 md:py-16 bg-muted/40 dark:bg-muted/20" aria-labelledby="projects-heading">
-						<div className="relative w-full">
-							<div className="w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-								<ErrorBoundary>
-									<Suspense fallback={
-										<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-											{Array.from({ length: 6 }).map((_, i) => (
-												<ProjectCardSkeleton key={i} />
-											))}
-										</div>
-									}>
-										<ScrollAnimation variant="scale">
-											<FeaturedProjects />
-										</ScrollAnimation>
-									</Suspense>
-								</ErrorBoundary>
 							</div>
 						</div>
 					</section>

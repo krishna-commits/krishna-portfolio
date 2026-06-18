@@ -11,7 +11,7 @@ export function StickySidebarNav() {
 		{ id: 'research-nav', label: 'Research', href: '/research-core', isRoute: true },
 		{ id: 'certifications-heading', label: 'Certifications', href: '#certifications-heading' },
 		{ id: 'security', label: 'Security', href: '#security' },
-		{ id: 'projects', label: 'Projects', href: '#projects' },
+		{ id: 'projects', label: 'Projects', href: '/projects', isRoute: true },
 	]
 
 	return <StickySidebar sections={sections} />

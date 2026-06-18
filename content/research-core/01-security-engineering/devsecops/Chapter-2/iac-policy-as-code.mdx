@@ -1,0 +1,58 @@
+---
+title: Infrastructure Policy as Code
+description: Enforcing security and compliance on Terraform and Kubernetes manifests before changes reach production.
+parent: "Chapter 2: Runtime & Supply Chain Controls"
+grand_parent: DevSecOps
+order: 2
+completed: true
+keywords:
+  - Terraform
+  - OPA
+  - Checkov
+  - Terrascan
+  - CIS Benchmarks
+---
+
+# Infrastructure Policy as Code
+
+## Why IaC scanning matters
+
+Misconfigured S3 buckets, open security groups, and privileged pods are **leading cloud breach vectors**. Scanning at `terraform plan` time prevents drift before apply.
+
+## Tooling comparison
+
+| Tool | Strength |
+|------|----------|
+| Checkov | Broad Terraform/CloudFormation/K8s rules |
+| Terrascan | Policy-as-code with custom Rego |
+| tfsec | Fast Terraform-focused checks |
+| OPA / Conftest | Custom organizational policies |
+
+## Example policies
+
+```rego
+# Deny public S3 ACLs (conceptual OPA)
+deny[msg] {
+  resource := input.resource.aws_s3_bucket[name]
+  resource.acl == "public-read"
+  msg := sprintf("S3 bucket %s must not be public", [name])
+}
+```
+
+## CI integration
+
+```bash
+terraform plan -out=plan.tfplan
+terraform show -json plan.tfplan > plan.json
+checkov -f plan.json --framework terraform --soft-fail-on MEDIUM
+```
+
+## CIS alignment
+
+Map policies to **CIS AWS/Azure/GCP benchmarks** for audit readiness. Tag each rule with control ID in policy documentation.
+
+## Operating model
+
+- Platform team maintains **golden policies**
+- Service teams request exceptions via ticket with expiry
+- Monthly report: top violated rules → training or guardrail automation

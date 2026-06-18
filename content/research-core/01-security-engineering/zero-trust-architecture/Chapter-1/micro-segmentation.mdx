@@ -1,0 +1,48 @@
+---
+title: Micro-Segmentation for Cloud Networks
+description: Network segmentation strategies using security groups, NACLs, and service mesh policies.
+parent: "Chapter 1: Identity and Access"
+grand_parent: Zero Trust Architecture
+order: 2
+completed: true
+---
+
+# Micro-Segmentation for Cloud Networks
+
+## Goal
+
+Limit lateral movement so a compromised workload cannot reach unrelated systems.
+
+## Layers
+
+1. **VPC / VNet isolation** — Separate prod, staging, shared services
+2. **Subnet tiers** — Public ALB only; app and data in private subnets
+3. **Security groups** — Default deny; allowlist ports per service
+4. **Service mesh** — mTLS + L7 authorization between pods
+
+## Kubernetes example
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: api-allow-frontend-only
+spec:
+  podSelector:
+    matchLabels:
+      app: api
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: frontend
+      ports:
+        - protocol: TCP
+          port: 8080
+```
+
+## Verification
+
+- Run **network reachability tests** from CI after policy changes
+- Map actual flows vs intended policy quarterly
+- Document exceptions with owner and review date

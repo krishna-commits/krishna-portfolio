@@ -38,26 +38,22 @@ const expertiseAreas = [
 		icon: Shield,
 		title: "Security-First Architecture",
 		description: "Designing cloud systems with security as a foundational principle.",
-		gradient: "from-sky-400 to-blue-500",
 	},
 	{
 		icon: Server,
 		title: "Infrastructure Automation",
 		description: "Building scalable, resilient infrastructure with IaC and CI/CD.",
-		gradient: "from-yellow-400 via-amber-500 to-yellow-600",
 	},
 	{
 		icon: Lock,
 		title: "Cybersecurity Defense",
 		description: "Implementing defense-in-depth, zero-trust architectures, and automated threat detection for enterprise cloud environments.",
-		gradient: "from-blue-400 to-sky-500",
 	},
 	{
 		icon: Cloud,
 		title: "Cloud-Native",
 		description: "Expertise in AWS, GCP, Heroku, Azure, and Kubernetes orchestration.",
-		gradient: "from-orange-500 via-red-500 to-orange-600",
-	}
+	},
 ]
 
 const customTags = ["DevSecOps", "Cybersecurity", "Cloud Security", "Threat Detection", "Security Automation", "Zero Trust"]
@@ -144,11 +140,11 @@ export const HeroSection = memo(function HeroSection() {
 									transition={prefersReducedMotion ? {} : { duration: 0.4, ease: "easeOut" }}
 									className="flex items-center gap-1.5 flex-wrap"
 								>
-									<Badge className="px-2 py-1 bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 text-white border-0 shadow-sm text-xs font-semibold">
-										<Shield className="h-3 w-3 mr-1" aria-hidden="true" />
+									<Badge className="border-0 bg-amber-600 px-2 py-1 text-xs font-semibold text-white shadow-sm dark:bg-amber-600">
+										<Shield className="mr-1 h-3 w-3" aria-hidden="true" />
 										Senior DevSecOps Engineer
 									</Badge>
-									<Badge variant="outline" className="px-2 py-1 border border-orange-400 dark:border-orange-600 bg-orange-50/50 dark:bg-orange-950/20 text-xs font-semibold">
+									<Badge variant="outline" className="border-border bg-muted/50 px-2 py-1 text-xs font-semibold text-foreground">
 										Researcher
 									</Badge>
 								</motion.div>
@@ -168,7 +164,7 @@ export const HeroSection = memo(function HeroSection() {
 										</RevealText>
 									</h1>
 									<p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-prose mt-3 sm:mt-4">
-										6+ years building security-first cloud systems, automating threat detection, and implementing zero-trust architectures across AWS, GCP, Heroku, Azure, and Kubernetes.
+										8+ years building security-first cloud systems, automating threat detection, and implementing zero-trust architectures across AWS, GCP, Heroku, Azure, and Kubernetes.
 									</p>
 								</motion.div>
 
@@ -272,9 +268,9 @@ export const HeroSection = memo(function HeroSection() {
 											id={`${deferredView.toLowerCase()}-panel`}
 											aria-labelledby={`${deferredView.toLowerCase()}-tab`}
 										>
-											<h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50 mb-3">
+											<p className="mb-3 text-sm font-semibold text-slate-900 dark:text-slate-50">
 												{viewContent[deferredView].headline}
-											</h3>
+											</p>
 											<ul className="space-y-2" role="list">
 												{viewContent[deferredView].bullets.map((bullet, idx) => (
 													<li key={idx} className="flex gap-2 text-slate-700 dark:text-slate-300">
@@ -302,14 +298,14 @@ export const HeroSection = memo(function HeroSection() {
 									<motion.div
 										key={idx}
 										whileHover={prefersReducedMotion ? {} : { y: -2 }}
-										className="p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-card shadow-sm hover:shadow-md transition-shadow duration-200"
+										className="rounded-2xl border border-border bg-card p-4 shadow-sm transition-shadow duration-200 hover:shadow-md sm:p-5"
 									>
 										<div className="inline-flex p-2.5 rounded-lg bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 mb-3">
 											<Icon className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
 										</div>
-										<h3 className="text-base font-semibold text-slate-900 dark:text-slate-50 mb-2">
+										<p className="mb-2 text-base font-semibold text-slate-900 dark:text-slate-50">
 											{area.title}
-										</h3>
+										</p>
 										<p className="text-sm text-muted-foreground leading-relaxed max-w-prose">
 											{area.description}
 										</p>

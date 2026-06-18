@@ -1,0 +1,50 @@
+---
+title: Container Image Scanning Workflows
+description: Integrating Trivy, Grype, or cloud-native scanners into build and admission control for Kubernetes deployments.
+parent: "Chapter 2: Runtime & Supply Chain Controls"
+grand_parent: DevSecOps
+order: 1
+completed: true
+keywords:
+  - Trivy
+  - Container Security
+  - CVE
+  - Kubernetes Admission
+---
+
+# Container Image Scanning Workflows
+
+## Scan points
+
+1. **CI build** — Fail on critical OS/package CVEs before push to registry
+2. **Registry** — Rescan on schedule (new CVE disclosures)
+3. **Admission** — Block deploy if image digest not in allow-list or policy violated
+
+## Example: Trivy in CI
+
+```bash
+trivy image --severity CRITICAL,HIGH --exit-code 1 myapp:${GIT_SHA}
+```
+
+## Policy tiers
+
+| Severity | CI | Production deploy |
+|----------|-----|-------------------|
+| Critical | Block | Block |
+| High | Block (or 7-day waiver) | Block |
+| Medium | Warn | Track |
+| Low | Info | Info |
+
+## Base image strategy
+
+- Use **minimal distroless or slim** bases
+- Rebuild weekly even without app changes (patch drift)
+- Pin digests in manifests, not floating tags
+
+## Kubernetes admission
+
+Use OPA Gatekeeper or Kyverno to require:
+
+- `image: repo@sha256:...`
+- Label `scanned=true` with scan timestamp annotation
+- No `latest` tag in production namespaces

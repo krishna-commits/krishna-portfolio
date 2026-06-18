@@ -1,0 +1,47 @@
+---
+title: SOC 2 Evidence from CI/CD Pipelines
+description: Automating control evidence — access reviews, change management, vulnerability scanning — for SOC 2 Type II audits.
+parent: "Chapter 3: Compliance Automation"
+grand_parent: DevSecOps
+order: 1
+completed: true
+keywords:
+  - SOC 2
+  - Compliance
+  - Audit
+  - DevSecOps
+---
+
+# SOC 2 Evidence from CI/CD Pipelines
+
+## Control mapping examples
+
+| SOC 2 criteria | Automated evidence |
+|----------------|-------------------|
+| CC6.1 Logical access | IAM export, MFA enrollment report |
+| CC7.2 System monitoring | SIEM alert metrics, uptime SLO |
+| CC8.1 Change management | Git merge history, approved PRs, deploy logs |
+
+## Pipeline artifacts to retain
+
+- PR approval records (GitHub/GitLab API)
+- CI test and security scan results (SARIF archives)
+- Signed deployment manifests with digest
+- Terraform plan/apply logs in immutable storage
+
+## Quarterly automation
+
+```text
+Cron job → collect evidence → upload to audit bucket → index in GRC tool
+```
+
+## Auditor-friendly package
+
+1. Control narrative (what + how)
+2. Sample population with timestamps
+3. Screenshots/API exports hashed for integrity
+4. Exception register with approvals
+
+## Research note
+
+Teams automating evidence collection reduce audit prep from **weeks to days** when pipelines are the system of record for change.

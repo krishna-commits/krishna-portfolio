@@ -40,7 +40,7 @@ export default function ProjectsCard() {
 	const filteredProjects = useMemo(() => {
 		return sortedProjects.filter((project: any) => {
 			const matchesSearch = searchQuery
-				? (project.title + " " + (project.description || "")).toLowerCase().includes(searchQuery.toLowerCase())
+				? (project.title + " " + (project.description || "") + " " + (project.outcome || "")).toLowerCase().includes(searchQuery.toLowerCase())
 				: true
 			const matchesKeyword = selectedKeyword
 				? project.keywords && project.keywords.includes(selectedKeyword)
@@ -145,6 +145,12 @@ export default function ProjectsCard() {
 										{project.title}
 									</h3>
 
+									{project.outcome && (
+										<p className="mb-2 text-xs font-medium leading-snug text-amber-800 dark:text-amber-300">
+											{project.outcome}
+										</p>
+									)}
+
 									{project.description && (
 										<p className="mb-3 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
 											{project.description}
@@ -172,6 +178,12 @@ export default function ProjectsCard() {
 									<h3 className="mb-2 text-sm font-semibold text-foreground sm:text-base">
 										{project.title}
 									</h3>
+
+									{project.outcome && (
+										<p className="mb-2 text-xs font-medium leading-snug text-amber-800 dark:text-amber-300">
+											{project.outcome}
+										</p>
+									)}
 
 									{project.description && (
 										<p className="mb-3 line-clamp-2 text-xs leading-relaxed text-muted-foreground">

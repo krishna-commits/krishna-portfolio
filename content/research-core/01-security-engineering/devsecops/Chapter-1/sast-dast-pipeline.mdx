@@ -1,0 +1,61 @@
+---
+title: SAST and DAST Pipeline Integration
+description: How to combine static and dynamic analysis in automated pipelines with sensible quality gates and developer workflows.
+parent: "Chapter 1: Pipeline Security Foundations"
+grand_parent: DevSecOps
+order: 2
+completed: true
+keywords:
+  - SAST
+  - DAST
+  - SonarQube
+  - OWASP ZAP
+---
+
+# SAST and DAST Pipeline Integration
+
+## When to use each
+
+| Technique | When it runs | Best for |
+|-----------|--------------|----------|
+| **SAST** | On every PR / build | Code flaws, injection patterns, misconfig in source |
+| **DAST** | Post-deploy to staging | Runtime behavior, auth flows, exposed endpoints |
+| **IaC scan** | Terraform/K8s PRs | Cloud misconfiguration before apply |
+
+## SAST integration pattern
+
+```yaml
+# Example GitHub Actions stage
+security-sast:
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v4
+    - name: Run SonarQube scan
+      run: sonar-scanner -Dsonar.projectKey=my-service
+    - name: Fail on quality gate
+      run: ./scripts/check-sonar-gate.sh
+```
+
+### Quality gate recommendations
+
+- **Block merge** on: SQL injection, hardcoded secrets, critical CVEs in direct dependencies
+- **Warn only** on: code smells, duplication spikes, medium-severity style issues
+
+## DAST integration pattern
+
+Run DAST against a **disposable staging environment** with test credentials:
+
+1. Deploy candidate build to staging
+2. Run authenticated crawl with OWASP ZAP or Burp automation
+3. Export SARIF to defect tracker
+4. Compare delta vs baseline (avoid alert fatigue)
+
+## Reducing false positives
+
+1. Maintain an **accepted-risk register** with expiry dates
+2. Tune rules per service (API vs batch vs frontend)
+3. Correlate SAST + dependency + runtime signals before paging on-call
+
+## Research note
+
+Teams that run SAST on every PR and DAST on release candidates report **40–60% fewer** emergency production patches for OWASP Top 10 classes — when findings are routed to the same backlog as functional bugs.

@@ -1,0 +1,111 @@
+---
+title: Interview Preparation Playbook
+description: Senior DevSecOps and platform engineering interview themes — system design, security trade-offs, and behavioral evidence.
+parent: "Chapter 3: Exams and Interviews"
+grand_parent: DevOps Learning Hub
+order: 2
+completed: true
+keywords:
+  - Interview
+  - DevSecOps
+  - Platform
+  - Career
+---
+
+# Interview Preparation Playbook
+
+Senior loops test whether you can **operate**, **design**, and **communicate** under real constraints. Prepare stories with metrics, not buzzwords.
+
+---
+
+## Round types
+
+| Round | What they probe | How to prepare |
+|-------|-----------------|----------------|
+| Recruiter | Scope, level, comp | 2-min career arc; target role clarity |
+| Technical screen | Linux, K8s, CI, cloud | Whiteboard commands; debug scenario |
+| System design | Scale, reliability, security | Draw CI → cluster → observability |
+| Security deep dive | Threat model, compliance | STRIDE on a pipeline; SOC 2 evidence |
+| Behavioral | Leadership, conflict | STAR format with outcomes |
+
+---
+
+## Technical themes (study list)
+
+### Linux & networking
+
+- Debug high CPU on a node without rebooting
+- Explain `TIME_WAIT`, connection limits, file descriptors
+- Walk through TLS termination options (ingress, service mesh, cloud LB)
+
+### Kubernetes
+
+- Pod stuck `Pending` — checklist
+- Rolling update failure — how rollback works
+- How you enforce non-root, read-only root FS, drop capabilities
+
+### CI/CD & DevSecOps
+
+- Where SAST vs SCA vs container scan run; what blocks merge
+- Signing images and verifying at admission
+- Secrets rotation without downtime
+
+### IaC & cloud
+
+- Terraform state locking failure — what breaks
+- Blast radius of a compromised CI OIDC role
+- Multi-account strategy for prod vs non-prod
+
+**Research Core anchors:** [DevSecOps](/research-core/01-security-engineering/devsecops/introduction) · [Incident Response](/research-core/01-security-engineering/incident-response/introduction) · [SRE](/research-core/03-operations-reliability/sre-reliability/introduction)
+
+---
+
+## Sample scenario questions
+
+Answer aloud in **10 minutes** each:
+
+1. Design a CI pipeline for a monorepo with 20 microservices and mandatory CVE gates.
+2. A developer wants `cluster-admin` for debugging — what do you offer instead?
+3. Region outage: RTO 1 h, RPO 15 min — what do you replicate and how do you test failover?
+4. Compliance asks for proof of encryption in transit for all internal services — your plan?
+5. Deployment frequency doubled but incidents tripled — what metrics do you inspect first?
+
+---
+
+## STAR story bank (build five)
+
+| Story | Situation | Result metric |
+|-------|-----------|---------------|
+| Incident commander | Outage scope | MTTR before/after |
+| Security gate rollout | Developer pushback | % builds passing without bypass |
+| Cost optimization | Idle resources | Monthly spend delta |
+| Migration | EKS/GKE/AKS or cloud move | Downtime minutes |
+| Mentoring | Junior → mid promotion | Their shipped project |
+
+---
+
+## Questions to ask them
+
+- How is on-call structured for platform vs product?
+- Where do security findings get triaged — centralized or federated?
+- What is deployment frequency and change failure rate today?
+- How much IaC is Terraform vs click-ops?
+
+---
+
+## Portfolio proof (this site)
+
+Point interviewers to:
+
+- [Projects](/projects) with **outcome** fields
+- [Research Core](/research-core) chapters showing depth in security and platform pillars
+- Public repos with pipelines and modules (if listed on resume)
+
+---
+
+## Week-before checklist
+
+- [ ] Re-read job description; map each bullet to a story
+- [ ] Run `kubectl` and `terraform plan` hands-on once
+- [ ] Prepare 2-min intro + "why this company"
+- [ ] Sleep — tired candidates over-engineer answers

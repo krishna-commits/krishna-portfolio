@@ -1,0 +1,109 @@
+---
+title: GitOps and CI/CD Patterns
+description: Delivery patterns — trunk-based CI, GitOps reconciliation, progressive rollout, and security gates in the pipeline.
+parent: "Chapter 2: Tools and Cloud Depth"
+grand_parent: DevOps Learning Hub
+order: 4
+completed: true
+keywords:
+  - GitOps
+  - CI/CD
+  - Argo CD
+  - Deployment
+---
+
+# GitOps and CI/CD Patterns
+
+**CI** builds and verifies artifacts. **CD** promotes trusted artifacts to environments. **GitOps** makes git the desired-state source for what runs in cluster.
+
+---
+
+## Pattern comparison
+
+| Pattern | How it works | Best for |
+|---------|--------------|----------|
+| Push-based CD | Pipeline calls `kubectl apply` or cloud API | Simple apps, few clusters |
+| GitOps (pull) | Controller syncs cluster to git | Kubernetes, audit trail |
+| Feature flags | Decouple deploy from release | SaaS, gradual exposure |
+| Blue/green | Two identical envs; switch traffic | Zero-downtime migrations |
+| Canary | Small % traffic to new version | Risk reduction |
+
+---
+
+## Reference pipeline (secure)
+
+```mermaid
+flowchart LR
+  PR[Pull request] --> Lint[Lint / test]
+  Lint --> SAST[SAST]
+  SAST --> Build[Build image]
+  Build --> SCA[SCA + image scan]
+  SCA --> Sign[Sign artifact]
+  Sign --> Staging[Deploy staging]
+  Staging --> DAST[DAST optional]
+  DAST --> Approve[Manual / policy gate]
+  Approve --> Prod[GitOps sync prod]
+```
+
+**Research Core:** [CI/CD](/research-core/02-platform-cloud/ci-cd-pipelines/introduction) · [DevSecOps](/research-core/01-security-engineering/devsecops/introduction)
+
+---
+
+## GitOps repository layout
+
+```
+infra-repo/
+  apps/
+    payments/
+      base/
+      overlays/
+        staging/
+        production/
+  clusters/
+    prod-eks/
+      argocd-apps.yaml
+```
+
+Rules:
+
+- **Immutable tags** in production — no `:latest`
+- Separate repos or paths for app source vs deployment manifests
+- PR reviews on every prod change
+
+---
+
+## Environment promotion
+
+| Gate | Staging | Production |
+|------|---------|------------|
+| Automated tests | Required | Required |
+| Security scan severity | Block critical | Block critical + high |
+| Manual approval | Optional | Required for tier-1 |
+| Smoke tests post-deploy | Required | Required + synthetic monitors |
+
+---
+
+## Common failures (and fixes)
+
+| Symptom | Likely cause | Fix |
+|---------|--------------|-----|
+| Drift between git and cluster | Manual `kubectl edit` | Disable direct edits; reconcile |
+| Slow pipelines | No caching | Cache deps; parallelize independent jobs |
+| Flaky tests block everyone | Quarantine + fix | Separate quarantine job; SLA to fix |
+| Secrets in workflow logs | Echo or env dump | Mask secrets; use OIDC to cloud |
+
+---
+
+## Learning exercise
+
+1. Fork a sample app.
+2. Add GitHub Actions: test → build → push to registry with digest tag.
+3. Add Argo CD Application pointing at `kustomize` overlay.
+4. Change replica count in git; watch sync — never `kubectl scale` by hand.
+
+---
+
+## Further reading on this site
+
+- [Supply Chain Security](/research-core/01-security-engineering/supply-chain-security/introduction)
+- [Kubernetes Security](/research-core/01-security-engineering/kubernetes-security/introduction)

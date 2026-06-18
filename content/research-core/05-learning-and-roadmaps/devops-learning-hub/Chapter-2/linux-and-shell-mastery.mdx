@@ -1,0 +1,127 @@
+---
+title: Linux and Shell Mastery Guide
+description: Command fluency, scripting patterns, and troubleshooting checklists for cloud and Kubernetes hosts.
+parent: "Chapter 2: Tools and Cloud Depth"
+grand_parent: DevOps Learning Hub
+order: 3
+completed: true
+keywords:
+  - Linux
+  - Bash
+  - Shell
+  - Operations
+---
+
+# Linux and Shell Mastery Guide
+
+Every container eventually runs on a Linux kernel. Platform engineers debug nodes, sidecars, and CI runners — comfort on the shell is non-negotiable.
+
+---
+
+## Command tiers
+
+### Tier 1 — daily
+
+| Command | Use |
+|---------|-----|
+| `ls`, `cd`, `pwd`, `mkdir`, `rm`, `cp`, `mv` | Navigation and files |
+| `cat`, `less`, `head`, `tail` | Read logs |
+| `grep`, `awk`, `sed` | Filter and transform |
+| `find` | Locate files by name/time |
+| `chmod`, `chown` | Permissions |
+| `ps`, `top`, `htop` | Processes |
+| `df`, `du` | Disk |
+| `systemctl` | Services on systemd hosts |
+| `journalctl` | Service logs |
+| `curl`, `wget` | HTTP checks |
+| `ssh`, `scp` | Remote access |
+
+### Tier 2 — weekly in production
+
+| Command | Use |
+|---------|-----|
+| `strace`, `lsof` | Why is this process stuck? |
+| `tcpdump`, `ss`, `netstat` | Network debugging |
+| `tar`, `gzip` | Archives |
+| `crontab -e` | Scheduled jobs |
+| `useradd`, `usermod`, `groups` | Account hygiene |
+| `iptables` / `nft` basics | Firewall rules on nodes |
+| `mount`, `lsblk` | Volumes |
+
+### Tier 3 — incident mode
+
+| Command | Use |
+|---------|-----|
+| `dmesg` | Kernel / OOM events |
+| `iostat`, `vmstat` | IO and memory pressure |
+| `nsenter`, `crictl` | Container runtime on node |
+| `kill -USR1` | App-specific signals (know your stack) |
+
+**Research Core:** [Linux](/research-core/03-operations-reliability/linux/introduction)
+
+---
+
+## Bash patterns worth memorizing
+
+```bash
+# Fail fast in scripts
+set -euo pipefail
+
+# Loop over files safely
+while IFS= read -r -d '' file; do
+  echo "$file"
+done < <(find . -name '*.yaml' -print0)
+
+# Retry with backoff
+for i in 1 2 3 4 5; do
+  curl -sf https://api.example/health && break
+  sleep $((i * 2))
+done
+```
+
+---
+
+## Troubleshooting playbooks
+
+### Disk full
+
+1. `df -h` — which mount?
+2. `du -sh /*` — largest top-level dirs
+3. `journalctl --disk-usage` — logs?
+4. Rotate or truncate with approval; fix log shipping
+
+### High CPU
+
+1. `top` — which PID?
+2. `ps -p PID -o args` — what process?
+3. Thread dump or profiler per application type
+4. Scale horizontally if load is legitimate
+
+### Cannot SSH
+
+1. Console access via cloud serial / rescue
+2. Check `sshd` status, disk full, `AllowUsers`
+3. Verify security group / NSG / firewall rules
+4. Key permissions: `chmod 600` private key
+
+---
+
+## Security habits on servers
+
+- No direct root SSH; use sudo with logging
+- Unattended upgrades for security patches (with reboot window)
+- CIS or vendor hardening baseline documented
+- Auditd or equivalent for sensitive paths
+
+---
+
+## Practice project
+
+Build a **bootstrap script** that:
+
+1. Creates a deploy user with sudo
+2. Installs Docker or containerd
+3. Configures fail2ban for SSH
+4. Ships logs to a central collector (even a filebeat sidecar counts)
+
+Commit to git with README — portfolio-grade proof.

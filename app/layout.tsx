@@ -1,19 +1,7 @@
 import './globals.css';
-import { Suspense } from 'react';
-import { AnalyticsProvider } from './components/analytics-provider';
 import { ThemeProvider } from "./components/theme-provider"
-import { SiteHeader } from './components/site-header';
-import { Subheader } from './components/subheader';
-import { ScrollToTop } from './components/scroll-to-top';
-import { ReadingProgress } from './components/reading-progress';
-import { PageTransition } from './components/page-transitions';
 import { ClientLayoutWrapper } from './client-layout';
-import { PerformanceMonitor } from './components/performance-monitor';
-import { AdminRouteWrapper } from './components/admin-route-wrapper';
-import { VisitorTracker } from './components/visitor-tracker';
-import { PerformanceTracker } from './components/performance-tracker';
-import { SpeedInsights } from '@vercel/speed-insights/next';
-import { Analytics } from '@vercel/analytics/react';
+import { SiteShell } from './components/site-shell';
 import { rootLayoutMetadata } from './metadata';
 
 export const metadata = rootLayoutMetadata
@@ -50,30 +38,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ClientLayoutWrapper>
-            <AdminRouteWrapper
-              adminContent={children}
-              siteContent={
-                <>
-                  <ReadingProgress />
-                  <SiteHeader />
-                  <Subheader />
-                  <main id="main-content">
-                    <PageTransition>
-                      {children}
-                    </PageTransition>
-                  </main>
-                  <AnalyticsProvider />
-                  <ScrollToTop />
-                  <PerformanceMonitor />
-                  <Suspense fallback={null}>
-                    <VisitorTracker />
-                  </Suspense>
-                  <PerformanceTracker />
-                  <SpeedInsights />
-                  <Analytics />
-                </>
-              }
-            />
+            <SiteShell>{children}</SiteShell>
           </ClientLayoutWrapper>
         </ThemeProvider>
       </body>

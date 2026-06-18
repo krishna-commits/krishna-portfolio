@@ -1,0 +1,40 @@
+---
+title: AWS Security Hub and Config Rules
+description: Centralizing findings from GuardDuty, Inspector, and Config into prioritized remediation queues.
+parent: "Chapter 1: Continuous Compliance"
+grand_parent: Cloud Security Posture Management
+order: 1
+completed: true
+---
+
+# AWS Security Hub and Config Rules
+
+## Architecture
+
+```text
+AWS Config Rules → Security Hub → EventBridge → Jira/Slack
+GuardDuty ────────────────┘
+Inspector ────────────────┘
+IAM Access Analyzer ────┘
+```
+
+## High-value Config rules
+
+| Rule | Finding |
+|------|---------|
+| `s3-bucket-public-read-prohibited` | Public data exposure |
+| `restricted-ssh` | SSH open to 0.0.0.0/0 |
+| `iam-root-access-key-check` | Root key exists |
+| `cloudtrail-enabled` | Missing audit trail |
+
+## Prioritization matrix
+
+Score = **Severity × Asset criticality × Exposure**
+
+- Critical + production + internet-facing → 24h SLA
+- Medium + internal → sprint backlog
+- Low + dev sandbox → monthly hygiene
+
+## Evidence for audits
+
+Export Security Hub compliance snapshots monthly; store in immutable S3 bucket with Object Lock for auditor review.

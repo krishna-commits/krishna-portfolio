@@ -1,16 +1,24 @@
 'use client'
 
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion"
+import dynamic from 'next/dynamic'
+import { motion } from "framer-motion"
 import { memo, useMemo, useEffect, useState } from "react"
 import { allResearchCores } from "contentlayer/generated"
 import { allProjects } from "contentlayer/generated"
 import { siteConfig } from "config/site"
 import { useGetGithubRepos } from "app/api/github"
 import useSWR from 'swr'
-import { BookOpen, Code, Award, FileText, Zap, Github, Star, GitFork, TrendingUp, Layers, Eye, Book, BookMarked, MessageSquare, BarChart3, Target, Users, Rocket } from "lucide-react"
-import { ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid, RadialBarChart, RadialBar, LineChart, Line } from 'recharts'
+import { BookOpen, Code, Award, FileText, Zap, Github, Star, GitFork, Layers, Eye, Book, BookMarked, Users } from "lucide-react"
 import { cn } from "app/theme/lib/utils"
 import { PAGE_CARD, PAGE_ICON_CHIP, PAGE_H1, PAGE_LEAD } from "lib/page-layout"
+
+const StatsChartPanel = dynamic(
+	() => import('./stats-charts').then((mod) => ({ default: mod.StatsChartPanel })),
+	{
+		ssr: false,
+		loading: () => <div className={cn(PAGE_CARD, 'h-48 animate-pulse sm:h-56')} aria-hidden />,
+	},
+)
 
 const fetcher = async (url: string) => {
 	const res = await fetch(url)
@@ -179,178 +187,7 @@ function StatCard({ stat, index }: { stat: any; index: number }) {
 	)
 }
 
-// Enhanced Donut Chart with Center Metric
-function EnhancedDonutChart({ data, colors, centerValue, centerLabel, title }: {
-	data: any[]
-	colors: string[]
-	centerValue?: string | number
-	centerLabel?: string
-	title: string
-}) {
-	const total = data.reduce((sum, item) => sum + item.value, 0)
-	
-	return (
-		<motion.div
-			initial={{ opacity: 0, scale: 0.9 }}
-			whileInView={{ opacity: 1, scale: 1 }}
-			viewport={{ once: true }}
-			transition={{ duration: 0.5 }}
-			className={cn(PAGE_CARD, "relative p-4 transition-shadow hover:shadow-md sm:p-5")}
-		>
-			<h4 className="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 mb-3 sm:mb-4 text-center">
-				{title}
-			</h4>
-			<div className="relative h-48 sm:h-56">
-				<ResponsiveContainer width="100%" height="100%">
-					<PieChart>
-						<defs>
-							{colors.map((color, index) => (
-								<linearGradient key={index} id={`gradient-${index}`} x1="0" y1="0" x2="1" y2="1">
-									<stop offset="0%" stopColor={color} stopOpacity={0.9} />
-									<stop offset="100%" stopColor={color} stopOpacity={0.7} />
-								</linearGradient>
-							))}
-						</defs>
-						<Pie
-							data={data}
-							cx="50%"
-							cy="50%"
-							innerRadius={50}
-							outerRadius={80}
-							paddingAngle={4}
-							dataKey="value"
-							animationBegin={0}
-							animationDuration={800}
-							animationEasing="ease-out"
-						>
-							{data.map((entry, index) => (
-								<Cell 
-									key={`cell-${index}`} 
-									fill={`url(#gradient-${index})`}
-									stroke="white"
-									strokeWidth={2}
-								/>
-							))}
-						</Pie>
-						<Tooltip 
-							formatter={(value: number, name: string, props: any) => {
-								const percent = ((value / total) * 100).toFixed(1)
-								return [`${value.toLocaleString()} (${percent}%)`, name]
-							}}
-							contentStyle={{
-								backgroundColor: 'rgba(255, 255, 255, 0.95)',
-								border: '1px solid #e2e8f0',
-								borderRadius: '8px',
-								padding: '8px 12px',
-								fontSize: '12px',
-								boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-							}}
-						/>
-					</PieChart>
-				</ResponsiveContainer>
-				
-				{/* Center Content */}
-				{centerValue !== undefined && (
-					<div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-						<div className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-br from-slate-700 to-slate-900 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent">
-							{centerValue.toLocaleString()}
-						</div>
-						{centerLabel && (
-							<div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium mt-1">
-								{centerLabel}
-							</div>
-						)}
-					</div>
-				)}
-			</div>
-			
-			{/* Legend */}
-			<div className="mt-3 sm:mt-4 flex flex-wrap justify-center gap-2 sm:gap-3">
-				{data.map((entry, index) => (
-					<motion.div
-						key={index}
-						initial={{ opacity: 0, x: -10 }}
-						whileInView={{ opacity: 1, x: 0 }}
-						viewport={{ once: true }}
-						transition={{ delay: index * 0.1 }}
-						className="flex items-center gap-1.5"
-					>
-						<div 
-							className="w-3 h-3 rounded-full shadow-sm"
-							style={{ backgroundColor: colors[index] }}
-						/>
-						<span className="text-xs text-slate-600 dark:text-slate-400 font-medium">
-							{entry.name}
-						</span>
-					</motion.div>
-				))}
-			</div>
-		</motion.div>
-	)
-}
-
-// Radial Progress Chart
-function RadialProgressChart({ data, colors, title }: {
-	data: any[]
-	colors: string[]
-	title: string
-}) {
-	const maxValue = Math.max(...data.map(item => item.value))
-	
-	return (
-		<motion.div
-			initial={{ opacity: 0, scale: 0.9 }}
-			whileInView={{ opacity: 1, scale: 1 }}
-			viewport={{ once: true }}
-			transition={{ duration: 0.5 }}
-			className={cn(PAGE_CARD, "relative p-4 transition-shadow hover:shadow-md sm:p-5")}
-		>
-			<h4 className="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 mb-3 sm:mb-4 text-center">
-				{title}
-			</h4>
-			<div className="h-48 sm:h-56">
-				<ResponsiveContainer width="100%" height="100%">
-					<RadialBarChart
-						innerRadius="40%"
-						outerRadius="90%"
-						data={data.map((item, index) => ({
-							...item,
-							fill: colors[index],
-							max: maxValue
-						}))}
-						startAngle={90}
-						endAngle={-270}
-					>
-						<RadialBar
-							dataKey="value"
-							cornerRadius={6}
-							animationBegin={0}
-							animationDuration={1000}
-							animationEasing="ease-out"
-						/>
-						<Tooltip 
-							formatter={(value: number) => value.toLocaleString()}
-							contentStyle={{
-								backgroundColor: 'rgba(255, 255, 255, 0.95)',
-								border: '1px solid #e2e8f0',
-								borderRadius: '8px',
-								padding: '8px 12px',
-								fontSize: '12px'
-							}}
-						/>
-						<Legend 
-							verticalAlign="bottom"
-							height={24}
-							formatter={(value) => <span style={{ fontSize: '10px', color: '#64748b' }}>{value}</span>}
-						/>
-					</RadialBarChart>
-				</ResponsiveContainer>
-			</div>
-		</motion.div>
-	)
-}
-
-// Category section with enhanced chart
+// Category section with lazy-loaded chart
 function CategorySection({ title, icon: Icon, stats, chartData, colors, chartType = 'donut' }: { 
 	title: string
 	icon: React.ComponentType<{ className?: string }>
@@ -369,18 +206,11 @@ function CategorySection({ title, icon: Icon, stats, chartData, colors, chartTyp
 			transition={{ duration: 0.6 }}
 			className="space-y-6 sm:space-y-8"
 		>
-			{/* Section Header */}
-			<div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-5">
-				<motion.div
-					whileHover={{ rotate: 360, scale: 1.1 }}
-					transition={{ duration: 0.6 }}
-					className="p-2 sm:p-2.5 md:p-3 rounded-lg bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-500 shadow-md"
-				>
-					<Icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-				</motion.div>
-				<h3 className="text-base sm:text-lg md:text-xl font-bold text-slate-900 dark:text-slate-50">
-					{title}
-				</h3>
+			<div className="mb-4 flex items-center gap-2 sm:mb-5 sm:gap-3">
+				<span className={PAGE_ICON_CHIP}>
+					<Icon className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden />
+				</span>
+				<h3 className="text-base font-semibold text-foreground sm:text-lg md:text-xl">{title}</h3>
 			</div>
 			
 			{/* Chart and Stats Grid */}
@@ -388,21 +218,12 @@ function CategorySection({ title, icon: Icon, stats, chartData, colors, chartTyp
 				<div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
 					{/* Enhanced Chart */}
 					<div className="lg:col-span-1">
-						{chartType === 'donut' ? (
-							<EnhancedDonutChart
-								data={chartData}
-								colors={colors || []}
-								centerValue={totalValue}
-								centerLabel="Total"
-								title="Distribution"
-							/>
-						) : chartType === 'radial' ? (
-							<RadialProgressChart
-								data={chartData}
-								colors={colors || []}
-								title="Distribution"
-							/>
-						) : null}
+						<StatsChartPanel
+							chartType={chartType === 'radial' ? 'radial' : 'donut'}
+							chartData={chartData}
+							colors={colors || []}
+							totalValue={totalValue}
+						/>
 					</div>
 					
 					{/* Stats Grid */}

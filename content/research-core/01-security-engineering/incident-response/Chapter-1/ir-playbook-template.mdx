@@ -1,0 +1,53 @@
+---
+title: Incident Response Playbook Template
+description: A structured playbook for cloud security incidents from triage through recovery and lessons learned.
+parent: "Chapter 1: Detection and Response"
+grand_parent: Incident Response and Threat Detection
+order: 2
+completed: true
+---
+
+# Incident Response Playbook Template
+
+## Severity levels
+
+| Level | Example | Response time |
+|-------|---------|---------------|
+| SEV-1 | Active data breach, ransomware | Immediate, war room |
+| SEV-2 | Compromised IAM key in prod | &lt; 1 hour |
+| SEV-3 | Suspicious login, contained | &lt; 4 hours |
+| SEV-4 | Policy violation, no exploit | Next business day |
+
+## Phases
+
+### 1. Detect & triage (0–15 min)
+
+- Confirm true positive vs false positive
+- Assign incident commander and scribe
+- Open dedicated comms channel
+
+### 2. Contain (15–60 min)
+
+- Disable compromised credentials
+- Apply emergency NetworkPolicy / SG deny rules
+- Snapshot volumes / preserve logs (chain of custody)
+
+### 3. Eradicate & recover
+
+- Patch root cause (image, IAM policy, secret rotation)
+- Redeploy from known-good artifact digest
+- Monitor for recurrence 72 hours
+
+### 4. Post-incident (within 5 days)
+
+- Blameless post-mortem document
+- Track action items in engineering backlog
+- Update detections and runbooks
+
+## Communication template
+
+```text
+Status: Investigating | Identified | Monitoring | Resolved
+Impact: [customer/data/system scope]
+Next update: [time UTC]
+```

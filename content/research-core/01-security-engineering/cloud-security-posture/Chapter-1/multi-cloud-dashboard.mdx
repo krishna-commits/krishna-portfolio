@@ -1,0 +1,38 @@
+---
+title: Multi-Cloud Posture Dashboard
+description: Normalizing security findings across AWS, Azure, and GCP into a single risk view for leadership and engineering.
+parent: "Chapter 1: Continuous Compliance"
+grand_parent: Cloud Security Posture Management
+order: 2
+completed: true
+---
+
+# Multi-Cloud Posture Dashboard
+
+## Challenge
+
+Each cloud exposes findings in different formats (Security Hub, Defender for Cloud, Security Command Center). Leadership needs **one risk score trend**, not three portals.
+
+## Normalization schema
+
+| Field | Description |
+|-------|-------------|
+| `finding_id` | Stable identifier |
+| `cloud` | aws \| azure \| gcp |
+| `severity` | critical … info |
+| `resource_arn` | Canonical resource ID |
+| `control_id` | CIS / custom mapping |
+| `owner_team` | From resource tags |
+| `status` | open \| remediated \| accepted |
+
+## Grafana / Elastic approach
+
+1. Ingest via cloud APIs on schedule
+2. Enrich with CMDB or tag-based ownership
+3. Dashboard panels: open critical by team, MTTR trend, top recurring misconfigs
+
+## Governance
+
+- Weekly security review per team with top 5 findings
+- Accepted risk requires CISO delegate approval + expiry
+- Auto-close findings when Config re-evaluates clean

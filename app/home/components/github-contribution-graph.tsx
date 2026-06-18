@@ -182,9 +182,9 @@ export function GitHubContributionGraph() {
               <Activity className="h-5 w-5 text-amber-600 dark:text-amber-400" />
             </div>
             <div className="flex-1">
-              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50 mb-1">
+              <p className="mb-1 text-sm font-semibold text-slate-900 dark:text-slate-50">
                 GitHub Contributions Unavailable
-              </h3>
+              </p>
               <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
                 {error?.message || 'Unable to load GitHub contributions. Please check the server logs.'}
               </p>

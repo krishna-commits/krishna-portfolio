@@ -1,0 +1,45 @@
+---
+title: Terraform Remote State and Locking
+description: S3 + DynamoDB backends, state isolation per environment, and disaster recovery.
+parent: "Chapter 1: Terraform Foundations"
+grand_parent: Infrastructure as Code
+order: 2
+completed: true
+---
+
+# Terraform Remote State and Locking
+
+## Backend pattern (AWS)
+
+```hcl
+terraform {
+  backend "s3" {
+    bucket         = "org-terraform-state"
+    key            = "prod/networking/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "terraform-locks"
+    encrypt        = true
+  }
+}
+```
+
+## State isolation
+
+- **One state per blast radius** — networking vs apps vs data
+- Separate AWS accounts for prod/nonprod state buckets
+- Deny `s3:DeleteObject` on state bucket except break-glass role
+
+## Locking
+
+DynamoDB conditional writes prevent concurrent apply corruption. Never disable locking in shared environments.
+
+## Recovery
+
+- Enable S3 versioning on state bucket
+- Document `terraform state pull` / restore procedure
+- Test restore quarterly
+
+## Security
+
+- State files contain secrets — encrypt at rest, restrict IAM tightly
+- Use `terraform state rm` only with change advisory approval

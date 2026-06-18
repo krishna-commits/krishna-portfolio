@@ -7,7 +7,7 @@ import { Instagram, ExternalLink, Share2, Mail, MessageSquare, ArrowRight } from
 import { Button } from "app/theme/components/ui/button"
 import { Icons } from "app/theme/components/theme/icons"
 import { cn } from "app/theme/lib/utils"
-import { PAGE_CARD, PAGE_ICON_CHIP, PAGE_LEAD } from "lib/page-layout"
+import { PAGE_CARD, PAGE_ICON_CHIP, PAGE_H1, PAGE_LEAD } from "lib/page-layout"
 
 const socialLinks = [
 	{
@@ -70,18 +70,15 @@ export function SocialLinks() {
 				transition={{ duration: 0.5 }}
 				className="mb-8 sm:mb-10"
 			>
-				<div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+				<div className="mb-3 flex flex-wrap items-center gap-2 sm:gap-3">
 					<span className={PAGE_ICON_CHIP}>
 						<Share2 className="h-5 w-5" aria-hidden />
 					</span>
 					<div>
-						<h2
-							id="social-heading"
-							className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl md:text-4xl"
-						>
+						<h2 id="social-heading" className={PAGE_H1}>
 							Connect & Collaborate
 						</h2>
-						<p className={cn(PAGE_LEAD, "mt-2 max-w-3xl text-base sm:text-lg")}>
+						<p className={cn(PAGE_LEAD, "mt-2 max-w-3xl")}>
 							Let&apos;s build secure, scalable solutions together. Connect on these platforms or reach out directly.
 						</p>
 					</div>

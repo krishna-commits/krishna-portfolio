@@ -1,0 +1,41 @@
+---
+title: Slack ChatOps for DevSecOps Teams
+description: Channel architecture, alert routing, and slash-command integrations for security and platform workflows.
+parent: "Chapter 1: Team Collaboration Tools"
+grand_parent: Communication and Collaboration
+order: 1
+completed: true
+keywords:
+  - Slack
+  - ChatOps
+  - Incident Comms
+---
+
+# Slack ChatOps for DevSecOps Teams
+
+## Channel taxonomy
+
+| Channel | Purpose |
+|---------|---------|
+| `#incidents` | SEV-1/2 war room |
+| `#security-alerts` | SIEM high-fidelity only |
+| `#deploys-prod` | Automated deploy notifications |
+| `#rfc` | Architecture proposals |
+
+## Alert hygiene
+
+- Route **actionable alerts only** to `#security-alerts`
+- Thread per incident; pin status message
+- Integrate PagerDuty → Slack with acknowledge buttons
+
+## ChatOps examples
+
+- `/deploy status payments-api` — query pipeline
+- `/vault token lookup` — break-glass audited workflow
+- GitHub app: PR security check summary in thread
+
+## Norms
+
+- No secrets in chat — use ephemeral links
+- Rotate channel membership for incidents
+- Archive and export incident threads to post-mortem doc

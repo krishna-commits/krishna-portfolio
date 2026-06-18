@@ -1,0 +1,37 @@
+---
+title: SBOM Generation and Vulnerability Correlation
+description: Creating Software Bill of Materials in CI and mapping CVEs to production services.
+parent: "Chapter 1: Artifact Integrity"
+grand_parent: Supply Chain Security
+order: 1
+completed: true
+---
+
+# SBOM Generation and Vulnerability Correlation
+
+## What is an SBOM?
+
+A machine-readable inventory of components (libraries, packages, OS packages) in an artifact. Formats: **SPDX**, **CycloneDX**.
+
+## Generate in CI
+
+```bash
+syft packages dir:. -o cyclonedx-json > sbom.json
+grype sbom:sbom.json --fail-on critical
+```
+
+## Operational workflow
+
+1. Attach SBOM to every release artifact in registry
+2. On new CVE disclosure, query SBOM database: *which services affected?*
+3. Prioritize by exposure (internet-facing first)
+
+## Executive reporting
+
+- % services with current SBOM (&lt; 30 days old)
+- Mean time to patch critical dependency CVEs
+- Count of unpinned dependencies in main branch
+
+## Regulatory context
+
+Executive Order 14028 and EU CRA increasingly expect SBOM readiness for software sold to government and enterprise buyers.

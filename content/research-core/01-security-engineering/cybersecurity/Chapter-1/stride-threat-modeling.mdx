@@ -1,0 +1,51 @@
+---
+title: STRIDE Threat Modeling for Cloud Services
+description: Applying STRIDE (Spoofing, Tampering, Repudiation, Information Disclosure, DoS, Elevation) to cloud-native architectures.
+parent: "Chapter 1: Threat Modeling and Defense"
+grand_parent: CyberSecurity
+order: 1
+completed: true
+keywords:
+  - STRIDE
+  - Threat Modeling
+  - Architecture Review
+---
+
+# STRIDE Threat Modeling for Cloud Services
+
+## Process
+
+1. **Diagram** — Data flows, trust boundaries, external dependencies
+2. **Enumerate threats** — STRIDE per component
+3. **Rate** — Likelihood × impact (DREAD optional)
+4. **Mitigate** — Map to controls; assign owners
+5. **Validate** — Pen test or tabletop exercise
+
+## STRIDE cheat sheet
+
+| Threat | Example in cloud | Typical control |
+|--------|------------------|-----------------|
+| Spoofing | Stolen API keys | MFA, short-lived tokens |
+| Tampering | MITM on API | TLS, mTLS, signing |
+| Repudiation | Denied admin action | CloudTrail, immutable logs |
+| Information disclosure | Public S3 bucket | IAM, encryption, SCPs |
+| DoS | API flood | WAF, rate limits, autoscale |
+| Elevation | IAM privilege escalation | Least privilege, permission boundaries |
+
+## Workshop template
+
+```text
+Service: [name]
+Assets: [data classes]
+Trust boundaries: [VPC, account, cluster]
+Top 5 threats:
+1. ...
+Mitigations:
+1. ...
+```
+
+## Output artifacts
+
+- Threat model document linked to architecture RFC
+- Jira epics for unresolved high risks
+- Re-review on major architecture changes

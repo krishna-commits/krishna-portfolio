@@ -1,0 +1,43 @@
+---
+title: Cloud SIEM Log Pipeline Design
+description: Ingesting and correlating AWS CloudTrail, VPC Flow Logs, and application logs for security analytics.
+parent: "Chapter 1: Detection and Response"
+grand_parent: Incident Response and Threat Detection
+order: 1
+completed: true
+---
+
+# Cloud SIEM Log Pipeline Design
+
+## Minimum viable sources
+
+| Source | Value |
+|--------|-------|
+| CloudTrail (management + data events) | API abuse, privilege escalation |
+| VPC Flow Logs | C2 beaconing, data exfil patterns |
+| GuardDuty findings | Managed threat intel |
+| K8s audit logs | `kubectl exec`, secret access |
+| App auth logs | Credential stuffing |
+
+## Pipeline architecture
+
+```text
+Sources → Kinesis/Firehose or Fluent Bit → OpenSearch / Elastic
+       → Normalization → Detection rules → SOAR / PagerDuty
+```
+
+## Retention
+
+- Hot: 30 days (active investigation)
+- Warm: 1 year (compliance)
+- Cold/archive: 7 years for regulated data (encrypted, immutable)
+
+## Cost control
+
+- Sample verbose debug logs at edge
+- Filter high-volume health checks before index
+- Use lifecycle policies to tier storage
+
+## Detection example
+
+Alert when: `ConsoleLogin` without MFA + `AttachUserPolicy` within 15 minutes from same principal.

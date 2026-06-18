@@ -7,6 +7,7 @@ import Image from "next/image"
 import { Code, Cloud, Database, Settings, Server, GitBranch, Zap, Shield, Container, Monitor, Search, X, Network, Layers, Grid, List, ChevronDown, ChevronUp } from "lucide-react"
 import { cn } from "app/theme/lib/utils"
 import { Badge } from "app/theme/components/ui/badge"
+import { PAGE_CARD, PAGE_H1, PAGE_ICON_CHIP, PAGE_LEAD } from "lib/page-layout"
 
 type Category = {
 	name: string
@@ -58,7 +59,7 @@ const categories: Category[] = [
 	{ 
 		name: "Database Management", 
 		icon: Database, 
-		keywords: ["MySQL", "PostgreSQL", "MongoDB", "Dynamo DB", "RDS"], 
+		keywords: ["MySQL", "PostgreSQL", "MongoDB", "DynamoDB", "Dynamo DB", "RDS"], 
 		gradient: "from-indigo-500 to-blue-500",
 		bgGradient: "from-indigo-50 to-blue-50 dark:from-indigo-950/20 dark:to-blue-950/20",
 		particleColor: "rgba(99, 102, 241, 0.25)",
@@ -74,18 +75,18 @@ const categories: Category[] = [
 		color: "#ef4444"
 	},
 	{ 
-		name: "Ci/Cd Code Repository", 
+		name: "CI/CD", 
 		icon: Settings, 
-		keywords: ["GitHub Actions", "Jenkins", "Gitlab pipelines", "Bitbucket Pipelines", "AWS CodeBuild", "AWS Codepipeline"], 
+		keywords: ["GitHub Actions", "Jenkins", "GitLab Pipelines", "Gitlab pipelines", "Bitbucket Pipelines", "AWS CodeBuild", "AWS Codepipeline"], 
 		gradient: "from-amber-500 to-yellow-500",
 		bgGradient: "from-amber-50 to-yellow-50 dark:from-amber-950/20 dark:to-yellow-950/20",
 		particleColor: "rgba(245, 158, 11, 0.25)",
 		color: "#f59e0b"
 	},
 	{ 
-		name: "Infranstracture as Code (IAC)", 
+		name: "Infrastructure as Code (IaC)", 
 		icon: Server, 
-		keywords: ["Terraform", "Terragrunt", "Cloudformation"], 
+		keywords: ["Terraform", "Terragrunt", "Cloudformation", "AWS CloudFormation"], 
 		gradient: "from-violet-500 to-purple-500",
 		bgGradient: "from-violet-50 to-purple-50 dark:from-violet-950/20 dark:to-purple-950/20",
 		particleColor: "rgba(139, 92, 246, 0.25)",
@@ -103,7 +104,7 @@ const categories: Category[] = [
 	{ 
 		name: "Serverless", 
 		icon: Zap, 
-		keywords: ["AWS Lambda", "Eventbridge", "Dynamodb streams", "AWS Step Functions", "AWS SNS"], 
+		keywords: ["AWS Lambda", "Amazon EventBridge", "Eventbridge", "DynamoDB Streams", "Dynamodb streams", "AWS Step Functions", "AWS SNS"], 
 		gradient: "from-rose-500 to-pink-500",
 		bgGradient: "from-rose-50 to-pink-50 dark:from-rose-950/20 dark:to-pink-950/20",
 		particleColor: "rgba(244, 63, 94, 0.25)",
@@ -112,7 +113,7 @@ const categories: Category[] = [
 	{ 
 		name: "Networking", 
 		icon: Network, 
-		keywords: ["Loadbalancer", "firewalls", "WAF"], 
+		keywords: ["Loadbalancer", "Firewalls", "firewalls", "WAF"], 
 		gradient: "from-orange-500 to-red-500",
 		bgGradient: "from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/20",
 		particleColor: "rgba(249, 115, 22, 0.25)",
@@ -121,14 +122,14 @@ const categories: Category[] = [
 	{ 
 		name: "Communication", 
 		icon: Monitor, 
-		keywords: ["Slack", "Confluence", "jira", "Teams", "Zoom", "Twilio", "Sendgrid"], 
+		keywords: ["Slack", "Confluence", "Jira", "jira", "Teams", "Zoom", "Twilio", "Sendgrid"], 
 		gradient: "from-blue-500 to-indigo-500",
 		bgGradient: "from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20",
 		particleColor: "rgba(59, 130, 246, 0.25)",
 		color: "#3b82f6"
 	},
 	{ 
-		name: "Message Queqe", 
+		name: "Message Queue", 
 		icon: Database, 
 		keywords: ["Kafka", "RabbitMQ", "Redis", "AWS SQS"], 
 		gradient: "from-cyan-500 to-blue-500",
@@ -149,11 +150,21 @@ const categories: Category[] = [
 
 type ViewMode = 'grid' | 'compact' | 'list'
 
+/** Shared generic logos — show monogram so tiles stay distinct */
+const GENERIC_SKILL_IMAGES = new Set(["/aws-logo.png", "/agile.png"])
+
+function skillMonogram(name: string): string {
+	const stripped = name.replace(/^AWS\s+/i, "").trim()
+	const words = stripped.split(/[\s/]+/).filter(Boolean)
+	if (words.length === 1) return words[0].slice(0, 3)
+	return words.map((w) => w[0]).join("").slice(0, 3).toUpperCase()
+}
+
 export const SkillsShowcase = memo(function SkillsShowcase() {
 	const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
 	const [searchQuery, setSearchQuery] = useState("")
 	const [hoveredSkill, setHoveredSkill] = useState<string | null>(null)
-	const [viewMode, setViewMode] = useState<ViewMode>('grid')
+	const [viewMode, setViewMode] = useState<ViewMode>('compact')
 	const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
 	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
 	const allSkills = useMemo(() => siteConfig.technology_stack, [])
@@ -166,20 +177,26 @@ export const SkillsShowcase = memo(function SkillsShowcase() {
 		return () => mediaQuery.removeEventListener('change', handleChange)
 	}, [])
 
-	/* Calmer default on first paint for small screens */
-	useEffect(() => {
-		if (typeof window !== "undefined" && window.matchMedia("(max-width: 639px)").matches) {
-			setViewMode("compact")
-		}
-	}, [])
-
 	const categorizeSkill = useCallback((skillName: string): string => {
-		const lowerName = skillName.toLowerCase()
+		const lowerName = skillName.toLowerCase().trim()
+
 		for (const category of categories) {
-			if (category.keywords.some(keyword => lowerName.includes(keyword.toLowerCase()))) {
+			if (category.keywords.some((keyword) => lowerName === keyword.toLowerCase())) {
 				return category.name
 			}
 		}
+
+		const keywordMatches = categories.flatMap((category) =>
+			category.keywords.map((keyword) => ({ keyword, category: category.name })),
+		)
+		keywordMatches.sort((a, b) => b.keyword.length - a.keyword.length)
+
+		for (const { keyword, category } of keywordMatches) {
+			if (lowerName.includes(keyword.toLowerCase())) {
+				return category
+			}
+		}
+
 		return "Other"
 	}, [])
 
@@ -257,27 +274,27 @@ export const SkillsShowcase = memo(function SkillsShowcase() {
 
 	return (
 		<section id="technology-stack" className="relative w-full" aria-labelledby="technology-stack-heading">
-			<div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-card shadow-sm p-4 sm:p-6 md:p-8">
+			<div className={cn(PAGE_CARD, "p-4 sm:p-6 md:p-8")}>
 			{/* Header */}
 			<motion.div
 				initial={{ opacity: 0, y: 20 }}
 				whileInView={{ opacity: 1, y: 0 }}
 				viewport={{ once: true }}
 				transition={{ duration: 0.5 }}
-				className="mb-6 sm:mb-8"
+				className="mb-5 sm:mb-6"
 			>
-				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-5 mb-4 sm:mb-5">
-					<div className="space-y-2 sm:space-y-3">
-						<div className="inline-flex items-center gap-2 sm:gap-3">
-							<div className="p-2.5 rounded-xl bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-200 border border-amber-200/80 dark:border-amber-800/50">
+				<div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+					<div className="space-y-2">
+						<div className="flex flex-wrap items-center gap-2 sm:gap-3">
+							<span className={PAGE_ICON_CHIP}>
 								<Layers className="h-5 w-5" aria-hidden />
-							</div>
-							<h2 id="technology-stack-heading" className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-50">
+							</span>
+							<h2 id="technology-stack-heading" className={PAGE_H1}>
 								Technology Stack
 							</h2>
 						</div>
-						<p className="text-sm sm:text-base text-muted-foreground max-w-prose leading-relaxed">
-							DevSecOps tools and security technologies I use to build, secure, and monitor cloud infrastructure from code to production
+						<p className={PAGE_LEAD}>
+							DevSecOps tools and security technologies I use to build, secure, and monitor cloud infrastructure
 						</p>
 					</div>
 					<div className="flex items-center gap-3">
@@ -586,6 +603,8 @@ const SkillCard = memo(function SkillCard({
 	prefersReducedMotion: boolean
 }) {
 	const [imageError, setImageError] = useState(false)
+	const useMonogram = GENERIC_SKILL_IMAGES.has(skill.imageUrl) || imageError
+	const monogram = skillMonogram(skill.name)
 
 	return (
 		<motion.div
@@ -598,14 +617,16 @@ const SkillCard = memo(function SkillCard({
 			className="group"
 		>
 			<div
+				title={skill.name}
+				aria-label={skill.name}
 				className={cn(
-					"relative flex flex-col items-center justify-center gap-2 overflow-hidden rounded-2xl border border-border bg-card p-2 sm:p-3 shadow-sm transition-shadow duration-200 hover:shadow-md",
-					viewMode === "compact" && "aspect-square p-2",
-					(viewMode === "grid" || viewMode === "list") && "aspect-square"
+					"relative flex flex-col items-center justify-center gap-1 overflow-hidden rounded-2xl border border-border bg-card p-2 shadow-sm transition-shadow duration-200 hover:shadow-md sm:gap-1.5 sm:p-3",
+					viewMode === "compact" && "min-h-[4.75rem] justify-start pt-2.5 sm:min-h-[5.25rem]",
+					(viewMode === "grid" || viewMode === "list") && "aspect-square gap-2",
 				)}
 			>
 				<div className="relative z-10">
-					{skill.imageUrl && !imageError ? (
+					{skill.imageUrl && !useMonogram ? (
 						<div
 							className={cn(
 								"relative flex items-center justify-center",
@@ -627,28 +648,29 @@ const SkillCard = memo(function SkillCard({
 					) : (
 						<div
 							className={cn(
-								"flex items-center justify-center rounded-xl border border-border bg-muted font-semibold text-muted-foreground",
+								"flex items-center justify-center rounded-xl border border-border bg-muted font-semibold text-amber-800 dark:text-amber-300",
 								viewMode === "compact"
-									? "h-8 w-8 sm:h-10 sm:w-10 text-sm sm:text-base"
-									: "h-10 w-10 sm:h-12 sm:text-lg md:h-14 md:w-14"
+									? "h-8 w-8 text-[10px] sm:h-10 sm:w-10 sm:text-xs"
+									: "h-10 w-10 text-sm sm:h-12 sm:text-base md:h-14 md:w-14"
 							)}
+							aria-hidden={!!skill.imageUrl}
 						>
-							{skill.name.charAt(0).toUpperCase()}
+							{monogram}
 						</div>
 					)}
 				</div>
-				{(viewMode === "grid" || viewMode === "list") && (
-					<div className="relative z-10 w-full">
-						<span
-							className={cn(
-								"line-clamp-2 block text-center font-medium leading-tight text-foreground",
-								viewMode === "list" ? "text-xs sm:text-sm" : "text-xs"
-							)}
-						>
-							{skill.name}
-						</span>
-					</div>
-				)}
+				<div className="relative z-10 w-full px-0.5">
+					<span
+						className={cn(
+							"line-clamp-2 block text-center font-medium leading-tight text-foreground",
+							viewMode === "compact" && "text-[10px] sm:text-[11px]",
+							viewMode === "grid" && "text-xs",
+							viewMode === "list" && "text-xs sm:text-sm",
+						)}
+					>
+						{skill.name}
+					</span>
+				</div>
 			</div>
 		</motion.div>
 	)

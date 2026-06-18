@@ -1,0 +1,47 @@
+---
+title: SLSA and Artifact Signing with Sigstore
+description: Implementing build provenance and cosign signatures for container images and release binaries.
+parent: "Chapter 1: Artifact Integrity"
+grand_parent: Supply Chain Security
+order: 2
+completed: true
+---
+
+# SLSA and Artifact Signing with Sigstore
+
+## SLSA levels (simplified)
+
+| Level | Requirement |
+|-------|-------------|
+| L1 | Build scripted / automated |
+| L2 | Signed provenance, hosted build |
+| L3 | Hardened build platform, non-falsifiable provenance |
+
+## Cosign signing flow
+
+```bash
+# Sign image after build
+cosign sign --key awskms://alias/cosign myregistry/app:v1.2.3
+
+# Verify at deploy time (admission webhook or deploy script)
+cosign verify --key awskms://alias/cosign myregistry/app:v1.2.3
+```
+
+## Provenance attestation
+
+GitHub Actions can emit SLSA provenance linking:
+
+- Git commit SHA
+- Workflow file
+- Builder identity
+- Artifact digest
+
+Store attestations alongside image in OCI registry.
+
+## Policy
+
+Production deploy pipeline **rejects** images without:
+
+1. Valid cosign signature from trusted key
+2. Provenance matching allowed repository and branch
+3. Passing vulnerability scan on same digest

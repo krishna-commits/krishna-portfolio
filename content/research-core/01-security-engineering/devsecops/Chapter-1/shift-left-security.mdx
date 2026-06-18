@@ -1,0 +1,59 @@
+---
+title: Shift-Left Security in CI/CD
+description: A practical framework for moving security validation earlier in the delivery lifecycle without increasing developer friction.
+parent: "Chapter 1: Pipeline Security Foundations"
+grand_parent: DevSecOps
+order: 1
+completed: true
+keywords:
+  - Shift Left
+  - Developer Experience
+  - Security Gates
+---
+
+# Shift-Left Security in CI/CD
+
+## Abstract
+
+Shift-left security moves validation **closer to the developer** — at commit, pull request, and build time — so defects are cheaper to fix and fewer vulnerabilities reach production.
+
+## Core principles
+
+1. **Fast feedback** — Security scans on every PR should complete in minutes, not hours.
+2. **Actionable results** — Findings must include file, line, severity, and remediation guidance.
+3. **Policy tiers** — Block on critical/high; warn on medium; track low in backlog.
+4. **Shared ownership** — Security engineers define policies; developers fix findings in normal workflow.
+
+## Reference pipeline stages
+
+```mermaid
+flowchart LR
+  A[Commit] --> B[Lint + Unit Tests]
+  B --> C[Secret Scan]
+  C --> D[SAST]
+  D --> E[Dependency Scan]
+  E --> F[Build Artifact]
+  F --> G[Container Scan]
+  G --> H[Deploy to Staging]
+  H --> I[DAST / Smoke Security Tests]
+```
+
+## Implementation checklist
+
+- [ ] Pre-commit hooks for secrets and formatting
+- [ ] PR-level SAST with GitHub/GitLab integration
+- [ ] SBOM generation on release branches
+- [ ] Signed artifacts and provenance metadata
+- [ ] Security dashboard tied to deployment frequency and MTTR
+
+## Metrics
+
+| Metric | Target |
+|--------|--------|
+| Mean time to remediate critical findings | &lt; 48 hours |
+| % PRs with security scan | 100% |
+| Critical vulns in production | Trending down quarter-over-quarter |
+
+## Conclusion
+
+Shift-left is not about adding more tools — it is about **placing the right control at the right stage** with clear ownership and measurable outcomes.

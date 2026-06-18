@@ -1,5 +1,27 @@
 const { createContentlayerPlugin } = require("next-contentlayer");
 
+const researchCoreRedirects = [
+  { source: "/research-core/DevSecOps/:path*", destination: "/research-core/01-security-engineering/devsecops/:path*", permanent: true },
+  { source: "/research-core/Security/:path*", destination: "/research-core/01-security-engineering/security/:path*", permanent: true },
+  { source: "/research-core/Kubernetes-Security/:path*", destination: "/research-core/01-security-engineering/kubernetes-security/:path*", permanent: true },
+  { source: "/research-core/Zero-Trust-Architecture/:path*", destination: "/research-core/01-security-engineering/zero-trust-architecture/:path*", permanent: true },
+  { source: "/research-core/Supply-Chain-Security/:path*", destination: "/research-core/01-security-engineering/supply-chain-security/:path*", permanent: true },
+  { source: "/research-core/Incident-Response/:path*", destination: "/research-core/01-security-engineering/incident-response/:path*", permanent: true },
+  { source: "/research-core/Cloud-Security-Posture/:path*", destination: "/research-core/01-security-engineering/cloud-security-posture/:path*", permanent: true },
+  { source: "/research-core/CyberSecurity/:path*", destination: "/research-core/01-security-engineering/cybersecurity/:path*", permanent: true },
+  { source: "/research-core/Cloud-Platform/:path*", destination: "/research-core/02-platform-cloud/cloud-platform/:path*", permanent: true },
+  { source: "/research-core/Infranstracture-as-a-Code/:path*", destination: "/research-core/02-platform-cloud/infrastructure-as-code/:path*", permanent: true },
+  { source: "/research-core/Containerization-and-Orchestration/:path*", destination: "/research-core/02-platform-cloud/containerization-and-orchestration/:path*", permanent: true },
+  { source: "/research-core/CI-CD-Pipelines/:path*", destination: "/research-core/02-platform-cloud/ci-cd-pipelines/:path*", permanent: true },
+  { source: "/research-core/Scripting/:path*", destination: "/research-core/02-platform-cloud/scripting/:path*", permanent: true },
+  { source: "/research-core/Logging-and-Monitoring/:path*", destination: "/research-core/03-operations-reliability/logging-and-monitoring/:path*", permanent: true },
+  { source: "/research-core/SRE-Reliability/:path*", destination: "/research-core/03-operations-reliability/sre-reliability/:path*", permanent: true },
+  { source: "/research-core/linux/:path*", destination: "/research-core/03-operations-reliability/linux/:path*", permanent: true },
+  { source: "/research-core/Networking/:path*", destination: "/research-core/03-operations-reliability/networking/:path*", permanent: true },
+  { source: "/research-core/Database/:path*", destination: "/research-core/03-operations-reliability/database/:path*", permanent: true },
+  { source: "/research-core/Communication/:path*", destination: "/research-core/04-collaboration-governance/communication/:path*", permanent: true },
+];
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -90,17 +112,22 @@ const nextConfig = {
   compress: true,
   // PoweredBy header
   poweredByHeader: false,
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, dev }) => {
     if (!isServer) {
       config.resolve.fallback = {
         "mermaid": require.resolve("mermaid/dist/mermaid.min.js"),
       };
     }
-    // Note: serverComponentsExternalPackages handles externalization for server components
-    // No need to manually configure externals here
+    // Avoid corrupted vendor-chunks when contentlayer rebuilds during dev (common on Windows)
+    if (dev) {
+      config.cache = false;
+    }
     return config;
   },
   // Security headers
+  async redirects() {
+    return researchCoreRedirects;
+  },
   async headers() {
     return [
       {

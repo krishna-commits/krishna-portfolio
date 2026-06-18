@@ -1,0 +1,58 @@
+---
+title: Pod Security Standards
+description: Applying restricted pod security profiles to reduce container breakout and privilege escalation risk.
+parent: "Chapter 1: Cluster Hardening"
+grand_parent: Kubernetes Security
+order: 2
+completed: true
+---
+
+# Pod Security Standards
+
+## Profiles (Kubernetes built-in)
+
+| Profile | Use case |
+|---------|----------|
+| **Privileged** | System daemons only |
+| **Baseline** | Minimize known privilege escalations |
+| **Restricted** | Hardened workloads (recommended default) |
+
+## Restricted profile highlights
+
+- Run as non-root user
+- Drop all capabilities; add only required caps
+- `readOnlyRootFilesystem: true` where possible
+- No hostPath / hostNetwork / hostPID
+
+## Example deployment snippet
+
+```yaml
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 10001
+  seccompProfile:
+    type: RuntimeDefault
+containers:
+  - name: app
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop: ["ALL"]
+```
+
+## Enforcement
+
+Enable **Pod Security admission** at namespace level:
+
+```yaml
+labels:
+  pod-security.kubernetes.io/enforce: restricted
+  pod-security.kubernetes.io/audit: restricted
+  pod-security.kubernetes.io/warn: restricted
+```
+
+## Migration path
+
+1. Audit existing workloads with kube-bench / Polaris
+2. Fix top offenders in staging
+3. Enforce warn → audit → enforce over 2–3 sprints

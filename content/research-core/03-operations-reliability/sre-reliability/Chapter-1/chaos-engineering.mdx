@@ -1,0 +1,43 @@
+---
+title: Chaos Engineering for Resilience
+description: Controlled failure injection to validate failover, backups, and incident response before real outages.
+parent: "Chapter 1: SLOs and Operability"
+grand_parent: SRE and Reliability Engineering
+order: 2
+completed: true
+---
+
+# Chaos Engineering for Resilience
+
+## Goals
+
+- Prove multi-AZ failover works
+- Validate backups restore within RTO
+- Train on-call on realistic failure modes
+
+## Safe experiment checklist
+
+- [ ] Hypothesis documented
+- [ ] Blast radius limited (single AZ, canary namespace)
+- [ ] Rollback plan tested
+- [ ] Stakeholders notified
+- [ ] Abort button ready
+
+## Example experiments
+
+| Experiment | Validates |
+|------------|-----------|
+| Terminate random pod | K8s reschedule, PDB |
+| Block AZ in load test | Multi-AZ routing |
+| Revoke IAM key used by app | Graceful degradation / alert |
+| DNS failure injection | Retry and cache behavior |
+
+## Tools
+
+- **Chaos Mesh** / **Litmus** on Kubernetes
+- **AWS FIS** for EC2/RDS/network faults
+- **Gremlin** for enterprise game days
+
+## Output
+
+Each experiment produces a short report: hypothesis, result, gaps, engineering tickets — same format as security post-mortems.

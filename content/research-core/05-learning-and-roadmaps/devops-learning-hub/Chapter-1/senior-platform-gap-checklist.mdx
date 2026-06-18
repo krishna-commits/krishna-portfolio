@@ -1,0 +1,94 @@
+---
+title: Senior Platform Gap Checklist
+description: A self-audit for engineers with 5–8+ years — map strengths, close security and reliability gaps, and prioritize what hiring managers probe.
+parent: "Chapter 1: Orientation and Roadmaps"
+grand_parent: DevOps Learning Hub
+order: 3
+completed: true
+keywords:
+  - Senior
+  - Staff
+  - DevSecOps
+  - Career
+  - Audit
+---
+
+# Senior Platform Gap Checklist
+
+If you already run production systems, skip beginner tutorials. Use this **self-audit** quarterly. Score each row: **0** = not in place, **1** = partial, **2** = automated and tested.
+
+---
+
+## Delivery & automation
+
+| Capability | 0 | 1 | 2 | Research Core |
+|------------|---|---|---|---------------|
+| Trunk-based or documented branching | | | | [CI/CD](/research-core/02-platform-cloud/ci-cd-pipelines/introduction) |
+| Pipeline blocks on critical vulns | | | | [DevSecOps](/research-core/01-security-engineering/devsecops/introduction) |
+| IaC for all net-new infra | | | | [IaC](/research-core/02-platform-cloud/infrastructure-as-code/introduction) |
+| GitOps or equivalent drift control | | | | [Containerization](/research-core/02-platform-cloud/containerization-and-orchestration/introduction) |
+| Secrets never in env files in git | | | | [Supply Chain](/research-core/01-security-engineering/supply-chain-security/introduction) |
+
+---
+
+## Kubernetes & cloud
+
+| Capability | 0 | 1 | 2 | Research Core |
+|------------|---|---|---|---------------|
+| Pod Security / admission policies | | | | [K8s Security](/research-core/01-security-engineering/kubernetes-security/introduction) |
+| Network policies default-deny | | | | [K8s Security](/research-core/01-security-engineering/kubernetes-security/introduction) |
+| Multi-account cloud landing zone | | | | [Cloud Platform](/research-core/02-platform-cloud/cloud-platform/introduction) |
+| CSPM or continuous compliance | | | | [Cloud Security Posture](/research-core/01-security-engineering/cloud-security-posture/introduction) |
+| IR runbook exercised in last 6 months | | | | [Incident Response](/research-core/01-security-engineering/incident-response/introduction) |
+
+---
+
+## Reliability & observability
+
+| Capability | 0 | 1 | 2 | Research Core |
+|------------|---|---|---|---------------|
+| SLOs defined per tier-1 service | | | | [SRE](/research-core/03-operations-reliability/sre-reliability/introduction) |
+| Error budget policy documented | | | | [SRE](/research-core/03-operations-reliability/sre-reliability/introduction) |
+| Structured logs with trace correlation | | | | [Logging](/research-core/03-operations-reliability/logging-and-monitoring/introduction) |
+| Game day or chaos experiment yearly | | | | [SRE](/research-core/03-operations-reliability/sre-reliability/introduction) |
+
+---
+
+## Security architecture
+
+| Capability | 0 | 1 | 2 | Research Core |
+|------------|---|---|---|---------------|
+| Zero trust principles in prod network | | | | [Zero Trust](/research-core/01-security-engineering/zero-trust-architecture/introduction) |
+| SBOM attached to releases | | | | [Supply Chain](/research-core/01-security-engineering/supply-chain-security/introduction) |
+| STRIDE or equivalent on major services | | | | [Cybersecurity](/research-core/01-security-engineering/cybersecurity/introduction) |
+
+---
+
+## Scoring guide
+
+| Total score (max 52) | Interpretation |
+|------------------------|----------------|
+| 40–52 | Staff-ready platform posture; focus on mentoring and strategy |
+| 26–39 | Strong operator; close gaps in lowest-scoring section first |
+| &lt; 26 | Prioritize automation and security gates before new tool adoption |
+
+---
+
+## 90-day improvement plan
+
+1. **Week 1–2:** Score honestly with your team lead; pick **two** rows at 0.
+2. **Week 3–8:** Ship one automation per gap (pipeline rule, policy, or runbook).
+3. **Week 9–12:** Tabletop incident; document evidence for compliance or promotion packet.
+
+---
+
+## Interview alignment
+
+Senior interviews rarely ask syntax. Prepare **stories** for:
+
+- A production incident you led and what changed afterward
+- How you introduced scanning without blocking all releases
+- A Terraform or K8s migration that reduced risk
+- Trade-off between speed and compliance (with numbers)
+
+See [Interview Preparation Playbook](/research-core/05-learning-and-roadmaps/devops-learning-hub/Chapter-3/interview-preparation-playbook).

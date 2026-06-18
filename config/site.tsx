@@ -16,7 +16,7 @@ export const siteConfig = {
   home: {
     title: "Building Secure, Scalable Systems | DevSecOps & Cybersecurity Expert",
     description: `
-          Senior DevSecOps Engineer with 6+ years securing cloud infrastructure and automating security into CI/CD pipelines. 
+          Senior DevSecOps Engineer with 8+ years securing cloud infrastructure and automating security into CI/CD pipelines. 
           I design security-first architectures, build automated threat detection systems, and implement defense-in-depth strategies 
           for multi-cloud environments. My expertise spans infrastructure security, container hardening, vulnerability management, 
           and incident response. I combine hands-on security engineering with research-driven approaches to solve complex 
@@ -287,7 +287,7 @@ export const siteConfig = {
       imageUrl: '/mongodb.svg',
     },
     {
-      name: 'Dynamo DB',
+      name: 'DynamoDB',
       imageUrl: '/aws-logo.png',
     },
     {
@@ -325,7 +325,7 @@ export const siteConfig = {
       imageUrl: '/jenkins-logo.svg',
     },
     {
-      name: 'Gitlab pipelines',
+      name: 'GitLab Pipelines',
       imageUrl: '/gitlab-logo.svg',
     },
     {
@@ -392,11 +392,11 @@ export const siteConfig = {
       imageUrl: '/aws-logo.png',
     },
     {
-      name: 'Eventbridge',
+      name: 'Amazon EventBridge',
       imageUrl: '/aws-logo.png',
     },
     {
-      name: 'Dynamodb streams',
+      name: 'DynamoDB Streams',
       imageUrl: '/aws-logo.png',
     },
     {
@@ -413,7 +413,7 @@ export const siteConfig = {
       imageUrl: '/aws-logo.png',
     },
     {
-      name: 'firewalls',
+      name: 'Firewalls',
       imageUrl: '/fortinet.svg',
     },
     {
@@ -430,7 +430,7 @@ export const siteConfig = {
       imageUrl: '/confluence.svg',
     },
     {
-      name: 'jira',
+      name: 'Jira',
       imageUrl: '/jira-logo.svg',
     },
     {

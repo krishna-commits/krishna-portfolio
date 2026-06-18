@@ -1,0 +1,45 @@
+---
+title: Defining SLIs and SLOs for Platform Services
+description: A practical guide to selecting indicators, setting targets, and reporting error budgets.
+parent: "Chapter 1: SLOs and Operability"
+grand_parent: SRE and Reliability Engineering
+order: 1
+completed: true
+---
+
+# Defining SLIs and SLOs for Platform Services
+
+## SLI examples
+
+| Service | SLI | Measurement |
+|---------|-----|-------------|
+| API | Availability | Successful requests / total |
+| API | Latency | p99 &lt; 300ms |
+| CI pipeline | Success rate | Green builds / total |
+| Auth | Login success | Valid logins / attempts |
+
+## SLO template
+
+```text
+Over a 30-day window, 99.9% of API requests will succeed (non-5xx).
+```
+
+**Error budget** = allowed unreliability = 0.1% ≈ 43 minutes downtime/month.
+
+## Policy
+
+When error budget is **expleted**:
+
+- Freeze non-critical releases
+- Prioritize stability and security patches
+- Resume features when budget recovers
+
+## Dashboards
+
+- Burn rate alerts (fast budget consumption)
+- SLO compliance by team / service tier
+- Link incidents to budget impact in post-mortems
+
+## Security tie-in
+
+Include **security SLIs**: mean time to patch critical CVEs, % prod workloads on signed images, MFA coverage for admin roles.

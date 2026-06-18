@@ -106,6 +106,12 @@ const ProjectCard = memo(function ProjectCard({ project, index }: { project: any
 							{project.title}
 						</h3>
 
+						{project.outcome && (
+							<p className="text-sm font-medium leading-snug text-amber-800 dark:text-amber-300">
+								{project.outcome}
+							</p>
+						)}
+
 						{project.description && (
 							<p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">
 								{project.description}

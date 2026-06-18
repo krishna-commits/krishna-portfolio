@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import { Shield, Code, Cloud, Server, Eye, Container, CheckCircle2, ArrowRight } from "lucide-react"
-import { PAGE_CARD, PAGE_ICON_CHIP } from "lib/page-layout"
+import { PAGE_CARD, PAGE_ICON_CHIP, PAGE_H1, PAGE_LEAD } from "lib/page-layout"
 import { cn } from "app/theme/lib/utils"
 
 export function SecurityFirstApproach() {
@@ -47,15 +47,15 @@ export function SecurityFirstApproach() {
 				transition={{ duration: 0.5 }}
 				className="mb-8 sm:mb-10 md:mb-12"
 			>
-				<div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+				<div className="mb-3 flex flex-wrap items-center gap-2 sm:gap-3">
 					<span className={PAGE_ICON_CHIP}>
 						<Shield className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden />
 					</span>
-					<h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl md:text-4xl">
+					<h2 id="security-heading" className={PAGE_H1}>
 						Security-First Approach
 					</h2>
 				</div>
-				<p className="max-w-3xl text-base leading-relaxed text-muted-foreground sm:text-lg md:text-xl">
+				<p className={cn(PAGE_LEAD, "max-w-3xl text-base sm:text-lg")}>
 					Integrating <span className="font-semibold text-foreground">security at every stage</span>, from{" "}
 					<span className="font-semibold text-primary">code commit</span> to{" "}
 					<span className="font-semibold text-primary">production monitoring</span>, using shift-left principles,

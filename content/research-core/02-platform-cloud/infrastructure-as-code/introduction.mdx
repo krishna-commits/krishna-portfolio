@@ -1,0 +1,32 @@
+---
+title: Infrastructure as Code
+description: Terraform, Terragrunt, and CloudFormation research — modules, state management, policy scanning, and multi-environment promotion patterns.
+date: "2024-08-01"
+venue: Platform Engineering Notes
+citationCount: 9
+keywords:
+  - Terraform
+  - Terragrunt
+  - CloudFormation
+  - IaC
+  - Policy as Code
+parent: null
+grand_parent: null
+order: 3
+category: 02-platform-cloud
+---
+
+## Research focus
+
+Infrastructure as Code (IaC) enables **repeatable, auditable** cloud provisioning. This track covers module design, remote state, workspace strategy, and security scanning before `terraform apply`.
+
+### Core questions
+
+1. How should modules be versioned and consumed across teams?
+2. What state backend layout supports disaster recovery and least privilege?
+3. Which policies must block apply vs warn in CI?
+
+### Related documentation
+
+- DevSecOps pillar: IaC policy as code (Checkov, OPA)
+- Cloud Platform: provider-specific resource patterns

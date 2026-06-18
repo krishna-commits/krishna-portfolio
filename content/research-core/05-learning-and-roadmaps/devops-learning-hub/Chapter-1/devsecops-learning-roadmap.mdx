@@ -1,0 +1,175 @@
+---
+title: DevSecOps Learning Roadmap
+description: A 12-step learning path for platform and security engineers — phased from Git to production DevSecOps with Research Core deep-dive links.
+parent: "Chapter 1: Orientation and Roadmaps"
+grand_parent: DevOps Learning Hub
+order: 2
+completed: true
+keywords:
+  - Roadmap
+  - DevSecOps
+  - Career
+  - Learning2026
+---
+
+# DevSecOps Learning Roadmap
+
+A phased plan for engineers who build **secure delivery pipelines** — not just infrastructure. This sequence reflects how production DevSecOps teams actually grow skills: foundations first, automation second, cloud and security depth last.
+
+> **Principle:** Learn enough to ship safely, then deepen by what your environment demands.
+
+---
+
+## Phase 0 — Foundations (weeks 1–4)
+
+### Step 1: Version control (Git)
+
+**Learn:** clone, branch, merge, rebase, pull requests, conflict resolution, protected branches.
+
+**Practice:** contribute to a team repo; open a PR with a small fix; review someone else's diff.
+
+**Research Core:** [Scripting](/research-core/02-platform-cloud/scripting/introduction)
+
+---
+
+### Step 2: One programming language
+
+**Learn:** variables, control flow, data structures, error handling, HTTP clients, reading JSON APIs.
+
+**Recommended:** Python for automation and glue; Go for CLI tools and cloud-native controllers.
+
+**Practice:** script that calls an API and writes a report; small CLI that validates a config file.
+
+**Research Core:** [Scripting](/research-core/02-platform-cloud/scripting/introduction)
+
+---
+
+### Step 3: Linux and shell scripting
+
+**Learn:** filesystem layout, permissions, processes, `grep`/`find`/`awk`, SSH, package managers, systemd basics, Bash or PowerShell.
+
+**Practice:** provision a VM, harden SSH, write a backup script with cron.
+
+**Research Core:** [Linux](/research-core/03-operations-reliability/linux/introduction)
+
+---
+
+## Phase 1 — Platform literacy (weeks 5–10)
+
+### Step 4: Networking and security fundamentals
+
+**Learn:** OSI/TCP-IP, DNS, TLS/HTTPS, firewalls, ports, VPN basics, STRIDE-style threat thinking.
+
+**Practice:** trace a request from browser to pod; explain what breaks if TLS cert expires.
+
+**Research Core:** [Networking](/research-core/03-operations-reliability/networking/introduction) · [Cybersecurity](/research-core/01-security-engineering/cybersecurity/introduction)
+
+---
+
+### Step 5: Server and application stack
+
+**Learn:** reverse proxy, load balancing, caching, web servers (Nginx/Apache), relational vs document DB concepts.
+
+**Practice:** deploy a static site behind Nginx with HTTPS termination.
+
+**Research Core:** [Database](/research-core/03-operations-reliability/database/introduction)
+
+---
+
+### Step 6: Containers
+
+**Learn:** images, Dockerfile layers, volumes, bridge networking, multi-stage builds, Docker Compose.
+
+**Practice:** containerize an app; compose app + database; scan image with a local scanner.
+
+**Research Core:** [Containerization and Orchestration](/research-core/02-platform-cloud/containerization-and-orchestration/introduction)
+
+---
+
+### Step 7: Container orchestration (Kubernetes)
+
+**Learn:** Pods, Deployments, Services, Ingress, ConfigMaps, Secrets, `kubectl`, Helm basics, **Pod Security Standards**, network policies.
+
+**Practice:** deploy a three-tier app; restrict pod capabilities; rotate a Secret.
+
+**Research Core:** [Kubernetes Security](/research-core/01-security-engineering/kubernetes-security/introduction) · [Containerization](/research-core/02-platform-cloud/containerization-and-orchestration/introduction)
+
+---
+
+## Phase 2 — Automation and delivery (weeks 11–16)
+
+### Step 8: Infrastructure as Code
+
+**Learn:** declarative vs imperative, Terraform state and modules, remote backends, Ansible playbooks, drift detection.
+
+**Practice:** module for VPC + EKS/AKS/GKE; CI job that runs `terraform plan` on PRs.
+
+**Research Core:** [Infrastructure as Code](/research-core/02-platform-cloud/infrastructure-as-code/introduction)
+
+---
+
+### Step 9: CI/CD with security gates
+
+**Learn:** build → test → **SAST/SCA** → deploy; GitHub Actions or Jenkins; artifact promotion; environment approvals.
+
+**Practice:** pipeline that fails on critical CVEs; signed container push; deploy to staging only from `main`.
+
+**Research Core:** [CI/CD Pipelines](/research-core/02-platform-cloud/ci-cd-pipelines/introduction) · [DevSecOps](/research-core/01-security-engineering/devsecops/introduction)
+
+---
+
+### Step 10: Monitoring and observability
+
+**Learn:** metrics, logs, traces; Prometheus/Grafana or cloud-native equivalents; alerting hygiene; SLOs and error budgets.
+
+**Practice:** dashboard for golden signals; alert that pages only on user impact.
+
+**Research Core:** [Logging and Monitoring](/research-core/03-operations-reliability/logging-and-monitoring/introduction) · [SRE Reliability](/research-core/03-operations-reliability/sre-reliability/introduction)
+
+---
+
+## Phase 3 — Cloud and security depth (weeks 17+)
+
+### Step 11: One cloud provider (then expand)
+
+**Learn:** IAM least privilege, VPC/VNet, compute, object storage, managed Kubernetes, identity federation, audit logs.
+
+**Practice:** landing zone with separate dev/prod accounts; break-glass role documented.
+
+**Research Core:** [Cloud Platform](/research-core/02-platform-cloud/cloud-platform/introduction) · [Cloud Security Posture](/research-core/01-security-engineering/cloud-security-posture/introduction)
+
+---
+
+### Step 12: DevSecOps fundamentals (ongoing)
+
+**Learn:** secrets management (Vault, cloud KMS), SBOM generation, zero trust networking, incident response, supply chain controls.
+
+**Practice:** quarterly tabletop for credential leak; SBOM in release artifacts; policy-as-code on cluster admission.
+
+**Research Core:**
+
+- [DevSecOps](/research-core/01-security-engineering/devsecops/introduction)
+- [Zero Trust Architecture](/research-core/01-security-engineering/zero-trust-architecture/introduction)
+- [Supply Chain Security](/research-core/01-security-engineering/supply-chain-security/introduction)
+- [Incident Response](/research-core/01-security-engineering/incident-response/introduction)
+
+---
+
+## Weekly rhythm (suggested)
+
+| Day | Activity |
+|-----|----------|
+| Mon–Wed | Read + lab (2 h/day) |
+| Thu | Write notes or update personal runbook |
+| Fri | Small portfolio artifact (script, pipeline snippet, diagram) |
+| Weekend | Optional cert lab or deep dive on weakest step |
+
+---
+
+## For experienced engineers (8+ years)
+
+Use this as a **gap checklist**, not a beginner sequence:
+
+1. Audit **Step 12** against your SDLC — scans, secrets, SBOM, IR playbooks.
+2. Deepen **Steps 7–9** with OPA/Kyverno, GitOps, and signed artifacts.
+3. Map cloud certs to **Step 11** using the [Certification Roadmap](/research-core/05-learning-and-roadmaps/devops-learning-hub/Chapter-3/certification-roadmap).

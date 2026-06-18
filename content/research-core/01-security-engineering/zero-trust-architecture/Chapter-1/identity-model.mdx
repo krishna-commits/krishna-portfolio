@@ -1,0 +1,43 @@
+---
+title: Zero Trust Identity Model
+description: Designing least-privilege IAM, MFA enforcement, and conditional access for humans and machines.
+parent: "Chapter 1: Identity and Access"
+grand_parent: Zero Trust Architecture
+order: 1
+completed: true
+---
+
+# Zero Trust Identity Model
+
+## Never trust, always verify
+
+Every request — user, service, batch job — must present **strong identity** and meet policy before accessing a resource.
+
+## Human access
+
+| Control | Implementation |
+|---------|----------------|
+| MFA | Required for all admin and production access |
+| SSO | SAML/OIDC via corporate IdP |
+| Conditional access | Block legacy auth, risky geos, unmanaged devices |
+| JIT access | Time-bound elevation via PAM (e.g. 2-hour prod admin) |
+
+## Workload access
+
+- **IRSA** (AWS), **Workload Identity** (GCP), **managed identity** (Azure)
+- No long-lived access keys in pods
+- Rotate service account tokens; prefer OIDC federation
+
+## Authorization patterns
+
+```text
+Subject + Action + Resource + Context → Allow/Deny
+```
+
+Use attribute-based access control (ABAC) where RBAC becomes unwieldy at scale.
+
+## Session monitoring
+
+- Log authentication events to SIEM
+- Alert on impossible travel, privilege escalation chains
+- Revoke sessions on role change or offboarding within minutes

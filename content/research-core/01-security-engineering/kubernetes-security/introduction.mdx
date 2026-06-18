@@ -1,0 +1,31 @@
+---
+title: Kubernetes Security
+description: Hardening container orchestration — RBAC, pod security, admission control, and runtime threat detection on Kubernetes.
+date: "2024-11-10"
+venue: Platform Security Research
+citationCount: 9
+highlight: true
+keywords:
+  - Kubernetes
+  - RBAC
+  - Pod Security
+  - Falco
+  - Kyverno
+parent: null
+grand_parent: null
+order: 3
+collaborators:
+  - Krishna Neupane
+---
+
+## Research scope
+
+Kubernetes introduces a new attack surface: the control plane, etcd, API server, and workload configuration. This track documents **defense-in-depth** for clusters running production workloads.
+
+### Areas covered
+
+- API server hardening and RBAC least privilege
+- Pod Security Standards / restricted profiles
+- Admission policies (Kyverno, Gatekeeper)
+- Runtime detection with Falco or cloud-native agents
+- Secrets encryption and etcd backup security

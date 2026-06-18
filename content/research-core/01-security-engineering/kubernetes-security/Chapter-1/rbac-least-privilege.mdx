@@ -1,0 +1,44 @@
+---
+title: Kubernetes RBAC Least Privilege
+description: Designing roles and bindings so developers and automation have minimum required API permissions.
+parent: "Chapter 1: Cluster Hardening"
+grand_parent: Kubernetes Security
+order: 1
+completed: true
+---
+
+# Kubernetes RBAC Least Privilege
+
+## Principles
+
+1. **Namespace isolation** — Teams operate in dedicated namespaces
+2. **No cluster-admin for apps** — Reserve for break-glass platform SREs
+3. **Separate CI roles** — Deploy-only SA per environment
+4. **Audit RBAC** — Review `ClusterRoleBinding` quarterly
+
+## Example: deploy-only role
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: payments-prod
+  name: cicd-deploy
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+```
+
+## Anti-patterns
+
+| Pattern | Risk |
+|---------|------|
+| `cluster-admin` for CI token | Full cluster compromise if leaked |
+| Wildcard verbs on secrets | Credential theft |
+| Shared namespace for prod/stage | Blast radius |
+
+## Tooling
+
+- `kubectl auth can-i --list --as=system:serviceaccount:ns:sa`
+- RBAC visualization tools (e.g. rbac-lookup, Polaris)

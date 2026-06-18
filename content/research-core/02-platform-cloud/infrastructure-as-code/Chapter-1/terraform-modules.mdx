@@ -1,0 +1,54 @@
+---
+title: Terraform Module Design Patterns
+description: Reusable modules, versioning, and interface design for platform teams.
+parent: "Chapter 1: Terraform Foundations"
+grand_parent: Infrastructure as Code
+order: 1
+completed: true
+keywords:
+  - Terraform
+  - Modules
+  - Platform Engineering
+---
+
+# Terraform Module Design Patterns
+
+## Module types
+
+| Type | Purpose | Example |
+|------|---------|---------|
+| Resource module | Single logical resource | `terraform-aws-s3-bucket` |
+| Composition module | Product-ready stack | `vpc-app-tier` |
+| Root module | Environment instance | `prod/us-east-1/app` |
+
+## Interface guidelines
+
+- Expose **minimal required variables**; sensible defaults for optional
+- Output IDs and ARNs consumers need — not entire resource objects
+- Document breaking changes in CHANGELOG; use semver tags
+
+## Example structure
+
+```text
+modules/
+  networking/vpc/
+  compute/eks/
+environments/
+  prod/
+  staging/
+```
+
+## CI checks
+
+```bash
+terraform fmt -check -recursive
+terraform validate
+tflint
+checkov -d .
+```
+
+## Anti-patterns
+
+- `terraform apply` from laptops to production
+- Unpinned module sources (`ref=main`)
+- Monolithic state for entire organization

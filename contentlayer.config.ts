@@ -141,6 +141,11 @@ export const ResearchCore = defineDocumentType(() => ({
       description: "The order of the blog post",
       required: false,
     },
+    category: {
+      type: "string",
+      description: "Pillar slug for grouping on research index",
+      required: false,
+    },
     completed: {
       type: "boolean",
       description: "Denotes weather the note is completed",
@@ -267,6 +272,11 @@ export const Projects = defineDocumentType(() => ({
       type: "list",
       of: { type: "string" },
       description: "Keywords/tags for the project",
+      required: false,
+    },
+    outcome: {
+      type: "string",
+      description: "One-line result or impact statement for the project",
       required: false,
     },
 

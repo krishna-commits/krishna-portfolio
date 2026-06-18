@@ -1,0 +1,45 @@
+---
+title: Runtime Threat Detection on Kubernetes
+description: Detecting anomalous syscalls, crypto mining, and lateral movement with Falco and SIEM integration.
+parent: "Chapter 1: Cluster Hardening"
+grand_parent: Kubernetes Security
+order: 3
+completed: true
+---
+
+# Runtime Threat Detection on Kubernetes
+
+## Why runtime matters
+
+Configuration and image scanning cannot catch **in-memory exploits**, stolen tokens used at runtime, or insider abuse.
+
+## Falco overview
+
+Falco uses kernel events (eBPF) to detect suspicious behavior:
+
+- Shell spawned in production container
+- Unexpected outbound connection to metadata IP
+- Write to `/etc` or sensitive paths
+- Crypto miner process patterns
+
+## Example rule (conceptual)
+
+```yaml
+- rule: Shell in Container
+  desc: Detect shell execution in running container
+  condition: spawned_process and container and proc.name in (bash, sh, zsh)
+  output: Shell spawned in container (user=%user.name container=%container.name)
+  priority: WARNING
+```
+
+## Response playbook
+
+1. **Alert** → SIEM with pod, namespace, image digest
+2. **Triage** — Known deploy vs anomaly
+3. **Contain** — NetworkPolicy deny-all on pod; scale to zero if critical
+4. **Forensics** — Capture logs, memory dump policy, rotate secrets
+5. **Post-incident** — Patch image, tighten admission policy
+
+## Integration
+
+Forward Falco events to Elasticsearch/Loki → Grafana dashboards → PagerDuty for critical rules only.

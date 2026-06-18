@@ -1,0 +1,33 @@
+---
+title: Defense in Depth for Enterprise Systems
+description: Layered security controls across network, identity, application, and data planes.
+parent: "Chapter 1: Threat Modeling and Defense"
+grand_parent: CyberSecurity
+order: 2
+completed: true
+---
+
+# Defense in Depth for Enterprise Systems
+
+## Layers
+
+```text
+[User] → WAF / CDN → LB → App → Service mesh → Data store
+         ↑ IAM/MFA   ↑ SG/NACL  ↑ AuthZ   ↑ mTLS    ↑ Encryption
+```
+
+## Control categories
+
+1. **Preventive** — Firewalls, IAM deny, input validation
+2. **Detective** — SIEM, IDS, anomaly detection
+3. **Corrective** — IR playbooks, backup restore, patching
+
+## Metrics
+
+- Mean time to detect (MTTD) for simulated attacks
+- % systems with baseline CIS hardening
+- Patch SLA compliance by severity
+
+## Research conclusion
+
+No single control is sufficient. **Correlated layers** reduce single-point failure when one control is bypassed.

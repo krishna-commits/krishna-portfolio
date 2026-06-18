@@ -27,7 +27,7 @@ export default function ResearchCorePage() {
 						<h1 className={PAGE_H1}>Research Core</h1>
 					</div>
 					<p className={PAGE_LEAD}>
-						Academic findings, conference highlights, coding practices, and theoretical summaries in a structured, research-focused format for continuous learning and exploration.
+						Five research pillars — Security Engineering, Platform & Cloud, Operations & Reliability, Collaboration, and Learning & Roadmaps — with structured tracks, chapters, and applied technical documentation.
 					</p>
 				</motion.div>
 				<ResearchCoreCard />

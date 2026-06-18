@@ -1,0 +1,113 @@
+---
+title: Cloud Provider Study Plans
+description: Eight-week structured labs for AWS, Azure, and GCP — IAM, networking, compute, storage, and managed Kubernetes per provider.
+parent: "Chapter 2: Tools and Cloud Depth"
+grand_parent: DevOps Learning Hub
+order: 2
+completed: true
+keywords:
+  - AWS
+  - Azure
+  - GCP
+  - Cloud
+  - Learning
+---
+
+# Cloud Provider Study Plans
+
+Pick **one** hyperscaler for eight focused weeks. Multi-cloud fluency comes later — depth on one provider transfers faster than shallow tours of three.
+
+---
+
+## Shared foundation (all providers)
+
+Before provider-specific labs, understand:
+
+| Concept | Why it matters |
+|---------|----------------|
+| Shared responsibility model | You own patching, IAM, and data classification |
+| Regions and availability zones | Blast radius and latency |
+| IAM users vs roles vs service accounts | No long-lived admin keys |
+| VPC/VNet and subnets | Every resource lives in network context |
+| Object storage vs block storage | Backup and static asset patterns |
+| Managed Kubernetes | Where most platform teams land |
+
+**Research Core:** [Cloud Platform](/research-core/02-platform-cloud/cloud-platform/introduction) · [Cloud Security Posture](/research-core/01-security-engineering/cloud-security-posture/introduction)
+
+---
+
+## AWS — 8-week plan
+
+| Week | Topic | Lab |
+|------|--------|-----|
+| 1 | IAM, Organizations, SCPs | Create role with least privilege; deny `*` actions |
+| 2 | VPC, subnets, security groups | Three-tier VPC diagram implemented |
+| 3 | EC2, ALB, Auto Scaling | Stateless app behind ALB |
+| 4 | S3, IAM policies, encryption | Static site + bucket policy |
+| 5 | RDS or DynamoDB | App with managed DB + secret in Secrets Manager |
+| 6 | EKS fundamentals | Deploy sample app; IRSA for pod identity |
+| 7 | CloudWatch, CloudTrail | Alert on root login; dashboard for ALB |
+| 8 | Capstone | Terraform module: VPC + EKS + RDS |
+
+**Cert alignment:** Solutions Architect Associate → DevOps Engineer Professional (after experience).
+
+---
+
+## Azure — 8-week plan
+
+| Week | Topic | Lab |
+|------|--------|-----|
+| 1 | Entra ID, RBAC, management groups | Custom role for deploy-only SP |
+| 2 | VNet, NSGs, Azure Firewall basics | Hub-spoke sketch |
+| 3 | App Service or AKS intro | Deploy container from ACR |
+| 4 | Storage accounts, Key Vault | Encrypted blob + key rotation plan |
+| 5 | Azure SQL or Cosmos DB | Connection via managed identity |
+| 6 | AKS deep dive | Azure CNI, workload identity |
+| 7 | Monitor, Log Analytics, Defender for Cloud | Alert on failed sign-ins |
+| 8 | Capstone | Bicep or Terraform: AKS + Key Vault |
+
+**Cert alignment:** AZ-104 (admin) → AZ-400 (DevOps) or SC-200 track for security roles.
+
+---
+
+## GCP — 8-week plan
+
+| Week | Topic | Lab |
+|------|--------|-----|
+| 1 | IAM, org policies, folders | Service account with minimal roles |
+| 2 | VPC, firewall rules, Cloud NAT | Private GKE nodes |
+| 3 | Compute Engine or Cloud Run | Compare VM vs serverless for same API |
+| 4 | Cloud Storage, CMEK option | Versioned bucket + lifecycle rule |
+| 5 | Cloud SQL or Firestore | App with connection pooling |
+| 6 | GKE, workload identity | Deploy with no JSON keys in cluster |
+| 7 | Cloud Monitoring, Logging, Security Command Center | Uptime check + log-based metric |
+| 8 | Capstone | Terraform: VPC + GKE + Cloud SQL |
+
+**Cert alignment:** Associate Cloud Engineer → Professional Cloud Architect or Security Engineer.
+
+---
+
+## Multi-cloud later
+
+After one capstone:
+
+| Pattern | Learn on provider A | Transfer to B/C |
+|---------|---------------------|-----------------|
+| Identity federation | OIDC workload identity | Same pattern, different console |
+| IaC modules | Terraform AWS provider | AzureRM / Google providers |
+| K8s workloads | Helm charts | Largely portable |
+| Posture tools | Native CSPM | Third-party multi-cloud CSPM |
+
+---
+
+## Cost discipline
+
+- Set billing alerts on day one.
+- Tear down capstone resources weekly.
+- Tag everything: `owner`, `env`, `cost-center`.
+
+---
+
+## Next
+
+Map weeks 6–8 to exams in [Certification Roadmap](/research-core/05-learning-and-roadmaps/devops-learning-hub/Chapter-3/certification-roadmap).
