@@ -2,61 +2,30 @@
 
 import { useState, useEffect, useMemo, useCallback, memo } from "react"
 import Image from "next/image"
-import { siteConfig } from "config/site"
 import { cn } from "app/theme/lib/utils"
 import { Badge } from "app/theme/components/ui/badge"
-import { CheckCircle2, Shield, Cloud, Lock, Server } from "lucide-react"
+import { CheckCircle2, Shield, Cloud, Lock, Server, ArrowRight } from "lucide-react"
+import Link from "next/link"
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion"
-import { Icons } from "app/theme/components/theme/icons"
 import { useDeferredValue as useReactDeferredValue } from "react"
 import { RevealText } from "../../components/animated-typography"
+import { useHero } from "lib/hooks/use-homepage-data"
+import { useResearchCoreConfig } from "lib/hooks/use-research-core-config"
+import type { HeroExpertiseArea } from "lib/hero-config"
 
 const VIEWS = ["Academic", "Enterprise"] as const
 type ViewType = (typeof VIEWS)[number]
 
-const viewContent: Record<ViewType, { headline: string; bullets: string[] }> = {
-	Academic: {
-		headline: "Advancing secure, resilient cloud research ready for doctoral depth.",
-		bullets: [
-			"Published applied DevSecOps playbooks adopted across cross-functional teams.",
-			"Led reproducible research pipelines with verifiable infrastructure artifacts.",
-			"Mentored cohorts on cloud resilience and secure CI/CD methodologies.",
-		],
-	},
-	Enterprise: {
-		headline: "Delivering secure, production-grade systems with automated security controls.",
-		bullets: [
-			"Built security-first CI/CD pipelines reducing vulnerabilities by 85% through automated SAST/DAST integration.",
-			"Implemented infrastructure security hardening across multi-cloud environments, achieving SOC2 compliance.",
-			"Designed and deployed zero-trust architectures with automated threat detection, reducing incident response time by 70%.",
-		],
-	},
+const HERO_ICON_MAP = {
+	Shield,
+	Server,
+	Lock,
+	Cloud,
+} as const
+
+function expertiseIcon(area: HeroExpertiseArea) {
+	return HERO_ICON_MAP[area.icon] ?? Shield
 }
-
-const expertiseAreas = [
-	{
-		icon: Shield,
-		title: "Security-First Architecture",
-		description: "Designing cloud systems with security as a foundational principle.",
-	},
-	{
-		icon: Server,
-		title: "Infrastructure Automation",
-		description: "Building scalable, resilient infrastructure with IaC and CI/CD.",
-	},
-	{
-		icon: Lock,
-		title: "Cybersecurity Defense",
-		description: "Implementing defense-in-depth, zero-trust architectures, and automated threat detection for enterprise cloud environments.",
-	},
-	{
-		icon: Cloud,
-		title: "Cloud-Native",
-		description: "Expertise in AWS, GCP, Heroku, Azure, and Kubernetes orchestration.",
-	},
-]
-
-const customTags = ["DevSecOps", "Cybersecurity", "Cloud Security", "Threat Detection", "Security Automation", "Zero Trust"]
 
 function SecurityPatternBackground() {
 	return (
@@ -76,6 +45,9 @@ function SecurityPatternBackground() {
 }
 
 export const HeroSection = memo(function HeroSection() {
+	const { config: researchConfig } = useResearchCoreConfig()
+	const { hero } = useHero()
+
 	const [activeView, setActiveView] = useState<ViewType>("Enterprise")
 	const [mounted, setMounted] = useState(false)
 	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
@@ -142,10 +114,10 @@ export const HeroSection = memo(function HeroSection() {
 								>
 									<Badge className="border-0 bg-amber-600 px-2 py-1 text-xs font-semibold text-white shadow-sm dark:bg-amber-600">
 										<Shield className="mr-1 h-3 w-3" aria-hidden="true" />
-										Senior DevSecOps Engineer
+										{hero.badgePrimary}
 									</Badge>
 									<Badge variant="outline" className="border-border bg-muted/50 px-2 py-1 text-xs font-semibold text-foreground">
-										Researcher
+										{hero.badgeSecondary}
 									</Badge>
 								</motion.div>
 
@@ -157,14 +129,14 @@ export const HeroSection = memo(function HeroSection() {
 								>
 									<h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight tracking-tight text-slate-900 dark:text-slate-50">
 										<RevealText variant="slide-up" className="block mb-1 sm:mb-2">
-											Securing Cloud Infrastructure
+											{hero.headlineLine1}
 										</RevealText>
 										<RevealText variant="slide-up" delay={0.1} className="block text-amber-600 dark:text-amber-400">
-											DevSecOps & Cybersecurity Expert
+											{hero.headlineLine2}
 										</RevealText>
 									</h1>
 									<p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-prose mt-3 sm:mt-4">
-										8+ years building security-first cloud systems, automating threat detection, and implementing zero-trust architectures across AWS, GCP, Heroku, Azure, and Kubernetes.
+										{hero.subtitle}
 									</p>
 								</motion.div>
 
@@ -174,8 +146,24 @@ export const HeroSection = memo(function HeroSection() {
 									transition={prefersReducedMotion ? {} : { duration: 0.4, delay: 0.2, ease: "easeOut" }}
 									className="text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed max-w-prose"
 								>
-									{siteConfig.home.description.trim()}
+									{hero.description}
 								</motion.p>
+
+								{researchConfig.heroCta.enabled && (
+									<motion.div
+										initial={prefersReducedMotion ? {} : { opacity: 0, y: 10 }}
+										animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+										transition={prefersReducedMotion ? {} : { duration: 0.4, delay: 0.25, ease: "easeOut" }}
+									>
+										<Link
+											href={researchConfig.heroCta.href}
+											className="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-amber-700 dark:bg-amber-600 dark:hover:bg-amber-500"
+										>
+											{researchConfig.heroCta.label}
+											<ArrowRight className="h-4 w-4" aria-hidden />
+										</Link>
+									</motion.div>
+								)}
 
 								<motion.div
 									initial={prefersReducedMotion ? {} : { opacity: 0, y: 10 }}
@@ -184,7 +172,7 @@ export const HeroSection = memo(function HeroSection() {
 									className="flex flex-wrap gap-1.5"
 									aria-label="Technology tags"
 								>
-									{customTags.map((tag, idx) => (
+									{hero.customTags.map((tag, idx) => (
 										<Badge
 											key={idx}
 											variant="secondary"
@@ -210,10 +198,10 @@ export const HeroSection = memo(function HeroSection() {
 											whileHover={prefersReducedMotion ? {} : { scale: 1.02 }}
 											transition={{ type: 'spring', stiffness: 400, damping: 28 }}
 										>
-											{siteConfig.profile_image ? (
+											{hero.profileImage ? (
 												<Image
-													src={siteConfig.profile_image}
-													alt={`${siteConfig.name} - ${siteConfig.bio}`}
+													src={hero.profileImage}
+													alt={`${hero.name} - ${hero.bio}`}
 													fill
 													className="object-cover object-center"
 													priority
@@ -269,10 +257,10 @@ export const HeroSection = memo(function HeroSection() {
 											aria-labelledby={`${deferredView.toLowerCase()}-tab`}
 										>
 											<p className="mb-3 text-sm font-semibold text-slate-900 dark:text-slate-50">
-												{viewContent[deferredView].headline}
+												{hero.viewContent[deferredView].headline}
 											</p>
 											<ul className="space-y-2" role="list">
-												{viewContent[deferredView].bullets.map((bullet, idx) => (
+												{hero.viewContent[deferredView].bullets.map((bullet, idx) => (
 													<li key={idx} className="flex gap-2 text-slate-700 dark:text-slate-300">
 														<CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
 														<span className="text-xs leading-relaxed font-medium">{bullet}</span>
@@ -292,8 +280,8 @@ export const HeroSection = memo(function HeroSection() {
 							className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5"
 							aria-label="Expertise areas"
 						>
-							{expertiseAreas.map((area, idx) => {
-								const Icon = area.icon
+							{hero.expertiseAreas.map((area, idx) => {
+								const Icon = expertiseIcon(area)
 								return (
 									<motion.div
 										key={idx}

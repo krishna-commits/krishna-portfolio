@@ -7,7 +7,7 @@ import { Activity, Calendar, TrendingUp, Clock } from 'lucide-react'
 import { cn } from 'app/theme/lib/utils'
 import { PAGE_CARD, PAGE_H1, PAGE_ICON_CHIP, PAGE_LEAD } from 'lib/page-layout'
 import Link from 'next/link'
-import { siteConfig } from 'config/site'
+import { useSocialLinks } from 'lib/hooks/use-homepage-data'
 import moment from 'moment'
 import { GitHubMetricsSkeleton } from 'app/components/skeleton-loaders'
 
@@ -113,6 +113,7 @@ function getContributionColor(level: number, isDark: boolean = false): string {
 }
 
 export function GitHubContributionGraph() {
+  const { links } = useSocialLinks()
   const [hoveredDay, setHoveredDay] = useState<ContributionDay | null>(null)
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
   const [isDark, setIsDark] = useState(false)
@@ -232,7 +233,7 @@ export function GitHubContributionGraph() {
             Code Canvas
           </Link>
           <Link
-            href={siteConfig.links.github}
+            href={links.github}
             target="_blank"
             rel="noopener noreferrer"
             className="no-underline flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-muted"

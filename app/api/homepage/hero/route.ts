@@ -1,70 +1,16 @@
-import { NextResponse } from 'next/server';
-import { prisma } from 'lib/prisma';
-import { siteConfig } from 'config/site';
+import { NextResponse } from 'next/server'
+import { DEFAULT_HERO_DATA, mergeHeroData } from 'lib/hero-config'
+import { getSiteSettingJson } from 'lib/site-settings'
 
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic'
 
-// GET - Get hero settings (public)
 export async function GET() {
-  try {
-    if (!prisma) {
-      return NextResponse.json({ 
-        hero: {
-          profileImage: siteConfig.profile_image,
-          name: siteConfig.name,
-          bio: siteConfig.bio,
-          title: siteConfig.home.title,
-          description: siteConfig.home.description,
-          talksAbout: siteConfig.talks_about,
-        }
-      }, { status: 200 });
-    }
-
-    const setting = await prisma.siteSetting.findUnique({
-      where: { key: 'hero' },
-    });
-
-    if (!setting) {
-      // Fallback to config
-      return NextResponse.json({ 
-        hero: {
-          profileImage: siteConfig.profile_image,
-          name: siteConfig.name,
-          bio: siteConfig.bio,
-          title: siteConfig.home.title,
-          description: siteConfig.home.description,
-          talksAbout: siteConfig.talks_about,
-        }
-      }, { status: 200 });
-    }
-
-    let heroData;
-    try {
-      heroData = JSON.parse(setting.value);
-    } catch {
-      heroData = {
-        profileImage: siteConfig.profile_image,
-        name: siteConfig.name,
-        bio: siteConfig.bio,
-        title: siteConfig.home.title,
-        description: siteConfig.home.description,
-        talksAbout: siteConfig.talks_about,
-      };
-    }
-
-    return NextResponse.json({ hero: heroData }, { status: 200 });
-  } catch (error: any) {
-    console.error('[Hero API] Error:', error);
-    return NextResponse.json({ 
-      hero: {
-        profileImage: siteConfig.profile_image,
-        name: siteConfig.name,
-        bio: siteConfig.bio,
-        title: siteConfig.home.title,
-        description: siteConfig.home.description,
-        talksAbout: siteConfig.talks_about,
-      }
-    }, { status: 200 });
-  }
+	try {
+		const stored = await getSiteSettingJson<typeof DEFAULT_HERO_DATA | null>('hero', null)
+		const hero = mergeHeroData(stored)
+		return NextResponse.json({ hero }, { status: 200 })
+	} catch (error: unknown) {
+		console.error('[Hero Public API]', error)
+		return NextResponse.json({ hero: DEFAULT_HERO_DATA }, { status: 200 })
+	}
 }
-

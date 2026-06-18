@@ -1,15 +1,25 @@
 'use client'
 
-import { siteConfig } from "config/site";
 import Link from "next/link";
 import { Icons } from "app/theme/components/theme/icons";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Shield, Mail, ArrowUp, Heart, Sparkles, Code2, BookOpen, GraduationCap, FolderKanban } from "lucide-react";
 import { Button } from "app/theme/components/ui/button";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { AnimatePresence } from "framer-motion";
+import { useSiteChrome } from "lib/hooks/use-site-chrome";
+import { useSocialLinks } from "lib/hooks/use-homepage-data";
 
 export default function Copyright(){
+	const { chrome } = useSiteChrome()
+	const { links } = useSocialLinks()
+	const socialLinks = useMemo(() => [
+		{ href: links.github, icon: Icons.gitHub, label: "GitHub", color: "from-slate-700 to-slate-900", bgColor: "from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900", hoverColor: "group-hover/social:from-blue-400 group-hover/social:to-sky-500" },
+		{ href: links.linkedIn, icon: Icons.linkedIn, label: "LinkedIn", color: "from-yellow-400 via-amber-500 to-yellow-600", bgColor: "from-yellow-50 to-amber-50 dark:from-yellow-900/40 dark:to-amber-800/40", hoverColor: "group-hover/social:from-yellow-500 group-hover/social:to-amber-600" },
+		{ href: links.researchgate, icon: Icons.researchgate, label: "ResearchGate", color: "from-orange-500 via-red-500 to-orange-600", bgColor: "from-orange-50 to-red-50 dark:from-orange-900/40 dark:to-red-800/40", hoverColor: "group-hover/social:from-orange-600 group-hover/social:to-red-600" },
+		{ href: links.orcid, icon: Icons.orcid, label: "ORCID", color: "from-yellow-400 via-amber-500 to-yellow-600", bgColor: "from-yellow-50 to-amber-50 dark:from-yellow-900/40 dark:to-amber-800/40", hoverColor: "group-hover/social:from-yellow-500 group-hover/social:to-amber-600" },
+	], [links])
+
 	const [showScrollTop, setShowScrollTop] = useState(false);
 	const { scrollYProgress } = useScroll();
 	const footerOpacity = useTransform(scrollYProgress, [0.7, 1], [0, 1]);
@@ -33,41 +43,6 @@ export default function Copyright(){
 		{ href: "/blog", label: "Blog", icon: BookOpen, color: "from-orange-500 via-red-500 to-orange-600" },
 		{ href: "/projects", label: "Projects", icon: FolderKanban, color: "from-yellow-500 to-amber-600" },
 		{ href: "/contact", label: "Contact", icon: Mail, color: "from-sky-400 to-blue-500" },
-	];
-
-	const socialLinks = [
-		{ 
-			href: siteConfig.links.github, 
-			icon: Icons.gitHub, 
-			label: "GitHub",
-			color: "from-slate-700 to-slate-900",
-			bgColor: "from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900",
-			hoverColor: "group-hover/social:from-blue-400 group-hover/social:to-sky-500"
-		},
-		{ 
-			href: siteConfig.links.linkedIn, 
-			icon: Icons.linkedIn, 
-			label: "LinkedIn",
-			color: "from-yellow-400 via-amber-500 to-yellow-600",
-			bgColor: "from-yellow-50 to-amber-50 dark:from-yellow-900/40 dark:to-amber-800/40",
-			hoverColor: "group-hover/social:from-yellow-500 group-hover/social:to-amber-600"
-		},
-		{ 
-			href: siteConfig.links.researchgate, 
-			icon: Icons.researchgate, 
-			label: "ResearchGate",
-			color: "from-orange-500 via-red-500 to-orange-600",
-			bgColor: "from-orange-50 to-red-50 dark:from-orange-900/40 dark:to-red-800/40",
-			hoverColor: "group-hover/social:from-orange-600 group-hover/social:to-red-600"
-		},
-		{ 
-			href: siteConfig.links.orcid, 
-			icon: Icons.orcid, 
-			label: "ORCID",
-			color: "from-yellow-400 via-amber-500 to-yellow-600",
-			bgColor: "from-yellow-50 to-amber-50 dark:from-yellow-900/40 dark:to-amber-800/40",
-			hoverColor: "group-hover/social:from-yellow-500 group-hover/social:to-amber-600"
-		},
 	];
 
 	return (
@@ -147,12 +122,12 @@ export default function Copyright(){
 										</div>
 									</motion.div>
 									<h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-900 via-yellow-700 to-slate-900 dark:from-slate-100 dark:via-amber-300 dark:to-slate-100 bg-clip-text text-transparent">
-										{siteConfig.title}
+										{chrome.siteTitle}
 									</h3>
 								</div>
 								
 								<p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed max-w-lg">
-									{siteConfig.home.description}
+									{chrome.footerDescription}
 								</p>
 								
 								{/* Made with love */}
@@ -167,7 +142,7 @@ export default function Copyright(){
 									>
 										<Heart className="h-5 w-5 text-red-500 fill-red-500" />
 									</motion.div>
-									<span className="text-base text-slate-500 dark:text-slate-500 font-medium">by {siteConfig.name}</span>
+									<span className="text-base text-slate-500 dark:text-slate-500 font-medium">by {chrome.madeWithName}</span>
 									<motion.div
 										animate={{ rotate: [0, 360], scale: [1, 1.2, 1] }}
 										transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
@@ -296,7 +271,7 @@ export default function Copyright(){
 									className="text-sm sm:text-base text-slate-600 dark:text-slate-400 font-semibold text-center sm:text-left"
 									whileHover={{ scale: 1.05 }}
 								>
-									&copy; {new Date().getFullYear()} {siteConfig.copyright.text}. All rights reserved.
+									&copy; {new Date().getFullYear()} {chrome.copyrightText}. All rights reserved.
 								</motion.p>
 								
 								{/* Enhanced Scroll to Top */}

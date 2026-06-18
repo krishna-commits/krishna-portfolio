@@ -2,7 +2,8 @@
 
 import Link from "next/link"
 import { Navbar } from "./nav"
-import { siteConfig } from "config/site"
+import { useSiteChrome } from "lib/hooks/use-site-chrome"
+import { useSocialLinks } from "lib/hooks/use-homepage-data"
 import { Icons } from "app/theme/components/theme/icons"
 import { ThemeToggle } from "./theme-toggle"
 import { MobileNav } from "./mobile-nav"
@@ -11,6 +12,8 @@ import { motion } from "framer-motion"
 import { Shield } from "lucide-react"
 import { useState, useEffect } from "react"
 export function SiteHeader() {
+	const { chrome } = useSiteChrome()
+	const { links } = useSocialLinks()
 	const [scrolled, setScrolled] = useState(false)
 	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
 
@@ -77,7 +80,7 @@ export function SiteHeader() {
 									
 									{/* Logo Text */}
 									<span className="hidden sm:inline-block font-bold text-xs sm:text-sm bg-gradient-to-r from-slate-900 to-slate-700 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent whitespace-nowrap">
-										{siteConfig.title}
+										{chrome.siteTitle}
 									</span>
 								</Link>
 							</motion.div>
@@ -103,7 +106,7 @@ export function SiteHeader() {
 								>
 									{/* GitHub */}
 									<Link
-										href={siteConfig.links.github}
+										href={links.github}
 										target="_blank"
 										rel="noopener noreferrer"
 										aria-label="GitHub profile"
@@ -121,7 +124,7 @@ export function SiteHeader() {
 
 									{/* LinkedIn */}
 									<Link
-										href={siteConfig.links.linkedIn}
+										href={links.linkedIn}
 										target="_blank"
 										rel="noopener noreferrer"
 										aria-label="LinkedIn profile"
@@ -139,7 +142,7 @@ export function SiteHeader() {
 
 									{/* ResearchGate */}
 									<Link
-										href={siteConfig.links.researchgate}
+										href={links.researchgate}
 										target="_blank"
 										rel="noopener noreferrer"
 										aria-label="ResearchGate profile"
@@ -157,7 +160,7 @@ export function SiteHeader() {
 
 									{/* ORCID */}
 									<Link
-										href={siteConfig.links.orcid}
+										href={links.orcid}
 										target="_blank"
 										rel="noopener noreferrer"
 										aria-label="ORCID profile"

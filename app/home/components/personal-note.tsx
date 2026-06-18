@@ -2,8 +2,26 @@
 
 import { motion } from "framer-motion"
 import { Heart, Sparkles, Target, Zap } from "lucide-react"
+import useSWR from "swr"
+import { DEFAULT_PERSONAL_NOTE, mergePersonalNote } from "lib/personal-note-config"
+import type { PersonalNoteCard } from "lib/personal-note-config"
+
+const fetcher = (url: string) => fetch(url).then((r) => r.json())
+
+const CARD_ICONS = { Target, Sparkles, Zap } as const
+
+function cardIcon(card: PersonalNoteCard) {
+	return CARD_ICONS[card.icon] ?? Target
+}
 
 export function PersonalNote() {
+	const { data } = useSWR<{ personalNote?: Parameters<typeof mergePersonalNote>[0] }>(
+		'/api/homepage/personal-note',
+		fetcher,
+		{ revalidateOnFocus: true },
+	)
+	const config = mergePersonalNote(data?.personalNote ?? DEFAULT_PERSONAL_NOTE)
+
 	return (
 		<section id="about" className="relative w-full" aria-label="Personal note">
 			<motion.div
@@ -14,100 +32,72 @@ export function PersonalNote() {
 				className="relative overflow-hidden rounded-xl sm:rounded-2xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 sm:p-6 md:p-8 lg:p-10 xl:p-12"
 			>
 				<div className="relative space-y-8">
-					{/* Header */}
 					<div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
 						<div className="p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-500 shadow-md">
 							<Heart className="h-5 w-5 sm:h-6 sm:w-6 text-white" aria-hidden="true" />
 						</div>
 						<h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
-							What Drives Me
+							{config.heading}
 						</h2>
 					</div>
 
-					{/* Content */}
-					<div className="space-y-8">
-						{/* Main Statement */}
-						<div className="space-y-4 sm:space-y-5 max-w-3xl">
-							<p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-slate-900 dark:text-slate-50 leading-tight tracking-tight">
-								I build <span className="bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 bg-clip-text text-transparent">secure, scalable cloud systems</span> that protect organizations from evolving threats.
-							</p>
-							<p className="text-sm sm:text-base md:text-lg lg:text-xl text-slate-700 dark:text-slate-300 leading-relaxed">
-								My passion lies in combining <span className="font-semibold text-slate-900 dark:text-slate-50">security engineering</span> with <span className="font-semibold text-slate-900 dark:text-slate-50">automation</span>, creating <span className="bg-gradient-to-r from-blue-400 to-sky-500 bg-clip-text text-transparent font-semibold">defense-in-depth architectures</span> that detect, prevent, and respond to attacks automatically.
-							</p>
+					{config.useSimpleContent && config.simpleContent.trim() ? (
+						<div className="prose prose-slate dark:prose-invert max-w-3xl whitespace-pre-wrap text-slate-700 dark:text-slate-300">
+							{config.simpleContent}
 						</div>
-						
-						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-							<motion.div
-								initial={{ opacity: 0, scale: 0.9 }}
-								whileInView={{ opacity: 1, scale: 1 }}
-								viewport={{ once: true }}
-								transition={{ delay: 0.1 }}
-								whileHover={{ scale: 1.02, y: -4 }}
-								className="p-5 rounded-xl border-2 border-orange-200 dark:border-orange-800 bg-gradient-to-br from-orange-50/50 to-red-50/50 dark:from-orange-950/20 dark:to-red-950/20 hover:shadow-lg transition-all duration-300"
-							>
-								<div className="inline-flex p-3 rounded-lg bg-gradient-to-br from-orange-500 via-red-500 to-orange-600 mb-3 shadow-md">
-									<Target className="h-5 w-5 text-white" />
-								</div>
-								<h3 className="text-lg font-bold text-slate-900 dark:text-slate-50 mb-2">Security-First Thinking</h3>
-								<p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-									Designing systems with security as the foundation, not an afterthought. Threat modeling and risk assessment guide every architectural decision.
+					) : (
+						<div className="space-y-8">
+							<div className="space-y-4 sm:space-y-5 max-w-3xl">
+								<p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-slate-900 dark:text-slate-50 leading-tight tracking-tight">
+									{config.mainStatement}
 								</p>
-							</motion.div>
-
-							<motion.div
-								initial={{ opacity: 0, scale: 0.9 }}
-								whileInView={{ opacity: 1, scale: 1 }}
-								viewport={{ once: true }}
-								transition={{ delay: 0.2 }}
-								whileHover={{ scale: 1.02, y: -4 }}
-								className="p-5 rounded-xl border-2 border-yellow-200 dark:border-yellow-800 bg-gradient-to-br from-yellow-50/50 to-amber-50/50 dark:from-yellow-950/20 dark:to-amber-950/20 hover:shadow-lg transition-all duration-300"
-							>
-								<div className="inline-flex p-3 rounded-lg bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-600 mb-3 shadow-md">
-									<Sparkles className="h-5 w-5 text-white" />
-								</div>
-								<h3 className="text-lg font-bold text-slate-900 dark:text-slate-50 mb-2">Automated Defense</h3>
-								<p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-									Building security automation that scales—from CI/CD security gates to real-time threat detection and automated incident response.
+								<p className="text-sm sm:text-base md:text-lg lg:text-xl text-slate-700 dark:text-slate-300 leading-relaxed">
+									{config.subStatement}
 								</p>
-							</motion.div>
+							</div>
 
-							<motion.div
-								initial={{ opacity: 0, scale: 0.9 }}
-								whileInView={{ opacity: 1, scale: 1 }}
-								viewport={{ once: true }}
-								transition={{ delay: 0.3 }}
-								whileHover={{ scale: 1.02, y: -4 }}
-								className="p-5 rounded-xl border-2 border-blue-200 dark:border-blue-800 bg-gradient-to-br from-blue-50/50 to-sky-50/50 dark:from-blue-950/20 dark:to-sky-950/20 hover:shadow-lg transition-all duration-300"
-							>
-								<div className="inline-flex p-3 rounded-lg bg-gradient-to-br from-blue-400 to-sky-500 mb-3 shadow-md">
-									<Zap className="h-5 w-5 text-white" />
-								</div>
-								<h3 className="text-lg font-bold text-slate-900 dark:text-slate-50 mb-2">Security Research</h3>
-								<p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-									Contributing to security research and open-source security tools. Publishing findings and sharing knowledge with the security community.
-								</p>
-							</motion.div>
-						</div>
+							<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+								{config.cards.map((card, idx) => {
+									const Icon = cardIcon(card)
+									return (
+										<motion.div
+											key={card.title + idx}
+											initial={{ opacity: 0, scale: 0.9 }}
+											whileInView={{ opacity: 1, scale: 1 }}
+											viewport={{ once: true }}
+											transition={{ delay: 0.1 * (idx + 1) }}
+											whileHover={{ scale: 1.02, y: -4 }}
+											className="p-5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 hover:shadow-lg transition-all duration-300"
+										>
+											<div className="inline-flex p-3 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 mb-3 shadow-md">
+												<Icon className="h-5 w-5 text-white" />
+											</div>
+											<h3 className="text-lg font-bold text-slate-900 dark:text-slate-50 mb-2">{card.title}</h3>
+											<p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{card.description}</p>
+										</motion.div>
+									)
+								})}
+							</div>
 
-						{/* Personal Philosophy */}
-						<div className="relative pt-6 border-t-2 border-slate-200 dark:border-slate-800 max-w-3xl">
-							<div className="flex items-start gap-4">
-								<div className="flex-shrink-0 mt-1">
-									<div className="p-2 rounded-lg bg-gradient-to-br from-yellow-400/20 via-amber-500/20 to-orange-500/20 border border-yellow-300/30 dark:border-yellow-700/30">
-										<Heart className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+							<div className="relative pt-6 border-t-2 border-slate-200 dark:border-slate-800 max-w-3xl">
+								<div className="flex items-start gap-4">
+									<div className="flex-shrink-0 mt-1">
+										<div className="p-2 rounded-lg bg-gradient-to-br from-yellow-400/20 via-amber-500/20 to-orange-500/20 border border-yellow-300/30 dark:border-yellow-700/30">
+											<Heart className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+										</div>
 									</div>
-								</div>
-								<div className="flex-1 space-y-4">
-									<p className="text-base sm:text-lg md:text-xl text-slate-700 dark:text-slate-300 leading-relaxed">
-										When I'm not securing cloud infrastructure, I'm <span className="font-semibold text-slate-900 dark:text-slate-50">researching new attack vectors</span>, <span className="font-semibold text-slate-900 dark:text-slate-50">contributing to security tools</span>, and <span className="font-semibold text-slate-900 dark:text-slate-50">mentoring the next generation</span> of security engineers.
-									</p>
-									<p className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-50 leading-tight">
-										<span className="bg-gradient-to-r from-blue-400 via-sky-500 to-blue-600 bg-clip-text text-transparent">Security is a team sport</span>. We're stronger together.
-									</p>
+									<div className="flex-1 space-y-4">
+										<p className="text-base sm:text-lg md:text-xl text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
+											{config.philosophy}
+										</p>
+										<p className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-50 leading-tight">
+											{config.closingStatement}
+										</p>
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
+					)}
 				</div>
 			</motion.div>
 		</section>

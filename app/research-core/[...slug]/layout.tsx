@@ -9,6 +9,7 @@ import {
 } from "app/theme/components/ui/sidebar"
 import AppSidebar from "../components/app-sidebar"
 import ResearchCoreBreadcrumb from "../components/breadcrumb"
+import { LearningHubTracker } from "../components/learning-hub-progress"
 import { usePathname } from "next/navigation"
 import { parseResearchCorePath } from "lib/research-pillars"
 
@@ -18,6 +19,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
 	return (
 		<SidebarProvider>
+			<LearningHubTracker />
 			<AppSidebar contentPrefix={contentPrefix} lastSegment={lastSegment} />
 			<SidebarInset>
 				<header className="flex h-10 shrink-0 items-center gap-2 border-b px-4">

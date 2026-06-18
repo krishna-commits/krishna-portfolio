@@ -6,7 +6,9 @@ import { motion } from 'framer-motion';
 import { CheckCircle2, Loader2, Mail, MapPinned, Phone, Send, Shield, MessageSquare, Briefcase, Globe, Linkedin, Github, ExternalLink, BookOpen, ArrowRight, Instagram, FileText, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from 'app/theme/lib/utils';
-import { siteConfig } from 'config/site';
+import { useContactPage } from 'lib/hooks/use-contact-page';
+import { useSocialLinks } from 'lib/hooks/use-homepage-data';
+import { useMemo } from 'react';
 import {
 	PAGE_CARD,
 	PAGE_CONTAINER,
@@ -85,37 +87,25 @@ const countryCodes = [
 	{ code: '+233', country: 'GH', name: 'Ghana' },
 ];
 
-const contactMethods = [
-	{
-		icon: Mail,
-		title: 'Email',
-		description: 'Available upon request',
-		clickable: true,
-	},
-	{
-		icon: Phone,
-		title: 'Phone',
-		description: 'Available upon request',
-		clickable: true,
-	},
-	{
-		icon: MapPinned,
-		title: 'Location',
-		description: 'Kathmandu, Nepal',
-		clickable: false,
-	},
-];
-
-const socialLinks = [
-	{ name: 'LinkedIn', url: siteConfig.links.linkedIn, icon: Linkedin, color: 'text-yellow-700 dark:text-yellow-400', bgColor: 'bg-yellow-100 dark:bg-yellow-900/30' },
-	{ name: 'GitHub', url: siteConfig.links.github, icon: Github, color: 'text-slate-700 dark:text-slate-300', bgColor: 'bg-slate-100 dark:bg-slate-800' },
-	{ name: 'ResearchGate', url: siteConfig.links.researchgate, icon: BookOpen, color: 'text-orange-600 dark:text-orange-400', bgColor: 'bg-orange-100 dark:bg-orange-900/30' },
-	{ name: 'ORCID', url: siteConfig.links.orcid, icon: ExternalLink, color: 'text-amber-600 dark:text-amber-400', bgColor: 'bg-amber-100 dark:bg-amber-900/30' },
-	{ name: 'Medium', url: siteConfig.links.medium, icon: FileText, color: 'text-slate-700 dark:text-slate-300', bgColor: 'bg-slate-100 dark:bg-slate-800' },
-	{ name: 'Instagram', url: siteConfig.links.instagram, icon: Instagram, color: 'text-orange-600 dark:text-orange-400', bgColor: 'bg-orange-100 dark:bg-orange-900/30' },
-];
-
 export default function ContactUsForm() {
+  const { contact } = useContactPage()
+  const { links } = useSocialLinks()
+
+  const contactMethods = useMemo(() => [
+    { icon: Mail, title: 'Email', description: contact.emailDescription, clickable: true },
+    { icon: Phone, title: 'Phone', description: contact.phoneDescription, clickable: true },
+    { icon: MapPinned, title: 'Location', description: contact.location, clickable: false },
+  ], [contact])
+
+  const socialLinks = useMemo(() => [
+    { name: 'LinkedIn', url: links.linkedIn, icon: Linkedin, color: 'text-yellow-700 dark:text-yellow-400', bgColor: 'bg-yellow-100 dark:bg-yellow-900/30' },
+    { name: 'GitHub', url: links.github, icon: Github, color: 'text-slate-700 dark:text-slate-300', bgColor: 'bg-slate-100 dark:bg-slate-800' },
+    { name: 'ResearchGate', url: links.researchgate, icon: BookOpen, color: 'text-orange-600 dark:text-orange-400', bgColor: 'bg-orange-100 dark:bg-orange-900/30' },
+    { name: 'ORCID', url: links.orcid, icon: ExternalLink, color: 'text-amber-600 dark:text-amber-400', bgColor: 'bg-amber-100 dark:bg-amber-900/30' },
+    { name: 'Medium', url: links.medium, icon: FileText, color: 'text-slate-700 dark:text-slate-300', bgColor: 'bg-slate-100 dark:bg-slate-800' },
+    { name: 'Instagram', url: links.instagram, icon: Instagram, color: 'text-orange-600 dark:text-orange-400', bgColor: 'bg-orange-100 dark:bg-orange-900/30' },
+  ].filter((s) => s.url), [links])
+
   const {
     register,
     handleSubmit,
@@ -259,10 +249,10 @@ export default function ContactUsForm() {
 							</span>
 						</div>
 						<h1 className={`${PAGE_H1} mx-auto mb-4 max-w-3xl`}>
-							Let&apos;s Connect
+							{contact.pageTitle}
 						</h1>
 						<p className={`${PAGE_LEAD} mx-auto max-w-3xl text-base sm:text-lg`}>
-							Ready to collaborate on your next DevSecOps project, discuss cybersecurity solutions, or explore research opportunities? Let&apos;s build something secure and scalable together.
+							{contact.pageLead}
 						</p>
 					</motion.div>
 				</div>
@@ -283,7 +273,7 @@ export default function ContactUsForm() {
 							<div className={`${PAGE_CARD} p-6 sm:p-6 lg:p-8`}>
 								<div className="space-y-5 sm:space-y-6">
 									<h2 className="text-xl font-semibold text-foreground sm:text-2xl">
-										Get In Touch
+										{contact.pageTitle}
 									</h2>
 									{contactMethods.map((method, idx) => {
 										const Icon = method.icon;

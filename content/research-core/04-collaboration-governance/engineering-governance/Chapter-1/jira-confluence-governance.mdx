@@ -1,0 +1,85 @@
+---
+title: Jira and Confluence Governance
+description: Ticket hygiene, epic structure, and documentation ownership for platform and security teams.
+parent: "Chapter 1: Engineering Rituals"
+grand_parent: Engineering Governance
+order: 1
+completed: true
+keywords:
+  - Jira
+  - Confluence
+  - Agile
+  - Governance
+---
+
+# Jira and Confluence Governance
+
+Scattered tickets and stale wiki pages slow every incident. This guide defines **minimum viable governance** for DevSecOps squads.
+
+---
+
+## Jira structure
+
+| Level | Use for | Example |
+|-------|---------|---------|
+| **Epic** | Quarter-level outcome | "SOC 2 pipeline evidence automation" |
+| **Story** | Shippable user/platform value | "Fail build on critical SCA findings" |
+| **Task** | Technical sub-step | "Add Trivy stage to GitHub Actions" |
+| **Bug** | Production or pipeline defect | "Staging deploy skips scan on hotfix branch" |
+
+### Definition of ready (story)
+
+- Acceptance criteria in Given/When/Then form
+- Link to RFC or threat note if security-impacting
+- Owner and target sprint
+
+### Definition of done
+
+- Merged to default branch with pipeline green
+- Runbook or Confluence page updated if operator-facing
+- No secrets in ticket comments or attachments
+
+---
+
+## Board hygiene
+
+1. **WIP limits** — cap "In Progress" per engineer (typically 2).
+2. **Stale sweep** — weekly: close or re-prioritize items idle 14+ days.
+3. **Labels** — `security`, `platform`, `compliance`, `debt` for filtering.
+4. **Link commits** — branch `PROJ-123-short-desc` maps to traceability audits.
+
+---
+
+## Confluence ownership
+
+| Space | Owner | Review cadence |
+|-------|-------|----------------|
+| Runbooks | On-call rotation lead | After every SEV-1/2 |
+| Architecture | Staff engineer | Quarterly |
+| Onboarding | EM or tech lead | When toolchain changes |
+| Compliance evidence | Security champion | Per audit window |
+
+### Page template (runbook)
+
+1. Service overview & dependencies  
+2. Dashboards and alerts  
+3. Common failures + fix steps  
+4. Escalation path  
+5. Last game day date  
+
+---
+
+## Anti-patterns
+
+| Trap | Fix |
+|------|-----|
+| Epic = bucket with 40 stories | Split by measurable outcome |
+| Confluence duplicate of git README | Single source in git; Confluence links out |
+| Security work only in Slack | Create ticket within 24h for audit trail |
+
+---
+
+## Related
+
+- [Slack ChatOps](/research-core/04-collaboration-governance/communication/Chapter-1/slack-chatops)
+- [Incident Response](/research-core/01-security-engineering/incident-response/introduction)

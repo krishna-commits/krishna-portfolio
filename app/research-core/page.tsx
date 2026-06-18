@@ -1,6 +1,7 @@
 'use client'
 
 import ResearchCoreCard from "./components/researchcore-card"
+import { ResearchCoreStartHere } from "./components/start-here-card"
 import { motion } from "framer-motion"
 import { BookOpen } from "lucide-react"
 import {
@@ -9,8 +10,11 @@ import {
 	PAGE_LEAD,
 	PAGE_SHELL_WIDE,
 } from "lib/page-layout"
+import { useResearchCoreConfig } from "lib/hooks/use-research-core-config"
 
 export default function ResearchCorePage() {
+	const { config } = useResearchCoreConfig()
+
 	return (
 		<div className="min-h-screen bg-background">
 			<div className={PAGE_SHELL_WIDE}>
@@ -24,12 +28,11 @@ export default function ResearchCorePage() {
 						<span className={PAGE_ICON_CHIP}>
 							<BookOpen className="h-5 w-5" aria-hidden />
 						</span>
-						<h1 className={PAGE_H1}>Research Core</h1>
+						<h1 className={PAGE_H1}>{config.pageTitle}</h1>
 					</div>
-					<p className={PAGE_LEAD}>
-						Five research pillars — Security Engineering, Platform & Cloud, Operations & Reliability, Collaboration, and Learning & Roadmaps — with structured tracks, chapters, and applied technical documentation.
-					</p>
+					<p className={PAGE_LEAD}>{config.pageLead}</p>
 				</motion.div>
+				<ResearchCoreStartHere />
 				<ResearchCoreCard />
 			</div>
 		</div>

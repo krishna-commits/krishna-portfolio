@@ -1,15 +1,17 @@
 'use client'
-import { useEffect, useState, useRef } from "react";
+import { useState, Children, isValidElement } from "react";
 import Image from "next/image"
 import { useMDXComponent } from "next-contentlayer/hooks"
-import mermaid from 'mermaid';
+import { MermaidDiagram } from "app/research-core/components/mermaid-diagram"
+import { SeniorGapChecklist } from "app/research-core/components/senior-gap-checklist"
 
 interface CopyButtonProps {
   text: string;
 }
 interface PreProps extends React.HTMLAttributes<HTMLPreElement> {
-  children?: any;
-  raw?: any;
+  children?: React.ReactNode;
+  raw?: string;
+  'data-language'?: string;
 }
 
 const CopyButton = ({ text }: CopyButtonProps) => {
@@ -31,14 +33,27 @@ const CopyButton = ({ text }: CopyButtonProps) => {
   );
 };
 
-const Pre = ({ children, raw, ...props }: PreProps) => {
+function extractTextFromPre(children: React.ReactNode): string {
+	if (typeof children === 'string') return children
+	if (Array.isArray(children)) return children.map(extractTextFromPre).join('')
+	if (isValidElement(children) && children.props?.children) {
+		return extractTextFromPre(children.props.children)
+	}
+	return ''
+}
 
-  const textContent = Array.isArray(children) ? children.map(child => child?.props.children).join('') : children?.props.children;
+const Pre = ({ children, raw, ...props }: PreProps) => {
+	const language = props['data-language']
+	const textContent = raw ?? extractTextFromPre(children)
+
+	if (language === 'mermaid') {
+		return <MermaidDiagram chart={textContent} />
+	}
 
   return (
     <pre {...props} className={"p-4 relative dark:bg-slate-800 "}>
       <div className={"code-header flex justify-end mr-2 mt-0 absolute right-0"}>
-        <CopyButton text={textContent} /> {/* Pass raw text to CopyButton */}
+        <CopyButton text={textContent} />
       </div>
       {children}
     </pre>
@@ -48,20 +63,21 @@ const Pre = ({ children, raw, ...props }: PreProps) => {
 
 const components = {
   Image,
-  h1: (props: any) => (
+  SeniorGapChecklist,
+  h1: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
     <h1
       className="mb-2 pb-0"
       {...props}
     />
   ),
-  h2: (props: any) => (
+  h2: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
     <h2
       className="mb-2 pb-0 mt-2"
       {...props}
     />
   ),
   pre: Pre,
-  figcaption: (props: any) => (
+  figcaption: (props: React.HTMLAttributes<HTMLElement>) => (
     <p
       className="mb-1 rounded-md bg-zinc-900/15 dark:bg-rose-100/10 px-3 py-1 font-mono text-xs text-primary-300/70 shadow-sm"
       {...props}

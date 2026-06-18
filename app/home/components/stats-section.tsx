@@ -249,6 +249,9 @@ export const StatsSection = memo(function StatsSection() {
 	const { repo, repoLoading } = useGetGithubRepos()
 	
 	// Fetch ResearchGate data
+	const { data: certData } = useSWR('/api/homepage/certifications', fetcher, { revalidateOnFocus: true })
+	const { data: techData } = useSWR('/api/homepage/technology', fetcher, { revalidateOnFocus: true })
+	const { data: statsSettings } = useSWR('/api/homepage/stats', fetcher, { revalidateOnFocus: true })
 	const { data: researchGateData, isLoading: researchGateLoading } = useSWR(
 		'/api/researchgate',
 		fetcher,
@@ -267,14 +270,24 @@ export const StatsSection = memo(function StatsSection() {
 		[]
 	)
 	const projectsCount = useMemo(() => allProjects.length, [])
-	const certificationsCount = useMemo(() => siteConfig.certification.length, [])
+	const certificationsCount = useMemo(() => {
+		return certData?.certifications?.length ?? siteConfig.certification.length
+	}, [certData])
 	
 	const researchGateCitations = useMemo(
 		() => researchGateData?.citations || 0,
 		[researchGateData]
 	)
 	
-	const technologiesCount = useMemo(() => siteConfig.technology_stack?.length || 0, [])
+	const technologiesCount = useMemo(
+		() => techData?.technology?.length ?? siteConfig.technology_stack?.length ?? 0,
+		[techData],
+	)
+
+	const statsTitle = (statsSettings?.stats as { title?: string })?.title || 'Impact Metrics'
+	const statsDescription =
+		(statsSettings?.stats as { description?: string })?.description ||
+		'Quantifying the impact of my work across security research, open source, and community engagement.'
 	
 	// GitHub stats
 	const githubStats = useMemo(() => {
@@ -480,10 +493,10 @@ export const StatsSection = memo(function StatsSection() {
 							<span className={PAGE_ICON_CHIP}>
 								<Zap className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden />
 							</span>
-							<h2 className={PAGE_H1}>Impact Metrics</h2>
+							<h2 className={PAGE_H1}>{statsTitle}</h2>
 						</div>
-						<p className={cn(PAGE_LEAD, "text-sm sm:text-base md:text-lg")}>
-							Measurable security outcomes, research impact, and engineering achievements
+						<p className={cn(PAGE_LEAD, "max-w-3xl text-sm sm:text-base md:text-lg")}>
+							{statsDescription}
 						</p>
 					</div>
 				</div>

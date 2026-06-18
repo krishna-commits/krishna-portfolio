@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback, memo, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { siteConfig } from "config/site"
+import useSWR from "swr"
 import Image from "next/image"
 import { Code, Cloud, Database, Settings, Server, GitBranch, Zap, Shield, Container, Monitor, Search, X, Network, Layers, Grid, List, ChevronDown, ChevronUp } from "lucide-react"
 import { cn } from "app/theme/lib/utils"
@@ -167,7 +168,18 @@ export const SkillsShowcase = memo(function SkillsShowcase() {
 	const [viewMode, setViewMode] = useState<ViewMode>('compact')
 	const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
 	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
-	const allSkills = useMemo(() => siteConfig.technology_stack, [])
+	const { data: techData } = useSWR<{ technology?: typeof siteConfig.technology_stack }>(
+		'/api/homepage/technology',
+		(url: string) => fetch(url).then((r) => r.json()),
+		{ revalidateOnFocus: true },
+	)
+	const allSkills = useMemo(
+		() =>
+			techData?.technology?.length
+				? techData.technology
+				: siteConfig.technology_stack,
+		[techData],
+	)
 
 	useEffect(() => {
 		const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')

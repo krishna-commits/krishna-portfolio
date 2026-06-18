@@ -9,6 +9,8 @@ import {
 	PAGE_INPUT,
 } from "lib/page-layout"
 import { RESEARCH_PILLARS } from "lib/research-pillars"
+import { mergePillarsWithConfig } from "lib/research-core-config"
+import { useResearchCoreConfig } from "lib/hooks/use-research-core-config"
 import { allResearchCores } from "contentlayer/generated"
 import { Badge } from "app/theme/components/ui/badge"
 import Link from "next/link"
@@ -30,6 +32,9 @@ function topicSlugFromIntro(slugAsParams: string) {
 }
 
 export default function ResearchCoreCard() {
+	const { config } = useResearchCoreConfig()
+	const pillars = useMemo(() => mergePillarsWithConfig(config), [config])
+
 	const [searchQuery, setSearchQuery] = useState("")
 	const [selectedVenue, setSelectedVenue] = useState<string | null>(null)
 	const [selectedYear, setSelectedYear] = useState<string | null>(null)
@@ -102,14 +107,14 @@ export default function ResearchCoreCard() {
 
 	const topicsByPillar = useMemo(() => {
 		const map = new Map<string, typeof filteredTopics>()
-		for (const pillar of RESEARCH_PILLARS) {
+		for (const pillar of pillars) {
 			map.set(
 				pillar.slug,
 				filteredTopics.filter((t: any) => t.slugAsParams.startsWith(pillar.slug + "/")),
 			)
 		}
 		return map
-	}, [filteredTopics])
+	}, [filteredTopics, pillars])
 
 	const pillarIntroBySlug = useMemo(() => {
 		const map = new Map<string, (typeof pillarIntros)[0]>()
@@ -159,7 +164,7 @@ export default function ResearchCoreCard() {
 					>
 						All
 					</button>
-					{RESEARCH_PILLARS.map((pillar) => (
+					{pillars.map((pillar) => (
 						<button
 							key={pillar.slug}
 							type="button"
@@ -215,7 +220,7 @@ export default function ResearchCoreCard() {
 				</div>
 			</motion.div>
 
-			{RESEARCH_PILLARS.filter(
+			{pillars.filter(
 				(p) => !selectedPillar || p.slug === selectedPillar,
 			).map((pillar, pillarIndex) => {
 				const topics = topicsByPillar.get(pillar.slug) || []

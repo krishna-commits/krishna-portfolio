@@ -1,80 +1,71 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from 'lib/prisma';
-import { isAuthenticated } from 'lib/auth';
+import { NextRequest, NextResponse } from 'next/server'
+import { isAuthenticated } from 'lib/auth'
+import { getSiteSettingJson, upsertSiteSettingJson } from 'lib/site-settings'
+import {
+	DEFAULT_SECURITY_APPROACH,
+	mergeSecurityApproach,
+	type SecurityApproachConfig,
+} from 'lib/security-approach-config'
 
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic'
 
-// GET - Get security-first approach
-export async function GET(request: NextRequest) {
-  try {
-    const authenticated = await isAuthenticated();
-    if (!authenticated) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+export async function GET() {
+	try {
+		const authenticated = await isAuthenticated()
+		if (!authenticated) {
+			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+		}
 
-    if (!prisma) {
-      return NextResponse.json({ error: 'Database not configured' }, { status: 500 });
-    }
-
-    const securityApproach = await prisma.siteSetting.findUnique({
-      where: { key: 'security_approach' },
-    });
-
-    if (!securityApproach) {
-      return NextResponse.json({
-        content: '',
-      }, { status: 200 });
-    }
-
-    return NextResponse.json(JSON.parse(securityApproach.value), { status: 200 });
-  } catch (error: any) {
-    console.error('[Security Approach API] Error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Failed to fetch security approach' },
-      { status: 500 }
-    );
-  }
+		const stored = await getSiteSettingJson<Partial<SecurityApproachConfig> | null>(
+			'security_approach',
+			null,
+		)
+		return NextResponse.json(mergeSecurityApproach(stored), { status: 200 })
+	} catch (error: unknown) {
+		const message = error instanceof Error ? error.message : 'Failed to fetch security approach'
+		return NextResponse.json({ error: message }, { status: 500 })
+	}
 }
 
-// PUT - Update security-first approach
 export async function PUT(request: NextRequest) {
-  try {
-    const authenticated = await isAuthenticated();
-    if (!authenticated) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+	try {
+		const authenticated = await isAuthenticated()
+		if (!authenticated) {
+			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+		}
 
-    if (!prisma) {
-      return NextResponse.json({ error: 'Database not configured' }, { status: 500 });
-    }
+    const body = await request.json()
+    const stored = await getSiteSettingJson<Partial<SecurityApproachConfig> | null>(
+      'security_approach',
+      null,
+    )
+    const config = mergeSecurityApproach({ ...stored, ...body } as Partial<SecurityApproachConfig>)
+		await upsertSiteSettingJson('security_approach', config)
 
-    const body = await request.json();
-    const { content } = body;
-
-    const approachData = {
-      content: content || '',
-      updatedAt: new Date().toISOString(),
-    };
-
-    const updated = await prisma.siteSetting.upsert({
-      where: { key: 'security_approach' },
-      update: { value: JSON.stringify(approachData) },
-      create: {
-        key: 'security_approach',
-        value: JSON.stringify(approachData),
-      },
-    });
-
-    return NextResponse.json(
-      { message: 'Security approach updated successfully', data: JSON.parse(updated.value) },
-      { status: 200 }
-    );
-  } catch (error: any) {
-    console.error('[Security Approach API] Error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Failed to update security approach' },
-      { status: 500 }
-    );
-  }
+		return NextResponse.json(
+			{ message: 'Security approach updated successfully', data: config },
+			{ status: 200 },
+		)
+	} catch (error: unknown) {
+		const message = error instanceof Error ? error.message : 'Failed to update security approach'
+		return NextResponse.json({ error: message }, { status: 500 })
+	}
 }
 
+export async function POST() {
+	try {
+		const authenticated = await isAuthenticated()
+		if (!authenticated) {
+			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+		}
+
+		await upsertSiteSettingJson('security_approach', DEFAULT_SECURITY_APPROACH)
+		return NextResponse.json(
+			{ message: 'Reset to defaults', data: DEFAULT_SECURITY_APPROACH },
+			{ status: 200 },
+		)
+	} catch (error: unknown) {
+		const message = error instanceof Error ? error.message : 'Failed to reset'
+		return NextResponse.json({ error: message }, { status: 500 })
+	}
+}

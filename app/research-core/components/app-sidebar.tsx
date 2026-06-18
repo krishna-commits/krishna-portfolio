@@ -23,6 +23,14 @@ import { allResearchCores, ResearchCore } from "contentlayer/generated"
 import Link from "next/link"
 import { cn } from "app/theme/lib/utils"
 import { getPillarMeta } from "lib/research-pillars"
+import { RESEARCH_SEGMENT_LABELS } from "lib/research-labels"
+import { formatReadingTime, readingTimeMinutes } from "lib/reading-time"
+import {
+	isLearningHubPath,
+	LEARNING_HUB_PREFIX,
+} from "lib/learning-hub-progress"
+import { LearningHubProgressBar } from "./learning-hub-progress"
+import { useResearchCoreConfig } from "lib/hooks/use-research-core-config"
 
 export default function AppSidebar({
 	contentPrefix,
@@ -43,7 +51,15 @@ export default function AppSidebar({
 			(item.parent == null && item.grand_parent == null && item.slugAsParams.endsWith("/introduction")),
 	)
 	const sidebarTitle =
-		topicIntro?.title || pillarMeta?.title || sortedItems[0]?.title || "Research"
+		topicIntro?.title ||
+		RESEARCH_SEGMENT_LABELS[contentPrefix.split("/").pop() ?? ""] ||
+		pillarMeta?.title ||
+		sortedItems[0]?.title ||
+		"Research"
+
+	const showHubProgress = isLearningHubPath(`/research-core/${contentPrefix}`)
+	const { config } = useResearchCoreConfig()
+	const showReadingTime = config.learningHub.showReadingTime
 
 	return (
 		<Sidebar {...props}>
@@ -84,7 +100,15 @@ export default function AppSidebar({
 																			) : (
 																				<ScrollText className="h-4 w-4 shrink-0" />
 																			)}
-																			<p>{child.title}</p>
+																			<p className="flex-1 min-w-0 truncate">{child.title}</p>
+																			{showReadingTime &&
+																				child.slugAsParams.startsWith(LEARNING_HUB_PREFIX) && (
+																				<span className="shrink-0 text-[10px] text-muted-foreground tabular-nums">
+																					{formatReadingTime(
+																						readingTimeMinutes(child.body?.raw),
+																					)}
+																				</span>
+																			)}
 																		</Link>
 																	</SidebarMenuItem>
 																),
@@ -97,6 +121,7 @@ export default function AppSidebar({
 							)}
 						</SidebarMenu>
 					</SidebarGroupContent>
+					{showHubProgress && <LearningHubProgressBar />}
 				</SidebarGroup>
 			</SidebarContent>
 			<SidebarRail />

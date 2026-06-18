@@ -18,6 +18,7 @@ const routes = [
 	"/contact",
 	"/codecanvas",
 	"/privacy",
+	"/research-core/04-collaboration-governance/engineering-governance/Chapter-1/jira-confluence-governance",
 	"/this-page-does-not-exist",
 ]
 

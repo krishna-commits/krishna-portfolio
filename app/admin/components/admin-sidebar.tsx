@@ -21,7 +21,8 @@ import {
     Lock,
     FolderOpen,
     Shield,
-    Cloud
+    Cloud,
+    BookMarked,
   } from 'lucide-react';
 import { Button } from 'app/theme/components/ui/button';
 import toast from 'react-hot-toast';
@@ -68,6 +69,12 @@ const adminNavItems = [
     href: '/admin/database',
     icon: Database,
     description: 'Test database connection',
+  },
+  {
+    title: 'Research Core UI',
+    href: '/admin/research-core',
+    icon: BookMarked,
+    description: 'Page copy, checklist, pillars, CTA',
   },
   {
     title: 'Content Management',

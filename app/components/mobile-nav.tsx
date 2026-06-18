@@ -2,8 +2,8 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { siteConfig } from "config/site"
 import { usePathname } from "next/navigation"
+import { cn } from "app/theme/lib/utils"
 import { motion } from "framer-motion"
 import {
 	Sheet,
@@ -17,33 +17,23 @@ import {
 import { ThemeToggle } from "./theme-toggle"
 import { Icons } from "app/theme/components/theme/icons"
 import {
-	Home,
-	Code2,
-	BookOpen,
-	GraduationCap,
-	Lightbulb,
-	FolderKanban,
-	Mail,
 	Shield,
+	Mail,
 	Menu,
 	X,
 	ArrowRight,
 } from "lucide-react"
 import { Button } from "app/theme/components/ui/button"
-import { cn } from "app/theme/lib/utils"
-
-const items = [
-	{ title: "Home", href: "/", icon: Home, description: "Overview and introduction", ariaLabel: "Navigate to home page" },
-	{ title: "Projects", href: "/projects", icon: FolderKanban, description: "Portfolio showcase", ariaLabel: "Navigate to projects page" },
-	{ title: "Code Canvas", href: "/codecanvas", icon: Code2, description: "Technical projects and code", ariaLabel: "Navigate to code canvas page" },
-	{ title: "Blog", href: "/blog", icon: BookOpen, description: "Articles and insights", ariaLabel: "Navigate to blog page" },
-	{ title: "Research Core", href: "/research-core", icon: GraduationCap, description: "Academic research and publications", ariaLabel: "Navigate to research core page" },
-	{ title: "Mantras", href: "/mantras", icon: Lightbulb, description: "Philosophy and principles", ariaLabel: "Navigate to mantras page" },
-	{ title: "Contact", href: "/contact", icon: Mail, description: "Get in touch", ariaLabel: "Navigate to contact page" },
-] as const
+import { useSiteChrome } from "lib/hooks/use-site-chrome"
+import { useSocialLinks } from "lib/hooks/use-homepage-data"
+import { useNavigationConfig } from "lib/hooks/use-navigation-config"
+import { getNavIcon } from "lib/nav-icon-map"
 
 export function MobileNav() {
 	const pathname = usePathname()
+	const { chrome } = useSiteChrome()
+	const { links } = useSocialLinks()
+	const { mobileItems } = useNavigationConfig()
 	const [open, setOpen] = React.useState(false)
 
 	return (
@@ -69,7 +59,7 @@ export function MobileNav() {
 									<Shield className="h-6 w-6" aria-hidden />
 								</span>
 								<div>
-									<SheetTitle className="text-xl font-semibold text-foreground">{siteConfig.title}</SheetTitle>
+									<SheetTitle className="text-xl font-semibold text-foreground">{chrome.siteTitle}</SheetTitle>
 									<SheetDescription className="mt-1 text-xs text-muted-foreground">Navigate the site</SheetDescription>
 								</div>
 							</div>
@@ -87,20 +77,20 @@ export function MobileNav() {
 				</div>
 
 				<nav className="space-y-2 p-6" aria-label="Mobile navigation">
-					{items.map((item, idx) => {
+					{mobileItems.map((item, idx) => {
 						const normalizedPathname = pathname?.includes("/blog/")
 							? "/blog"
 							: pathname?.includes("/projects")
 								? "/projects"
 								: pathname
 						const active =
-							normalizedPathname === item.href ||
-							(item.href !== "/" && normalizedPathname?.startsWith(item.href))
-						const Icon = item.icon
+							normalizedPathname === item.path ||
+							(item.path !== "/" && normalizedPathname?.startsWith(item.path))
+						const Icon = getNavIcon(item.icon)
 
 						return (
-							<SheetClose key={item.href} asChild>
-								<Link href={item.href} aria-label={item.ariaLabel} aria-current={active ? "page" : undefined} className="block">
+							<SheetClose key={item.path} asChild>
+								<Link href={item.path} aria-label={item.ariaLabel} aria-current={active ? "page" : undefined} className="block">
 									<motion.div
 										initial={{ opacity: 0, x: -12 }}
 										animate={{ opacity: 1, x: 0 }}
@@ -123,7 +113,7 @@ export function MobileNav() {
 											</span>
 											<div className="min-w-0 flex-1">
 												<div className={cn("text-base font-semibold", active ? "text-white" : "text-foreground")}>
-													{item.title}
+													{item.name}
 												</div>
 												{item.description && (
 													<div className={cn("mt-1 text-xs", active ? "text-white/90" : "text-muted-foreground")}>
@@ -145,10 +135,10 @@ export function MobileNav() {
 					<p className="mb-4 text-xs text-muted-foreground">Follow me on these platforms</p>
 					<div className="grid grid-cols-4 gap-3">
 						{[
-							{ href: siteConfig.links.github, label: "GitHub profile", Icon: Icons.gitHub },
-							{ href: siteConfig.links.linkedIn, label: "LinkedIn profile", Icon: Icons.linkedIn },
-							{ href: siteConfig.links.researchgate, label: "ResearchGate profile", Icon: Icons.researchgate },
-							{ href: siteConfig.links.orcid, label: "ORCID profile", Icon: Icons.orcid },
+							{ href: links.github, label: "GitHub profile", Icon: Icons.gitHub },
+							{ href: links.linkedIn, label: "LinkedIn profile", Icon: Icons.linkedIn },
+							{ href: links.researchgate, label: "ResearchGate profile", Icon: Icons.researchgate },
+							{ href: links.orcid, label: "ORCID profile", Icon: Icons.orcid },
 						].map(({ href, label, Icon }) => (
 							<Link
 								key={href}

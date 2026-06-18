@@ -1,5 +1,6 @@
 'use client'
 
+import { useMemo } from 'react'
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { siteConfig } from "config/site"
@@ -8,59 +9,43 @@ import { Button } from "app/theme/components/ui/button"
 import { Icons } from "app/theme/components/theme/icons"
 import { cn } from "app/theme/lib/utils"
 import { PAGE_CARD, PAGE_ICON_CHIP, PAGE_H1, PAGE_LEAD } from "lib/page-layout"
+import useSWR from "swr"
 
-const socialLinks = [
-	{
-		name: "GitHub",
-		url: siteConfig.links.github,
-		icon: Icons.gitHub,
-		iconType: "component" as const,
-		description: "Open source contributions",
-		ariaLabel: "GitHub profile",
-	},
-	{
-		name: "LinkedIn",
-		url: siteConfig.links.linkedIn,
-		icon: Icons.linkedIn,
-		iconType: "component" as const,
-		description: "Professional network",
-		ariaLabel: "LinkedIn profile",
-	},
-	{
-		name: "ResearchGate",
-		url: siteConfig.links.researchgate,
-		icon: Icons.researchgate,
-		iconType: "component" as const,
-		description: "Research publications",
-		ariaLabel: "ResearchGate profile",
-	},
-	{
-		name: "ORCID",
-		url: siteConfig.links.orcid,
-		icon: Icons.orcid,
-		iconType: "component" as const,
-		description: "Research profile",
-		ariaLabel: "ORCID profile",
-	},
-	{
-		name: "Medium",
-		url: siteConfig.links.medium,
-		icon: ExternalLink,
-		iconType: "lucide" as const,
-		description: "Technical articles",
-		ariaLabel: "Medium profile",
-	},
-	{
-		name: "Instagram",
-		url: siteConfig.links.instagram,
-		icon: Instagram,
-		iconType: "lucide" as const,
-		description: "Personal updates",
-		ariaLabel: "Instagram profile",
-	},
+const fetcher = (url: string) => fetch(url).then((r) => r.json())
+
+type SocialLinkDef = {
+	name: string
+	key: keyof typeof siteConfig.links
+	icon: React.ComponentType<{ className?: string }>
+	iconType: 'component' | 'lucide'
+	description: string
+	ariaLabel: string
+}
+
+const SOCIAL_DEFS: SocialLinkDef[] = [
+	{ name: 'GitHub', key: 'github', icon: Icons.gitHub, iconType: 'component', description: 'Open source contributions', ariaLabel: 'GitHub profile' },
+	{ name: 'LinkedIn', key: 'linkedIn', icon: Icons.linkedIn, iconType: 'component', description: 'Professional network', ariaLabel: 'LinkedIn profile' },
+	{ name: 'ResearchGate', key: 'researchgate', icon: Icons.researchgate, iconType: 'component', description: 'Research publications', ariaLabel: 'ResearchGate profile' },
+	{ name: 'ORCID', key: 'orcid', icon: Icons.orcid, iconType: 'component', description: 'Research profile', ariaLabel: 'ORCID profile' },
+	{ name: 'Medium', key: 'medium', icon: ExternalLink, iconType: 'lucide', description: 'Technical articles', ariaLabel: 'Medium profile' },
+	{ name: 'Instagram', key: 'instagram', icon: Instagram, iconType: 'lucide', description: 'Personal updates', ariaLabel: 'Instagram profile' },
 ]
 
 export function SocialLinks() {
+	const { data } = useSWR<{ links?: Record<string, string> }>(
+		'/api/homepage/social',
+		fetcher,
+		{ revalidateOnFocus: true },
+	)
+
+	const socialLinks = useMemo(() => {
+		const links = data?.links ?? siteConfig.links
+		return SOCIAL_DEFS.map((def) => ({
+			...def,
+			url: (links as Record<string, string>)[def.key] || (siteConfig.links as Record<string, string>)[def.key],
+		})).filter((s) => s.url)
+	}, [data])
+
 	return (
 		<section className="relative w-full" aria-labelledby="social-heading">
 			<motion.div

@@ -6,7 +6,7 @@ import { Button } from 'app/theme/components/ui/button';
 import { 
   User, GraduationCap, Briefcase, Award, MessageSquare, Code, 
   Heart, Users, Settings, Image as ImageIcon, ArrowRight,
-  BarChart3, Shield, BookOpen, Github, Link as LinkIcon, Database, Loader2, CheckCircle2
+  BarChart3, Shield, BookOpen, Github, Link as LinkIcon, Database, Loader2, CheckCircle2, Globe, Mail, Compass
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -111,6 +111,51 @@ const homepageSections = [
     gradient: 'from-sky-500 to-blue-500',
     href: '/admin/homepage/social',
     color: 'text-sky-500',
+  },
+  {
+    id: 'hero-content',
+    title: 'Hero Content',
+    description: 'Headlines, badges, tags, panels, expertise cards',
+    icon: User,
+    gradient: 'from-indigo-500 to-violet-500',
+    href: '/admin/homepage/hero-content',
+    color: 'text-indigo-500',
+  },
+  {
+    id: 'site-chrome',
+    title: 'Site Branding',
+    description: 'Header title, footer text, copyright',
+    icon: Globe,
+    gradient: 'from-slate-600 to-slate-800',
+    href: '/admin/homepage/site-chrome',
+    color: 'text-slate-600',
+  },
+  {
+    id: 'contact-page',
+    title: 'Contact Page',
+    description: 'Contact page headlines and location',
+    icon: Mail,
+    gradient: 'from-sky-500 to-blue-600',
+    href: '/admin/homepage/contact',
+    color: 'text-sky-500',
+  },
+  {
+    id: 'navigation',
+    title: 'Navigation Menu',
+    description: 'Desktop navbar and mobile menu links',
+    icon: Compass,
+    gradient: 'from-violet-500 to-purple-600',
+    href: '/admin/homepage/navigation',
+    color: 'text-violet-500',
+  },
+  {
+    id: 'research-core',
+    title: 'Research Core UI',
+    description: 'Start Here card, checklist, pillars, homepage CTA',
+    icon: BookOpen,
+    gradient: 'from-amber-600 to-orange-600',
+    href: '/admin/research-core',
+    color: 'text-amber-600',
   },
   {
     id: 'github',

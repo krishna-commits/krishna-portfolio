@@ -5,6 +5,7 @@ import { Quote, Linkedin, ExternalLink, Users } from "lucide-react"
 import Link from "next/link"
 import { siteConfig } from "config/site"
 import useSWR from 'swr'
+import { useSocialLinks } from 'lib/hooks/use-homepage-data'
 import { PAGE_CARD, PAGE_H1, PAGE_ICON_CHIP, PAGE_LEAD } from "lib/page-layout"
 import { cn } from "app/theme/lib/utils"
 
@@ -20,13 +21,14 @@ interface Recommendation {
 const fetcher = (url: string) => fetch(url).then(res => res.json())
 
 export function LinkedInRecommendations() {
-	const { data } = useSWR('/api/homepage/recommendations', fetcher)
-	const recommendations = (data?.recommendations || siteConfig.linkedin_recommendations || []) as Recommendation[]
+	const { data: recData } = useSWR('/api/homepage/recommendations', fetcher)
+	const { links } = useSocialLinks()
+	const recommendations = (recData?.recommendations || siteConfig.linkedin_recommendations || []) as Recommendation[]
 	
 	// Normalize recommendations data - use siteConfig LinkedIn URL as fallback
 	const normalizedRecommendations: Recommendation[] = recommendations.map((rec: Recommendation) => ({
 		...rec,
-		linkedinUrl: rec.linkedinUrl || siteConfig.links.linkedIn,
+		linkedinUrl: rec.linkedinUrl || links.linkedIn,
 	}))
 	
 	if (normalizedRecommendations.length === 0) return null
@@ -54,7 +56,7 @@ export function LinkedInRecommendations() {
 						</p>
 					</div>
 					<Link
-						href={siteConfig.links.linkedIn}
+						href={links.linkedIn}
 						target="_blank"
 						rel="noopener noreferrer"
 						className="no-underline hidden items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-muted lg:flex"
@@ -75,7 +77,7 @@ export function LinkedInRecommendations() {
 			{/* Mobile CTA */}
 			<div className="lg:hidden mt-8">
 				<Link
-					href={siteConfig.links.linkedIn}
+					href={links.linkedIn}
 					target="_blank"
 					rel="noopener noreferrer"
 					className="flex items-center justify-center gap-2 w-full py-3 text-base font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-50 border-t-2 border-slate-200 dark:border-slate-800 pt-6 transition-colors"

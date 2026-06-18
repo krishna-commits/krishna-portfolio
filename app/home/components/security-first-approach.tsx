@@ -4,39 +4,30 @@ import { motion } from "framer-motion"
 import { Shield, Code, Cloud, Server, Eye, Container, CheckCircle2, ArrowRight } from "lucide-react"
 import { PAGE_CARD, PAGE_ICON_CHIP, PAGE_H1, PAGE_LEAD } from "lib/page-layout"
 import { cn } from "app/theme/lib/utils"
+import useSWR from "swr"
+import { DEFAULT_SECURITY_APPROACH, mergeSecurityApproach } from "lib/security-approach-config"
+import type { SecurityMethodology, SecurityPipelineStage } from "lib/security-approach-config"
+
+const fetcher = (url: string) => fetch(url).then((r) => r.json())
+
+const METHODOLOGY_ICONS = { Code, Server, Eye } as const
+const PIPELINE_ICONS = { Code, Container, CheckCircle2, Cloud, Eye } as const
+
+function methodologyIcon(item: SecurityMethodology) {
+	return METHODOLOGY_ICONS[item.icon] ?? Code
+}
+
+function pipelineIcon(item: SecurityPipelineStage) {
+	return PIPELINE_ICONS[item.icon] ?? Code
+}
 
 export function SecurityFirstApproach() {
-	const methodologies = [
-		{
-			icon: Code,
-			title: "Shift Left Security",
-			description:
-				"Automated SAST/DAST scanning in CI/CD pipelines, secret detection, dependency vulnerability scanning, and security policy enforcement before code reaches production.",
-			delay: 0,
-		},
-		{
-			icon: Server,
-			title: "Infrastructure Hardening",
-			description:
-				"IaC security scanning (Trivy, Terrascan), CIS benchmark compliance, network segmentation, least-privilege IAM, and container security hardening.",
-			delay: 0.1,
-		},
-		{
-			icon: Eye,
-			title: "Continuous Security Monitoring",
-			description:
-				"Real-time threat detection using SIEM integration, automated incident response playbooks, security event correlation, and runtime application self-protection (RASP).",
-			delay: 0.2,
-		},
-	]
-
-	const securityPipeline = [
-		{ stage: "Code", icon: Code, description: "SAST, Secret Detection" },
-		{ stage: "Build", icon: Container, description: "Container Scanning" },
-		{ stage: "Test", icon: CheckCircle2, description: "DAST, Security Tests" },
-		{ stage: "Deploy", icon: Cloud, description: "IaC Validation" },
-		{ stage: "Monitor", icon: Eye, description: "Runtime Protection" },
-	]
+	const { data } = useSWR<{ securityApproach?: Parameters<typeof mergeSecurityApproach>[0] }>(
+		'/api/homepage/security-approach',
+		fetcher,
+		{ revalidateOnFocus: true },
+	)
+	const config = mergeSecurityApproach(data?.securityApproach ?? DEFAULT_SECURITY_APPROACH)
 
 	return (
 		<section id="security-approach" className="relative w-full" aria-label="Security-first approach">
@@ -52,14 +43,11 @@ export function SecurityFirstApproach() {
 						<Shield className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden />
 					</span>
 					<h2 id="security-heading" className={PAGE_H1}>
-						Security-First Approach
+						{config.heading}
 					</h2>
 				</div>
-				<p className={cn(PAGE_LEAD, "max-w-3xl text-base sm:text-lg")}>
-					Integrating <span className="font-semibold text-foreground">security at every stage</span>, from{" "}
-					<span className="font-semibold text-primary">code commit</span> to{" "}
-					<span className="font-semibold text-primary">production monitoring</span>, using shift-left principles,
-					automated threat detection, and continuous validation to build resilient systems.
+				<p className={cn(PAGE_LEAD, "max-w-3xl text-base sm:text-lg whitespace-pre-wrap")}>
+					{config.lead}
 				</p>
 			</motion.div>
 
@@ -72,7 +60,7 @@ export function SecurityFirstApproach() {
 			>
 				<div className={cn(PAGE_CARD, "p-5 sm:p-6 md:p-8 lg:p-10")}>
 					<h3 className="mb-6 text-center text-lg font-semibold text-foreground sm:mb-8 sm:text-xl md:text-2xl">
-						Security Pipeline
+						{config.pipelineHeading}
 					</h3>
 
 					<div className="relative">
@@ -82,11 +70,11 @@ export function SecurityFirstApproach() {
 						/>
 
 						<div className="relative z-10 grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6 md:gap-8 lg:grid-cols-5">
-							{securityPipeline.map((stage, idx) => {
-								const Icon = stage.icon
+							{config.pipeline.map((stage, idx) => {
+								const Icon = pipelineIcon(stage)
 								return (
 									<motion.div
-										key={idx}
+										key={stage.stage + idx}
 										initial={{ opacity: 0, scale: 0.95 }}
 										whileInView={{ opacity: 1, scale: 1 }}
 										viewport={{ once: true }}
@@ -108,7 +96,7 @@ export function SecurityFirstApproach() {
 												</div>
 											</div>
 										</div>
-										{idx < securityPipeline.length - 1 && (
+										{idx < config.pipeline.length - 1 && (
 											<div className="absolute top-1/2 -right-3 z-20 hidden h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background sm:flex">
 												<ArrowRight className="h-3 w-3 text-muted-foreground" aria-hidden />
 											</div>
@@ -122,15 +110,15 @@ export function SecurityFirstApproach() {
 			</motion.div>
 
 			<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 md:gap-6 lg:grid-cols-3">
-				{methodologies.map((method, idx) => {
-					const Icon = method.icon
+				{config.methodologies.map((method, idx) => {
+					const Icon = methodologyIcon(method)
 					return (
 						<motion.div
-							key={idx}
+							key={method.title + idx}
 							initial={{ opacity: 0, y: 20 }}
 							whileInView={{ opacity: 1, y: 0 }}
 							viewport={{ once: true, margin: "-50px" }}
-							transition={{ delay: method.delay, duration: 0.5 }}
+							transition={{ delay: idx * 0.1, duration: 0.5 }}
 							whileHover={{ y: -2 }}
 							className={cn(PAGE_CARD, "p-6 transition-shadow hover:shadow-md")}
 							data-cursor="pointer"

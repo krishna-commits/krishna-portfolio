@@ -10,19 +10,12 @@ import {
 	BreadcrumbSeparator,
 } from "app/theme/components/ui/breadcrumb"
 import { getPillarMeta } from "lib/research-pillars"
-
-function labelForSegment(segment: string, index: number, segments: string[]) {
-	if (segment === "research-core") return "Research Core"
-	const pillar = getPillarMeta(segment)
-	if (pillar) return pillar.title
-	if (segment === "introduction") return "Overview"
-	if (segment.startsWith("Chapter")) return segment.replace(/-/g, " ")
-	if (index === segments.length - 1) return segment.replace(/-/g, " ")
-	return segment.replace(/-/g, " ")
-}
+import { labelForResearchSegment } from "lib/research-labels"
+import { useResearchCoreConfig } from "lib/hooks/use-research-core-config"
 
 export default function ResearchCoreBreadcrumb() {
 	const pathname = usePathname()
+	const { config } = useResearchCoreConfig()
 	const segments = pathname.split("/").filter(Boolean)
 
 	return (
@@ -31,7 +24,7 @@ export default function ResearchCoreBreadcrumb() {
 				{segments.map((segment, index) => {
 					const isLast = index === segments.length - 1
 					const href = `/${segments.slice(0, index + 1).join("/")}`
-					const label = labelForSegment(segment, index, segments)
+					const label = getPillarMeta(segment)?.title ?? labelForResearchSegment(segment, index, segments, config.segmentLabels)
 
 					return (
 						<div className="flex items-center space-x-2" key={`${segment}-${index}`}>

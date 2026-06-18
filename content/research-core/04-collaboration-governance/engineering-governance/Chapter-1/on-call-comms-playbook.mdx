@@ -1,0 +1,99 @@
+---
+title: On-Call Comms Playbook
+description: Severity levels, channel selection, and stakeholder updates during production incidents.
+parent: "Chapter 1: Engineering Rituals"
+grand_parent: Engineering Governance
+order: 3
+completed: true
+keywords:
+  - On-call
+  - Incident
+  - Communication
+  - SRE
+---
+
+# On-Call Comms Playbook
+
+Technical fixes fail when communication fails. This playbook standardizes **what to say, where, and when** during incidents.
+
+---
+
+## Severity matrix
+
+| Sev | User impact | Response | Comms cadence |
+|-----|-------------|----------|---------------|
+| **1** | Major outage or active breach | Page IC + security | Every 15 min |
+| **2** | Degraded tier-1, no data loss | Page on-call | Every 30 min |
+| **3** | Limited scope, workaround exists | Business hours | At resolution |
+| **4** | Cosmetic / internal only | Ticket | None |
+
+---
+
+## Channel map
+
+| Audience | Channel | Content |
+|----------|---------|---------|
+| Responders | Slack `#incident-YYYY-MM-DD` | Technical timeline, commands, hypotheses |
+| Leadership | Email or exec Slack | Impact, ETA, customer risk |
+| Company | Status page / `#announcements` | Plain-language, no jargon |
+| Customers | Status page only | Approved messaging from CS |
+
+**Rule:** No speculation about root cause in external comms until confirmed.
+
+---
+
+## Message templates
+
+### Initial (internal, T+5 min)
+
+```
+INCIDENT Sev{N} — {service}
+Impact: {who/what}
+IC: @{name}
+Status: Investigating
+Next update: {time UTC}
+```
+
+### Update (every cadence)
+
+```
+Update — {time UTC}
+Status: Identified | Mitigating | Monitoring
+Actions: {bullets}
+ETA: {time or "unknown"}
+```
+
+### Resolution
+
+```
+Resolved — {time UTC}
+Duration: {X}
+Root cause: {one sentence}
+Follow-up: Jira {link}, postmortem {date}
+```
+
+---
+
+## Roles
+
+| Role | Responsibility |
+|------|----------------|
+| **Incident Commander** | Decisions, comms cadence, scope |
+| **Tech Lead** | Mitigation, delegates tasks |
+| **Scribe** | Timeline in Slack thread → postmortem |
+| **Comms Liaison** | External/status page (Sev 1–2) |
+
+---
+
+## After the incident
+
+1. Postmortem within 5 business days (blameless)  
+2. Update [IR playbook](/research-core/01-security-engineering/incident-response/Chapter-1/ir-playbook-template) if steps were missing  
+3. Track actions in Jira with owners  
+
+---
+
+## Related
+
+- [Slack ChatOps](/research-core/04-collaboration-governance/communication/Chapter-1/slack-chatops)
+- [SIEM Pipeline Design](/research-core/01-security-engineering/incident-response/Chapter-1/siem-pipeline-design)

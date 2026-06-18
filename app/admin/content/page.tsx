@@ -24,6 +24,14 @@ const contentTypes = [
     href: '/admin/content/project',
   },
   {
+    type: 'research-ui',
+    title: 'Research Core UI',
+    description: 'Start Here card, checklist, pillars, and homepage CTA',
+    icon: BookOpen,
+    gradient: 'from-amber-600 to-orange-600',
+    href: '/admin/research-core',
+  },
+  {
     type: 'research',
     title: 'Research Articles',
     description: 'Manage research content and publications',

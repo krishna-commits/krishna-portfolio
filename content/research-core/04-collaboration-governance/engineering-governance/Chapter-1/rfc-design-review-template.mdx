@@ -1,0 +1,94 @@
+---
+title: RFC and Design Review Template
+description: A lightweight request-for-comments format for infrastructure, security, and platform changes.
+parent: "Chapter 1: Engineering Rituals"
+grand_parent: Engineering Governance
+order: 2
+completed: true
+keywords:
+  - RFC
+  - Design Review
+  - Architecture
+  - Governance
+---
+
+# RFC and Design Review Template
+
+Not every change needs an RFC. Use this template when work is **cross-team**, **irreversible**, or **security/compliance** sensitive.
+
+---
+
+## When to write an RFC
+
+| Trigger | Example |
+|---------|---------|
+| New production dependency | Managed K8s → new service mesh |
+| Data classification change | PII in new log field |
+| Blast radius &gt; one team | Shared CI OIDC role for all repos |
+| Cost step-change | Multi-region replication |
+
+Skip RFC for: routine version bumps, typo fixes, isolated dev sandbox experiments.
+
+---
+
+## RFC template
+
+```markdown
+# RFC-NNN: Title
+
+| Field | Value |
+|-------|--------|
+| Author | |
+| Status | Draft / Review / Approved / Superseded |
+| Reviewers | |
+| Target date | |
+
+## Problem
+What pain or risk exists today?
+
+## Goals / Non-goals
+- Goals:
+- Non-goals:
+
+## Proposal
+Architecture diagram, interfaces, rollout plan.
+
+## Security & compliance
+- Threat notes (STRIDE bullets)
+- Secrets, IAM, data flows
+- Audit evidence impact
+
+## Alternatives considered
+| Option | Pros | Cons |
+|--------|------|------|
+
+## Rollout & rollback
+Phases, feature flags, backout in &lt; X minutes.
+
+## Open questions
+```
+
+---
+
+## Review meeting (30 minutes)
+
+1. **5 min** — Author summary  
+2. **15 min** — Clarifying questions (security, SRE, product)  
+3. **5 min** — Decision: approve, approve with conditions, defer  
+4. **5 min** — Action items → Jira tickets  
+
+Record outcome in RFC header and link tickets.
+
+---
+
+## Approval storage
+
+- RFC markdown in git (`docs/rfcs/`) or Confluence with git mirror  
+- Approved RFCs linked from Terraform module README or ADR index  
+
+---
+
+## Related
+
+- [STRIDE Threat Modeling](/research-core/01-security-engineering/cybersecurity/Chapter-1/stride-threat-modeling)
+- [Zero Trust Architecture](/research-core/01-security-engineering/zero-trust-architecture/introduction)
