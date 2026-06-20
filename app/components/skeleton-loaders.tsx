@@ -62,7 +62,7 @@ export function StatsCardSkeleton() {
 
 export function GitHubMetricsSkeleton() {
 	return (
-		<div className="space-y-6">
+		<div className="min-h-[520px] space-y-6">
 			<div className="flex items-center justify-between">
 				<div className="space-y-2">
 					<Skeleton className="h-8 w-48" />

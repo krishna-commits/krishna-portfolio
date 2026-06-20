@@ -6,10 +6,12 @@ import { Button } from 'app/theme/components/ui/button';
 import { Input } from 'app/theme/components/ui/input';
 import { Label } from 'app/theme/components/ui/label';
 import { Textarea } from 'app/theme/components/ui/textarea';
-import { User, Save, Loader2, Image as ImageIcon, Upload } from 'lucide-react';
+import { User, Save, Loader2, Image as ImageIcon, Upload, Info } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import { Badge } from 'app/theme/components/ui/badge';
 import { X } from 'lucide-react';
+import { getCareerYearsExperience } from 'lib/career-years';
+import { getHeroDescription, getHeroSubtitle } from 'lib/hero-config';
 
 export default function HeroSectionPage() {
   const [loading, setLoading] = useState(true);
@@ -211,6 +213,29 @@ export default function HeroSectionPage() {
               </div>
 
               {/* Description */}
+              <Card className="border-dashed bg-muted/30">
+                <CardHeader className="pb-2">
+                  <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+                    <Info className="h-4 w-4 text-amber-600" aria-hidden />
+                    Live homepage preview (auto-computed)
+                  </CardTitle>
+                  <CardDescription className="text-xs">
+                    Subtitle and years sync from career start (July 2017). Saved description is normalized on publish.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                  <p>
+                    <span className="font-medium text-foreground">Experience: </span>
+                    <span className="text-muted-foreground">{getCareerYearsExperience()} years (since July 2017)</span>
+                  </p>
+                  <p>
+                    <span className="font-medium text-foreground">Subtitle: </span>
+                    <span className="text-muted-foreground">{getHeroSubtitle()}</span>
+                  </p>
+                  <p className="text-muted-foreground leading-relaxed">{getHeroDescription()}</p>
+                </CardContent>
+              </Card>
+
               <div>
                 <Label htmlFor="description">Description *</Label>
                 <Textarea

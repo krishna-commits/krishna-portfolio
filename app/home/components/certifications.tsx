@@ -67,12 +67,12 @@ const getCertificationsByProvider = (certifications: any[] = []) => {
 
 function CertificationItem({ cert }: { cert: any }) {
 	const [imageError, setImageError] = useState(false)
-	
+
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<button 
-					className="w-full text-left p-3 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group/item"
+				<button
+					className="group/item w-full rounded-lg border border-border p-3 text-left transition-colors hover:border-amber-500/30 hover:bg-amber-500/5"
 					aria-label={`View ${cert.title} certificate`}
 				>
 					<div className="flex items-start gap-3">
@@ -82,20 +82,20 @@ function CertificationItem({ cert }: { cert: any }) {
 								width={40}
 								height={40}
 								alt={cert.title}
-								className="rounded-lg object-cover flex-shrink-0"
+								className="flex-shrink-0 rounded-lg object-cover"
 								onError={() => setImageError(true)}
 							/>
 						) : (
-							<div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0">
+							<div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-amber-500/20 bg-amber-500/10">
 								<Award className="h-5 w-5 text-amber-600 dark:text-amber-400" />
 							</div>
 						)}
-						<div className="flex-1 min-w-0 space-y-1">
-							<p className="text-sm font-semibold text-slate-900 dark:text-slate-50 line-clamp-2 group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 transition-colors">
+						<div className="min-w-0 flex-1 space-y-1">
+							<p className="line-clamp-2 text-sm font-semibold text-foreground transition-colors group-hover/item:text-amber-700 dark:group-hover/item:text-amber-400">
 								{cert.title}
 							</p>
 							{cert.time && (
-								<p className="text-xs text-slate-500 dark:text-slate-500">{cert.time}</p>
+								<p className="text-xs text-muted-foreground">{cert.time}</p>
 							)}
 						</div>
 					</div>
@@ -185,63 +185,99 @@ function CertificationProviderCard({
 	)
 }
 
-export function Certifications() {
+export function Certifications({ limit }: { limit?: number }) {
 	const { data } = useSWR('/api/homepage/certifications', fetcher)
 	const allCertifications = data?.certifications || siteConfig.certification || []
-	const certifications = getCertificationsByProvider(allCertifications)
-	const hasCertifications = Object.values(certifications).some(arr => arr.length > 0)
+	const [showAll, setShowAll] = useState(false)
+
+	const sortedCerts = [...allCertifications].sort((a, b) => {
+		const da = Date.parse(a.time ?? '') || 0
+		const db = Date.parse(b.time ?? '') || 0
+		return db - da
+	})
+
+	const homepageCerts = limit && !showAll ? sortedCerts.slice(0, limit) : sortedCerts
+	const certifications = getCertificationsByProvider(
+		limit && !showAll ? homepageCerts : allCertifications,
+	)
+	const hasCertifications = allCertifications.length > 0
 
 	if (!hasCertifications) return null
 
+	const useHomepageGrid = limit && !showAll
+
 	return (
 		<section className="relative w-full" aria-labelledby="certifications-heading">
-			{/* Header */}
 			<motion.div
 				initial={{ opacity: 0, y: 20 }}
 				whileInView={{ opacity: 1, y: 0 }}
 				viewport={{ once: true }}
 				transition={{ duration: 0.5 }}
-				className="mb-12"
+				className="mb-5 sm:mb-6"
 			>
-				<div className="mb-10 flex flex-wrap items-center gap-3">
+				<div className="mb-3 flex flex-wrap items-center gap-2 sm:gap-3">
 					<span className={PAGE_ICON_CHIP}>
-						<Award className="h-5 w-5" aria-hidden />
+						<Award className="h-5 w-5 text-amber-700 dark:text-amber-400" aria-hidden />
 					</span>
 					<h2 id="certifications-heading" className={PAGE_H1}>
 						Professional Certifications
 					</h2>
 				</div>
-				<p className={cn(PAGE_LEAD, "mb-10 text-base sm:text-lg")}>
-					Industry-recognized certifications and credentials
+				<p className={cn(PAGE_LEAD, 'max-w-2xl')}>
+					Industry-recognized credentials across cloud, security, and identity
 				</p>
 			</motion.div>
 
-			{/* Certification Providers Grid */}
-			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-				{certifications.aws.length > 0 && (
-					<CertificationProviderCard provider="AWS" certifications={certifications.aws} />
-				)}
+			{useHomepageGrid ? (
+				<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+					{homepageCerts.map((cert: any, idx: number) => (
+						<motion.div
+							key={`${cert.title}-${idx}`}
+							initial={{ opacity: 0, y: 12 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							viewport={{ once: true }}
+							transition={{ delay: idx * 0.05 }}
+						>
+							<CertificationItem cert={cert} />
+						</motion.div>
+					))}
+				</div>
+			) : (
+				<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
+					{certifications.aws.length > 0 && (
+						<CertificationProviderCard provider="AWS" certifications={certifications.aws} />
+					)}
+					{certifications.google.length > 0 && (
+						<CertificationProviderCard provider="Google" certifications={certifications.google} />
+					)}
+					{certifications.coursera.length > 0 && (
+						<CertificationProviderCard provider="Coursera" certifications={certifications.coursera} />
+					)}
+					{certifications.okta.length > 0 && (
+						<CertificationProviderCard provider="Okta" certifications={certifications.okta} />
+					)}
+					{certifications.icsi.length > 0 && (
+						<CertificationProviderCard provider="ICSI" certifications={certifications.icsi} />
+					)}
+					{certifications.other.length > 0 && (
+						<CertificationProviderCard provider="Other" certifications={certifications.other} />
+					)}
+				</div>
+			)}
 
-				{certifications.google.length > 0 && (
-					<CertificationProviderCard provider="Google" certifications={certifications.google} />
-				)}
-
-				{certifications.coursera.length > 0 && (
-					<CertificationProviderCard provider="Coursera" certifications={certifications.coursera} />
-				)}
-
-				{certifications.okta.length > 0 && (
-					<CertificationProviderCard provider="Okta" certifications={certifications.okta} />
-				)}
-
-				{certifications.icsi.length > 0 && (
-					<CertificationProviderCard provider="ICSI" certifications={certifications.icsi} />
-				)}
-
-				{certifications.other.length > 0 && (
-					<CertificationProviderCard provider="Other" certifications={certifications.other} />
-				)}
-			</div>
+			{limit && allCertifications.length > limit && (
+				<div className="mt-6 text-center">
+					<button
+						type="button"
+						onClick={() => setShowAll((v) => !v)}
+						className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:border-amber-500/30 hover:bg-amber-500/5 hover:text-amber-700 dark:hover:text-amber-400"
+					>
+						{showAll
+							? 'Show fewer certifications'
+							: `View all ${allCertifications.length} certifications`}
+					</button>
+				</div>
+			)}
 		</section>
 	)
 }

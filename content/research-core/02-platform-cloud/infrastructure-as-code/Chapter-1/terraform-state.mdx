@@ -25,7 +25,7 @@ terraform {
 
 ## State isolation
 
-- **One state per blast radius** — networking vs apps vs data
+- **One state per blast radius**  networking vs apps vs data
 - Separate AWS accounts for prod/nonprod state buckets
 - Deny `s3:DeleteObject` on state bucket except break-glass role
 
@@ -41,5 +41,5 @@ DynamoDB conditional writes prevent concurrent apply corruption. Never disable l
 
 ## Security
 
-- State files contain secrets — encrypt at rest, restrict IAM tightly
+- State files contain secrets  encrypt at rest, restrict IAM tightly
 - Use `terraform state rm` only with change advisory approval

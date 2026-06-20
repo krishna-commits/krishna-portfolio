@@ -1,6 +1,6 @@
 ---
 title: DevOps Foundation Roadmap
-description: Twelve sequential steps from Git to cloud delivery — the standard path before specializing in security or SRE.
+description: Twelve sequential steps from Git to cloud delivery  the standard path before specializing in security or SRE.
 parent: "Chapter 1: Orientation and Roadmaps"
 grand_parent: DevOps Learning Hub
 order: 1
@@ -54,51 +54,51 @@ flowchart LR
 
 ## Step details
 
-### 1 — Git
+### 1  Git
 
 Master branching strategies (trunk-based vs GitFlow for your context). Understand **why** merge commits differ from rebase. Use signed commits if your org requires them.
 
-### 2 — Programming language
+### 2  Programming language
 
-Pick **one** language and stay with it for six months. DevOps value comes from reading SDKs and writing glue — not algorithm contests.
+Pick **one** language and stay with it for six months. DevOps value comes from reading SDKs and writing glue  not algorithm contests.
 
-### 3 — Linux
+### 3  Linux
 
 Comfort on Ubuntu or RHEL. Know where logs live, how to debug disk full, and how `sudo` and groups interact.
 
-### 4 — Networking
+### 4  Networking
 
 Draw your home lab: client → DNS → load balancer → pod. Know common ports (22, 80, 443, 5432, 6379).
 
-### 5 — Server management
+### 5  Server management
 
 Configure Nginx or Caddy with TLS. Understand forward vs reverse proxy and when to use a CDN.
 
-### 6 — Containers
+### 6  Containers
 
 Optimize Dockerfile layer cache. Never run as root in production images. Pin base image digests.
 
-### 7 — Kubernetes
+### 7  Kubernetes
 
 `kubectl` fluency: debug CrashLoopBackOff, inspect events, port-forward. Learn Helm for packaging, not as a crutch for missing GitOps discipline.
 
-### 8 — Infrastructure as Code
+### 8  Infrastructure as Code
 
 Terraform for provisioning; Ansible (or cloud-init) for configuration. **Never** edit production by hand without a ticket.
 
-### 9 — CI/CD
+### 9  CI/CD
 
 Stages: lint → unit test → integration test → build artifact → deploy. Cache dependencies. Fail fast.
 
-### 10 — Observability
+### 10  Observability
 
-RED/USE methods. One SLI per service. Alerts must be actionable — if it wakes someone at 3 a.m., it must be fixable.
+RED/USE methods. One SLI per service. Alerts must be actionable  if it wakes someone at 3 a.m., it must be fixable.
 
-### 11 — Cloud
+### 11  Cloud
 
 Start with free tier. Build: VPC, compute, managed DB, object storage, IAM roles (not long-lived keys).
 
-### 12 — Culture
+### 12  Culture
 
 Read *The DevOps Handbook* and *Accelerate*. Measure lead time, deployment frequency, MTTR, change failure rate.
 

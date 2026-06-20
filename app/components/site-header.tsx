@@ -39,8 +39,8 @@ export function SiteHeader() {
 		<header 
 			className={`sticky top-0 z-50 w-full transition-all duration-300 supports-[backdrop-filter]:backdrop-blur-md ${
 				scrolled 
-					? 'border-b border-slate-200/90 dark:border-slate-800/90 bg-white/92 dark:bg-slate-950/92 shadow-sm' 
-					: 'border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-slate-950/95'
+					? 'border-b border-amber-200/80 bg-white/98 shadow-sm dark:border-slate-800/90 dark:bg-slate-950/92' 
+					: 'border-b border-slate-200/80 bg-white/95 dark:border-slate-800/80 dark:bg-slate-950/95'
 			}`}
 			role="banner"
 		>
@@ -52,7 +52,7 @@ export function SiteHeader() {
 				<div className="w-full mx-auto max-w-7xl">
 					<div className="flex h-14 sm:h-16 items-center justify-between px-3 sm:px-4 md:px-6 lg:px-8">
 						{/* Left Section: Mobile Nav + Logo + Navbar */}
-						<div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0 overflow-hidden">
+						<div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
 							<MobileNav />
 							
 							{/* Logo */}
@@ -89,7 +89,7 @@ export function SiteHeader() {
 							<div className="hidden lg:block h-5 w-px bg-slate-300 dark:bg-slate-700 mx-2 flex-shrink-0" />
 							
 							{/* Desktop Navbar - Show on lg screens and above */}
-							<Navbar className="hidden lg:flex flex-1 min-w-0" />
+							<Navbar className="hidden lg:flex flex-1 min-w-0 overflow-x-auto scrollbar-hide" />
 						</div>
 						
 						{/* Right Section: Social Links + Theme Toggle */}

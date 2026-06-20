@@ -42,7 +42,7 @@ export default function SiteChromeAdminPage() {
 				body: JSON.stringify({ chrome }),
 			})
 			if (!res.ok) throw new Error((await res.json()).error || 'Failed to save')
-			toast.success('Site branding saved — header & footer update live')
+			toast.success('Site branding saved  header & footer update live')
 		} catch (err: unknown) {
 			toast.error(err instanceof Error ? err.message : 'Failed to save')
 		} finally {

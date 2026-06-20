@@ -3,7 +3,8 @@ import { generatePageMetadata } from '../metadata'
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Code Canvas',
-	description: 'A curated collection of repositories demonstrating production-ready engineering practices, research implementations, and open-source contributions.',
+	description:
+		'Live GitHub repositories from Krishna Neupane  open-source DevSecOps tooling, cloud automation, and infra experiments.',
 	path: '/codecanvas',
 })
 

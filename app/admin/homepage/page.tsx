@@ -78,8 +78,8 @@ const homepageSections = [
   },
   {
     id: 'stats',
-    title: 'Impact Metrics',
-    description: 'Manage statistics and metrics display',
+    title: 'Knowledge & Impact',
+    description: 'Section title and live stats (GitHub, ResearchGate, Medium)',
     icon: BarChart3,
     gradient: 'from-indigo-500 to-purple-500',
     href: '/admin/homepage/stats',

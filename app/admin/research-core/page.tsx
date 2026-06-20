@@ -77,7 +77,7 @@ export default function ResearchCoreAdminPage() {
 			if (!res.ok) throw new Error(data.error || 'Failed to save')
 			setConfig(data.config)
 			setSource('database')
-			toast.success('Research Core settings saved — changes are live on the site')
+			toast.success('Research Core settings saved  changes are live on the site')
 		} catch (err: unknown) {
 			const message = err instanceof Error ? err.message : 'Failed to save'
 			toast.error(message)

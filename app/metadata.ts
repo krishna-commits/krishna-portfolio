@@ -73,16 +73,16 @@ export const defaultMetadata: Metadata = {
 	},
 }
 
-/** Root `app/layout.tsx` — one place for default title/description/OG to avoid drift from `defaultMetadata`. */
+/** Root `app/layout.tsx`  one place for default title/description/OG to avoid drift from `defaultMetadata`. */
 export const rootLayoutMetadata: Metadata = {
 	...defaultMetadata,
 	title: {
 		default:
-			'Krishna Neupane - Senior DevSecOps Engineer | Cybersecurity Expert',
+			'Krishna Neupane - Senior DevSecOps Engineer | Applied Security Researcher',
 		template: `%s | ${siteConfig.name}`,
 	},
 	description:
-		'Senior DevSecOps Engineer | Cybersecurity Expert | Security Researcher. Building secure, scalable cloud infrastructure with automated threat detection, zero-trust architectures, and defense-in-depth security strategies.',
+		'Senior DevSecOps Engineer | Applied Security Researcher. Building secure, scalable cloud infrastructure with automated threat detection, zero-trust architectures, and defense-in-depth security strategies.',
 	keywords: [
 		'DevSecOps',
 		'DevOps',
@@ -94,15 +94,15 @@ export const rootLayoutMetadata: Metadata = {
 	openGraph: {
 		...defaultMetadata.openGraph,
 		url: getSiteOrigin(),
-		title: 'Krishna Neupane - Senior DevSecOps Engineer | Cybersecurity Expert',
+		title: 'Krishna Neupane - Senior DevSecOps Engineer | Applied Security Researcher',
 		description:
-			'Senior DevSecOps Engineer | Cybersecurity Expert | Security Researcher. Building secure cloud infrastructure with automated threat detection and zero-trust architectures.',
+			'Senior DevSecOps Engineer | Applied Security Researcher. Building secure cloud infrastructure with automated threat detection and zero-trust architectures.',
 	},
 	twitter: {
 		...defaultMetadata.twitter,
-		title: 'Krishna Neupane - Senior DevSecOps Engineer | Cybersecurity Expert',
+		title: 'Krishna Neupane - Senior DevSecOps Engineer | Applied Security Researcher',
 		description:
-			'Senior DevSecOps Engineer | Cybersecurity Expert | Security Researcher. Building secure cloud infrastructure with automated threat detection and zero-trust architectures.',
+			'Senior DevSecOps Engineer | Applied Security Researcher. Building secure cloud infrastructure with automated threat detection and zero-trust architectures.',
 	},
 }
 
@@ -119,7 +119,7 @@ export function generatePageMetadata({
 }): Metadata {
 	const fullTitle = title === 'Home' ? siteConfig.name : `${title} | ${siteConfig.name}`
 	const fullDescription = description || defaultMetadata.description as string
-	// Root layout uses title.template '%s | …' — pass short page titles so the suffix is not doubled.
+	// Root layout uses title.template '%s | …'  pass short page titles so the suffix is not doubled.
 	const documentTitle =
 		title === 'Home' ? { absolute: siteConfig.name as string } : title
 
@@ -144,7 +144,7 @@ export function generatePageMetadata({
 	}
 }
 
-/** Long-form MDX (research) — article OG + stable canonical; tab title uses root template once. */
+/** Long-form MDX (research)  article OG + stable canonical; tab title uses root template once. */
 export function generateResearchArticleMetadata({
 	title,
 	description,

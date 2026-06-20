@@ -10,6 +10,7 @@ import {
 	PAGE_LEAD,
 	PAGE_SHELL_WIDE,
 } from "lib/page-layout"
+import { ContentCrossLink } from "../components/content-cross-link"
 import { useResearchCoreConfig } from "lib/hooks/use-research-core-config"
 
 export default function ResearchCorePage() {
@@ -32,6 +33,7 @@ export default function ResearchCorePage() {
 					</div>
 					<p className={PAGE_LEAD}>{config.pageLead}</p>
 				</motion.div>
+				<ContentCrossLink variant="research-to-blog" className="mb-8" />
 				<ResearchCoreStartHere />
 				<ResearchCoreCard />
 			</div>

@@ -15,10 +15,10 @@ Limit lateral movement so a compromised workload cannot reach unrelated systems.
 
 ## Layers
 
-1. **VPC / VNet isolation** — Separate prod, staging, shared services
-2. **Subnet tiers** — Public ALB only; app and data in private subnets
-3. **Security groups** — Default deny; allowlist ports per service
-4. **Service mesh** — mTLS + L7 authorization between pods
+1. **VPC / VNet isolation**  Separate prod, staging, shared services
+2. **Subnet tiers**  Public ALB only; app and data in private subnets
+3. **Security groups**  Default deny; allowlist ports per service
+4. **Service mesh**  mTLS + L7 authorization between pods
 
 ## Kubernetes example
 

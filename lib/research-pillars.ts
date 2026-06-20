@@ -1,5 +1,5 @@
 /**
- * Research Core pillar taxonomy — folder slugs match content/research-core/*
+ * Research Core pillar taxonomy  folder slugs match content/research-core/*
  */
 export const RESEARCH_PILLARS = [
 	{
@@ -35,7 +35,7 @@ export const RESEARCH_PILLARS = [
 		title: "Learning & Roadmaps",
 		order: 5,
 		description:
-			"Curated DevSecOps learning paths, tool guides, certification maps, and interview preparation — written for this portfolio.",
+			"Curated DevSecOps learning paths, tool guides, certification maps, and interview preparation  written for this portfolio.",
 	},
 ] as const
 

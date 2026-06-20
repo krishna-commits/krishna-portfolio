@@ -92,9 +92,9 @@ export default function ContactUsForm() {
   const { links } = useSocialLinks()
 
   const contactMethods = useMemo(() => [
-    { icon: Mail, title: 'Email', description: contact.emailDescription, clickable: true },
-    { icon: Phone, title: 'Phone', description: contact.phoneDescription, clickable: true },
-    { icon: MapPinned, title: 'Location', description: contact.location, clickable: false },
+    { icon: Mail, title: 'Email', description: contact.emailDescription, href: `mailto:${contact.email}`, clickable: true, external: true },
+    { icon: Phone, title: 'Phone', description: contact.phoneDescription, href: '/contact#send-a-message', clickable: true, external: false },
+    { icon: MapPinned, title: 'Location', description: contact.location, href: '', clickable: false, external: false },
   ], [contact])
 
   const socialLinks = useMemo(() => [
@@ -277,6 +277,17 @@ export default function ContactUsForm() {
 									</h2>
 									{contactMethods.map((method, idx) => {
 										const Icon = method.icon;
+										const content = (
+											<>
+												<div className="flex-shrink-0 rounded-lg border border-border bg-background p-2.5 text-foreground">
+													<Icon className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden />
+												</div>
+												<div className="min-w-0 flex-1 pt-0.5">
+													<p className="mb-1 text-sm font-semibold text-foreground sm:text-base">{method.title}</p>
+													<p className="text-xs font-medium text-primary sm:text-sm">{method.description}</p>
+												</div>
+											</>
+										)
 										return (
 											<motion.div
 												key={idx}
@@ -284,38 +295,38 @@ export default function ContactUsForm() {
 												animate={{ opacity: 1, y: 0 }}
 												transition={{ delay: 0.4 + idx * 0.1 }}
 												whileHover={{ x: 4 }}
-												className={`flex items-start gap-4 rounded-xl border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/50 sm:gap-5 sm:p-5 ${
-													method.clickable ? 'cursor-pointer group' : ''
-												}`}
-												onClick={method.clickable ? (e) => {
-													e.preventDefault();
-													scrollToMessage();
-												} : undefined}
 											>
-												<div className="flex-shrink-0 rounded-lg border border-border bg-background p-2.5 text-foreground">
-													<Icon className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden />
-												</div>
-												<div className="min-w-0 flex-1 pt-0.5">
-													<p className="mb-1 text-sm font-semibold text-foreground sm:text-base">{method.title}</p>
-													{method.clickable ? (
-														<button
-															type="button"
-															onClick={(e) => {
-																e.stopPropagation();
-																scrollToMessage();
-															}}
-															className="group/link flex items-center gap-1.5 text-xs font-medium text-primary transition-colors hover:underline sm:text-sm"
-														>
-															<span>Available upon request</span>
-															<ArrowRight className="h-3.5 w-3.5 shrink-0 transition-transform group-hover/link:translate-x-1 sm:h-4 sm:w-4" aria-hidden />
-														</button>
-													) : (
-														<p className="text-xs text-muted-foreground sm:text-sm">{method.description}</p>
-													)}
-												</div>
+												{method.external && method.href ? (
+													<a
+														href={method.href}
+														className={`flex items-start gap-4 rounded-xl border border-border bg-muted/30 p-4 no-underline transition-colors hover:bg-muted/50 sm:gap-5 sm:p-5`}
+													>
+														{content}
+													</a>
+												) : method.clickable && method.href ? (
+													<Link
+														href={method.href}
+														className={`flex items-start gap-4 rounded-xl border border-border bg-muted/30 p-4 no-underline transition-colors hover:bg-muted/50 sm:gap-5 sm:p-5`}
+													>
+														{content}
+													</Link>
+												) : (
+													<div className="flex items-start gap-4 rounded-xl border border-border bg-muted/30 p-4 sm:gap-5 sm:p-5">
+														{content}
+													</div>
+												)}
 											</motion.div>
 										);
 									})}
+
+									<Link
+										href={contact.resumeUrl}
+										className="flex items-center justify-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800 no-underline transition-colors hover:bg-amber-100 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200 dark:hover:bg-amber-950/60"
+									>
+										<Briefcase className="h-4 w-4" aria-hidden />
+										{contact.resumeLabel}
+										<ArrowRight className="h-4 w-4" aria-hidden />
+									</Link>
 								</div>
 							</div>
 

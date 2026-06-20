@@ -64,7 +64,7 @@ export default function NavigationAdminPage() {
 				body: JSON.stringify({ navigation }),
 			})
 			if (!res.ok) throw new Error((await res.json()).error || 'Failed to save')
-			toast.success('Navigation saved — header and mobile menu update live')
+			toast.success('Navigation saved  header and mobile menu update live')
 		} catch (err: unknown) {
 			toast.error(err instanceof Error ? err.message : 'Failed to save')
 		} finally {
@@ -107,7 +107,7 @@ export default function NavigationAdminPage() {
 						</div>
 						<div>
 							<h1 className="text-2xl font-bold">Navigation Menu</h1>
-							<p className="text-sm text-muted-foreground">Desktop navbar and mobile menu links</p>
+							<p className="text-sm text-muted-foreground">Desktop navbar and mobile menu links. Use Reset to restore Mantras and default order.</p>
 						</div>
 					</div>
 					<Button type="button" variant="outline" size="sm" onClick={handleReset} disabled={saving}>

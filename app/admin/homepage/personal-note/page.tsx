@@ -48,7 +48,7 @@ export default function PersonalNotePage() {
 				body: JSON.stringify(config),
 			})
 			if (!res.ok) throw new Error((await res.json()).error || 'Failed to save')
-			toast.success('Personal note saved — live on homepage')
+			toast.success('Personal note saved  live on homepage')
 		} catch (err: unknown) {
 			toast.error(err instanceof Error ? err.message : 'Failed to save')
 		} finally {

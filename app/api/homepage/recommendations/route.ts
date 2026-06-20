@@ -1,43 +1,30 @@
-import { NextResponse } from 'next/server';
-import { prisma } from 'lib/prisma';
-import { siteConfig } from 'config/site';
+import { NextResponse } from 'next/server'
+import { fetchLinkedInRecommendations } from 'lib/linkedin-recommendations'
 
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
-// GET - List all recommendations (public)
 export async function GET() {
-  try {
-    if (!prisma) {
-      return NextResponse.json({ 
-        recommendations: siteConfig.linkedin_recommendations || [] 
-      }, { status: 200 });
-    }
+	try {
+		const data = await fetchLinkedInRecommendations()
 
-    const recommendations = await prisma.linkedInRecommendation.findMany({
-      orderBy: { orderIndex: 'asc' },
-    });
-
-    if (recommendations.length === 0) {
-      return NextResponse.json({ 
-        recommendations: siteConfig.linkedin_recommendations || [] 
-      }, { status: 200 });
-    }
-
-    // Map to match config format
-    const formattedRecommendations = recommendations.map(rec => ({
-      name: rec.name,
-      title: rec.title,
-      company: rec.company,
-      text: rec.text,
-      date: rec.date,
-    }));
-
-    return NextResponse.json({ recommendations: formattedRecommendations }, { status: 200 });
-  } catch (error: any) {
-    console.error('[Recommendations API] Error:', error);
-    return NextResponse.json({ 
-      recommendations: siteConfig.linkedin_recommendations || [] 
-    }, { status: 200 });
-  }
+		return NextResponse.json({
+			recommendations: data.recommendations,
+			count: data.count,
+			profileUrl: data.profileUrl,
+			lastUpdated: data.fetchedAt,
+		})
+	} catch (error) {
+		console.error('[Recommendations API] Error:', error)
+		return NextResponse.json(
+			{
+				recommendations: [],
+				count: 0,
+				profileUrl: '',
+				error: error instanceof Error ? error.message : 'Unknown error',
+				lastUpdated: new Date().toISOString(),
+			},
+			{ status: 500 },
+		)
+	}
 }
-

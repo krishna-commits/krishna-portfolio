@@ -1,5 +1,5 @@
 /**
- * Shared page shell — matches home section rhythm (padding, width, cards).
+ * Shared page shell  matches home section rhythm (padding, width, cards).
  * Use these on marketing routes (blog, contact, projects, etc.).
  */
 
@@ -7,7 +7,7 @@ export const pageGutter = "px-4 sm:px-6 lg:px-8"
 
 export const pageSectionY = "py-12 md:py-16"
 
-/** Horizontal centering only (no vertical padding) — hero + stacked sections */
+/** Horizontal centering only (no vertical padding)  hero + stacked sections */
 export const PAGE_CONTAINER = `w-full mx-auto ${pageGutter} max-w-7xl`
 
 /** Full-width content band (e.g. projects, mantras) */
@@ -28,7 +28,11 @@ export const PAGE_LEAD = "text-sm sm:text-base text-muted-foreground max-w-prose
 
 export const PAGE_CARD = "rounded-2xl border border-border bg-card shadow-sm"
 
-/** Form controls — matches theme tokens */
+/** Light-mode elevated card  white surface, amber border (homepage sections) */
+export const PAGE_CARD_LIGHT =
+	"rounded-2xl border border-amber-200/60 bg-white shadow-sm dark:border-border dark:bg-card"
+
+/** Form controls  matches theme tokens */
 export const PAGE_INPUT =
 	"w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-all"
 

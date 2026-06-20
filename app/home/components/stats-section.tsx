@@ -1,24 +1,30 @@
 'use client'
 
-import dynamic from 'next/dynamic'
-import { motion } from "framer-motion"
-import { memo, useMemo, useEffect, useState } from "react"
-import { allResearchCores } from "contentlayer/generated"
-import { allProjects } from "contentlayer/generated"
-import { siteConfig } from "config/site"
-import { useGetGithubRepos } from "app/api/github"
+import { motion } from 'framer-motion'
+import { memo, useMemo, useEffect, useState, type ComponentType } from 'react'
+import { allResearchCores } from 'contentlayer/generated'
+import { allProjects } from 'contentlayer/generated'
+import { siteConfig } from 'config/site'
 import useSWR from 'swr'
-import { BookOpen, Code, Award, FileText, Zap, Github, Star, GitFork, Layers, Eye, Book, BookMarked, Users } from "lucide-react"
-import { cn } from "app/theme/lib/utils"
-import { PAGE_CARD, PAGE_ICON_CHIP, PAGE_H1, PAGE_LEAD } from "lib/page-layout"
-
-const StatsChartPanel = dynamic(
-	() => import('./stats-charts').then((mod) => ({ default: mod.StatsChartPanel })),
-	{
-		ssr: false,
-		loading: () => <div className={cn(PAGE_CARD, 'h-48 animate-pulse sm:h-56')} aria-hidden />,
-	},
-)
+import Link from 'next/link'
+import {
+	BookOpen,
+	Code,
+	Award,
+	Zap,
+	Eye,
+	BookMarked,
+	TrendingUp,
+	Quote,
+	Hash,
+	PenLine,
+	ExternalLink,
+	GraduationCap,
+} from 'lucide-react'
+import { cn } from 'app/theme/lib/utils'
+import { PAGE_CARD, PAGE_H1, PAGE_ICON_CHIP, PAGE_LEAD, PAGE_CARD_LIGHT } from 'lib/page-layout'
+import { PublicationsBand } from './publications-section'
+import { useLightMotion } from 'lib/hooks/use-light-motion'
 
 const fetcher = async (url: string) => {
 	const res = await fetch(url)
@@ -28,507 +34,572 @@ const fetcher = async (url: string) => {
 	return res.json()
 }
 
-// Animated counter component
-function AnimatedCounter({ value, duration = 2 }: { value: number; duration?: number }) {
-	const [displayValue, setDisplayValue] = useState(0)
-	
+type Accent = 'amber' | 'violet' | 'emerald' | 'sky'
+
+type StatItem = {
+	icon: ComponentType<{ className?: string }>
+	label: string
+	value: number
+	description?: string
+	delay?: number
+	loading?: boolean
+	decimals?: number
+	accent?: Accent
+}
+
+const ACCENT: Record<
+	Accent,
+	{ icon: string; chip: string; ring: string; glow: string }
+> = {
+	amber: {
+		icon: 'text-amber-600 dark:text-amber-400',
+		chip: 'bg-amber-500/10 border-amber-500/20',
+		ring: 'ring-amber-500/20',
+		glow: 'from-amber-500/[0.07] via-amber-500/[0.02] to-transparent',
+	},
+	violet: {
+		icon: 'text-violet-600 dark:text-violet-400',
+		chip: 'bg-violet-500/10 border-violet-500/20',
+		ring: 'ring-violet-500/20',
+		glow: 'from-violet-500/[0.08] via-violet-500/[0.02] to-transparent',
+	},
+	emerald: {
+		icon: 'text-emerald-600 dark:text-emerald-400',
+		chip: 'bg-emerald-500/10 border-emerald-500/20',
+		ring: 'ring-emerald-500/20',
+		glow: 'from-emerald-500/[0.07] via-emerald-500/[0.02] to-transparent',
+	},
+	sky: {
+		icon: 'text-sky-600 dark:text-sky-400',
+		chip: 'bg-sky-500/10 border-sky-500/20',
+		ring: 'ring-sky-500/20',
+		glow: 'from-sky-500/[0.07] via-sky-500/[0.02] to-transparent',
+	},
+}
+
+function useAnimatedNumber(value: number, loading: boolean, decimals = 0) {
+	const [display, setDisplay] = useState(0)
+
 	useEffect(() => {
+		if (loading) {
+			setDisplay(0)
+			return
+		}
+
 		let startTime: number | null = null
-		const startValue = 0
-		const endValue = value
-		
-		const animate = (currentTime: number) => {
-			if (startTime === null) startTime = currentTime
-			const progress = Math.min((currentTime - startTime) / (duration * 1000), 1)
-			
-			// Easing function (ease-out)
-			const easeOut = 1 - Math.pow(1 - progress, 3)
-			const currentValue = Math.floor(startValue + (endValue - startValue) * easeOut)
-			
-			setDisplayValue(currentValue)
-			
-			if (progress < 1) {
-				requestAnimationFrame(animate)
-			} else {
-				setDisplayValue(endValue)
-			}
+		const duration = 1400
+
+		const animate = (time: number) => {
+			if (startTime === null) startTime = time
+			const progress = Math.min((time - startTime) / duration, 1)
+			const eased = 1 - Math.pow(1 - progress, 3)
+			const current = value * eased
+			setDisplay(decimals > 0 ? Number(current.toFixed(decimals)) : Math.round(current))
+			if (progress < 1) requestAnimationFrame(animate)
+			else setDisplay(value)
 		}
-		
+
 		requestAnimationFrame(animate)
-	}, [value, duration])
-	
-	return <span>{displayValue.toLocaleString()}</span>
+	}, [value, loading, decimals])
+
+	return display
 }
 
-// Featured stat card with large display
-function FeaturedStatCard({ stat, index }: { stat: any; index: number }) {
-	const [isHovered, setIsHovered] = useState(false)
-	
-	return (
-		<motion.div
-			initial={{ opacity: 0, y: 30, scale: 0.95 }}
-			whileInView={{ opacity: 1, y: 0, scale: 1 }}
-			viewport={{ once: true }}
-			transition={{ delay: index * 0.1, duration: 0.6, type: "spring" }}
-			whileHover={{ y: -8, scale: 1.02 }}
-			onHoverStart={() => setIsHovered(true)}
-			onHoverEnd={() => setIsHovered(false)}
-			className="group relative"
-		>
-			<div className={cn(
-				PAGE_CARD,
-				"relative h-full overflow-hidden p-4 transition-shadow duration-300 hover:shadow-md sm:p-5 md:p-6",
-			)}>
-				<div className="relative z-10 space-y-3 sm:space-y-4">
-					<motion.div
-						animate={isHovered ? { scale: 1.05 } : {}}
-						transition={{ duration: 0.3 }}
-						className="inline-flex rounded-lg border border-border bg-muted p-2 sm:p-2.5"
-					>
-						<stat.icon className="h-3 w-3 text-amber-600 dark:text-amber-400 sm:h-4 sm:w-4" />
-					</motion.div>
-
-					<div className="space-y-1.5">
-						{stat.loading ? (
-							<div className="text-2xl font-bold leading-none text-muted-foreground animate-pulse sm:text-3xl md:text-4xl">
-								--
-							</div>
-						) : (
-							<div className="text-2xl font-bold leading-none text-foreground sm:text-3xl md:text-4xl">
-								<AnimatedCounter value={stat.value} />
-							</div>
-						)}
-						<div className="text-sm font-semibold text-foreground sm:text-base">
-							{stat.label}
-						</div>
-						<div className="text-xs text-muted-foreground sm:text-sm">
-							{stat.description}
-						</div>
-					</div>
-				</div>
-			</div>
-		</motion.div>
-	)
+function formatMetric(value: number, decimals = 0) {
+	if (decimals > 0) return value.toFixed(decimals)
+	return value.toLocaleString()
 }
 
-// Standard stat card
-function StatCard({ stat, index }: { stat: any; index: number }) {
-	const [isHovered, setIsHovered] = useState(false)
-	const [displayValue, setDisplayValue] = useState(0)
-	
-	useEffect(() => {
-		if (!stat.loading) {
-			let startTime: number | null = null
-			const startValue = 0
-			const endValue = stat.value
-			const duration = 1.5
-			
-			const animate = (currentTime: number) => {
-				if (startTime === null) startTime = currentTime
-				const progress = Math.min((currentTime - startTime) / (duration * 1000), 1)
-				const easeOut = 1 - Math.pow(1 - progress, 3)
-				const currentValue = Math.floor(startValue + (endValue - startValue) * easeOut)
-				setDisplayValue(currentValue)
-				
-				if (progress < 1) {
-					requestAnimationFrame(animate)
-				} else {
-					setDisplayValue(endValue)
-				}
-			}
-			
-			requestAnimationFrame(animate)
-		}
-	}, [stat.value, stat.loading])
-	
-	return (
-		<motion.div
-			initial={{ opacity: 0, y: 20 }}
-			whileInView={{ opacity: 1, y: 0 }}
-			viewport={{ once: true, margin: "-50px" }}
-			transition={{ delay: stat.delay, duration: 0.5 }}
-			whileHover={{ y: -6, scale: 1.02 }}
-			onHoverStart={() => setIsHovered(true)}
-			onHoverEnd={() => setIsHovered(false)}
-			className="group relative"
-		>
-			<div className={cn(PAGE_CARD, "relative h-full overflow-hidden p-4 transition-shadow hover:shadow-md sm:p-5")}>
-				<div className="relative space-y-4">
-					<motion.div
-						animate={isHovered ? { scale: 1.05 } : {}}
-						transition={{ duration: 0.3 }}
-						className="inline-flex rounded-lg border border-border bg-muted p-3"
-					>
-						<stat.icon className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-					</motion.div>
-
-					<div className="space-y-2">
-						{stat.loading ? (
-							<div className="text-xl font-bold leading-none text-muted-foreground animate-pulse sm:text-2xl md:text-3xl">
-								--
-							</div>
-						) : (
-							<div className="text-xl font-bold leading-none text-foreground sm:text-2xl md:text-3xl">
-								{displayValue.toLocaleString()}
-							</div>
-						)}
-						<div className="space-y-1">
-							<div className="text-xs font-semibold text-foreground sm:text-sm">
-								{stat.label}
-							</div>
-							<div className="text-xs text-muted-foreground">
-								{stat.description}
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</motion.div>
-	)
-}
-
-// Category section with lazy-loaded chart
-function CategorySection({ title, icon: Icon, stats, chartData, colors, chartType = 'donut' }: { 
-	title: string
-	icon: React.ComponentType<{ className?: string }>
-	stats: any[]
-	chartData?: any[]
-	colors?: string[]
-	chartType?: 'donut' | 'radial' | 'bar'
+function MetricValue({
+	value,
+	loading,
+	decimals = 0,
+	className,
+}: {
+	value: number
+	loading?: boolean
+	decimals?: number
+	className?: string
 }) {
-	const totalValue = chartData?.reduce((sum, item) => sum + item.value, 0) || 0
-	
+	const display = useAnimatedNumber(value, loading ?? false, decimals)
+
+	if (loading) {
+		return (
+			<span className={cn('inline-block h-[1em] w-16 animate-pulse rounded bg-muted', className)} aria-hidden />
+		)
+	}
+
+	return (
+		<span className={cn('tabular-nums tracking-tight', className)}>
+			{formatMetric(display, decimals)}
+		</span>
+	)
+}
+
+function FeaturedMetricCard({ stat, index }: { stat: StatItem; index: number }) {
+	const accent = ACCENT[stat.accent ?? 'amber']
+	const lightMotion = useLightMotion()
+
+	const card = (
+		<div
+			className={cn(
+				PAGE_CARD_LIGHT,
+				'relative h-full overflow-hidden p-5 sm:p-6',
+				'transition-all duration-300 hover:border-amber-300 hover:shadow-md hover:ring-1',
+				accent.ring,
+			)}
+		>
+			<div
+				className={cn(
+					'pointer-events-none absolute inset-0 bg-gradient-to-br opacity-100',
+					accent.glow,
+				)}
+				aria-hidden
+			/>
+			<div className="relative flex h-full flex-col justify-between gap-4">
+				<div
+					className={cn(
+						'inline-flex w-fit rounded-xl border p-2.5',
+						accent.chip,
+					)}
+				>
+					<stat.icon className={cn('h-4 w-4 sm:h-5 sm:w-5', accent.icon)} aria-hidden />
+				</div>
+				<div className="space-y-1">
+					<p className="text-3xl font-bold leading-none text-foreground sm:text-4xl">
+						<MetricValue value={stat.value} loading={stat.loading} />
+					</p>
+					<p className="text-sm font-semibold text-foreground">{stat.label}</p>
+					{stat.description && (
+						<p className="text-xs leading-relaxed text-muted-foreground sm:text-sm">
+							{stat.description}
+						</p>
+					)}
+				</div>
+			</div>
+		</div>
+	)
+
+	if (lightMotion) {
+		return <div className="group relative">{card}</div>
+	}
+
 	return (
 		<motion.div
-			initial={{ opacity: 0, y: 30 }}
+			initial={{ opacity: 0, y: 24 }}
 			whileInView={{ opacity: 1, y: 0 }}
 			viewport={{ once: true }}
-			transition={{ duration: 0.6 }}
-			className="space-y-6 sm:space-y-8"
+			transition={{ delay: index * 0.08, duration: 0.5 }}
+			className="group relative"
 		>
-			<div className="mb-4 flex items-center gap-2 sm:mb-5 sm:gap-3">
+			{card}
+		</motion.div>
+	)
+}
+
+function CompactMetric({
+	stat,
+	index,
+	href,
+}: {
+	stat: StatItem
+	index: number
+	href?: string
+}) {
+	const accent = ACCENT[stat.accent ?? 'amber']
+	const lightMotion = useLightMotion()
+
+	const inner = (
+		<>
+			<div className={cn('mt-0.5 shrink-0 rounded-lg border p-2', accent.chip)}>
+				<stat.icon className={cn('h-4 w-4', accent.icon)} aria-hidden />
+			</div>
+			<div className="min-w-0 flex-1 space-y-0.5">
+				<p className="text-xl font-bold leading-none text-foreground sm:text-2xl">
+					<MetricValue value={stat.value} loading={stat.loading} decimals={stat.decimals} />
+				</p>
+				<p className="text-xs font-medium text-foreground sm:text-sm">{stat.label}</p>
+				{stat.description && (
+					<p className="text-[11px] leading-snug text-muted-foreground sm:text-xs">{stat.description}</p>
+				)}
+			</div>
+		</>
+	)
+
+	const cardClass = cn(
+		PAGE_CARD_LIGHT,
+		'flex items-start gap-3 p-3.5 sm:p-4',
+		'transition-all duration-200 hover:border-amber-300 hover:shadow-md',
+		href && 'hover:ring-1 hover:ring-amber-200/60',
+	)
+
+	if (href) {
+		if (lightMotion) {
+			return (
+				<Link href={href} className={cn(cardClass, 'no-underline')}>
+					{inner}
+				</Link>
+			)
+		}
+		return (
+			<motion.div
+				initial={{ opacity: 0, y: 16 }}
+				whileInView={{ opacity: 1, y: 0 }}
+				viewport={{ once: true, margin: '-40px' }}
+				transition={{ delay: (stat.delay ?? index * 0.05) + 0.1, duration: 0.45 }}
+			>
+				<Link href={href} className={cn(cardClass, 'no-underline')}>
+					{inner}
+				</Link>
+			</motion.div>
+		)
+	}
+
+	if (lightMotion) {
+		return <div className={cardClass}>{inner}</div>
+	}
+
+	return (
+		<motion.div
+			initial={{ opacity: 0, y: 16 }}
+			whileInView={{ opacity: 1, y: 0 }}
+			viewport={{ once: true, margin: '-40px' }}
+			transition={{ delay: (stat.delay ?? index * 0.05) + 0.1, duration: 0.45 }}
+			className={cardClass}
+		>
+			{inner}
+		</motion.div>
+	)
+}
+
+function PlatformLink({
+	href,
+	label,
+	internal = false,
+}: {
+	href: string
+	label: string
+	internal?: boolean
+}) {
+	const className =
+		'inline-flex items-center gap-1 rounded-full border border-border bg-muted/50 px-2.5 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:border-amber-500/30 hover:bg-amber-500/5 hover:text-amber-700 dark:hover:text-amber-400 sm:text-xs'
+
+	if (internal) {
+		return (
+			<Link href={href} className={className}>
+				{label}
+			</Link>
+		)
+	}
+
+	return (
+		<Link href={href} target="_blank" rel="noopener noreferrer" className={className}>
+			{label}
+			<ExternalLink className="h-3 w-3" aria-hidden />
+		</Link>
+	)
+}
+
+function LiveBadge() {
+	return (
+		<span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400 sm:text-[11px]">
+			<span className="relative flex h-1.5 w-1.5">
+				<span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-40" />
+				<span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
+			</span>
+			Live
+		</span>
+	)
+}
+
+function PanelHeader({
+	icon: Icon,
+	title,
+	badge,
+	link,
+}: {
+	icon: ComponentType<{ className?: string }>
+	title: string
+	badge?: React.ReactNode
+	link?: { href: string; label: string }
+}) {
+	return (
+		<div className="flex flex-wrap items-center justify-between gap-3">
+			<div className="flex items-center gap-2.5 sm:gap-3">
 				<span className={PAGE_ICON_CHIP}>
 					<Icon className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden />
 				</span>
-				<h3 className="text-base font-semibold text-foreground sm:text-lg md:text-xl">{title}</h3>
+				<div className="flex flex-wrap items-center gap-2">
+					<h3 className="text-base font-semibold text-foreground sm:text-lg">{title}</h3>
+					{badge}
+				</div>
 			</div>
-			
-			{/* Chart and Stats Grid */}
-			{chartData && chartData.length > 0 ? (
-				<div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
-					{/* Enhanced Chart */}
-					<div className="lg:col-span-1">
-						<StatsChartPanel
-							chartType={chartType === 'radial' ? 'radial' : 'donut'}
-							chartData={chartData}
-							colors={colors || []}
-							totalValue={totalValue}
-						/>
-					</div>
-					
-					{/* Stats Grid */}
-					<div className="lg:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-5">
-						{stats.map((stat, idx) => (
-							<StatCard key={idx} stat={stat} index={idx} />
-						))}
-					</div>
-				</div>
-			) : (
-				/* Stats Grid without Chart */
-				<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
-					{stats.map((stat, idx) => (
-						<StatCard key={idx} stat={stat} index={idx} />
-					))}
-				</div>
-			)}
-		</motion.div>
+			{link && <PlatformLink href={link.href} label={link.label} />}
+		</div>
 	)
 }
 
 export const StatsSection = memo(function StatsSection() {
-	const { repo, repoLoading } = useGetGithubRepos()
-	
-	// Fetch ResearchGate data
+	const lightMotion = useLightMotion()
 	const { data: certData } = useSWR('/api/homepage/certifications', fetcher, { revalidateOnFocus: true })
-	const { data: techData } = useSWR('/api/homepage/technology', fetcher, { revalidateOnFocus: true })
 	const { data: statsSettings } = useSWR('/api/homepage/stats', fetcher, { revalidateOnFocus: true })
 	const { data: researchGateData, isLoading: researchGateLoading } = useSWR(
 		'/api/researchgate',
 		fetcher,
-		{ revalidateOnFocus: false, revalidateOnReconnect: true }
+		{ revalidateOnFocus: false, revalidateOnReconnect: true },
 	)
-	
-	// Fetch Medium stats data
 	const { data: mediumData, isLoading: mediumLoading } = useSWR(
 		'/api/medium/stats',
 		fetcher,
-		{ revalidateOnFocus: false, revalidateOnReconnect: true, refreshInterval: 3600000 } // Refresh every hour
-	)
-	
-	const researchCount = useMemo(
-		() => allResearchCores.filter((r: any) => r.parent == null && r.grand_parent == null).length,
-		[]
-	)
-	const projectsCount = useMemo(() => allProjects.length, [])
-	const certificationsCount = useMemo(() => {
-		return certData?.certifications?.length ?? siteConfig.certification.length
-	}, [certData])
-	
-	const researchGateCitations = useMemo(
-		() => researchGateData?.citations || 0,
-		[researchGateData]
-	)
-	
-	const technologiesCount = useMemo(
-		() => techData?.technology?.length ?? siteConfig.technology_stack?.length ?? 0,
-		[techData],
+		{ revalidateOnFocus: false, revalidateOnReconnect: true, refreshInterval: 3600000 },
 	)
 
-	const statsTitle = (statsSettings?.stats as { title?: string })?.title || 'Impact Metrics'
+	const technicalGuideCount = useMemo(() => allResearchCores.length, [])
+	const projectsCount = useMemo(() => allProjects.length, [])
+	const certificationsCount = useMemo(
+		() => certData?.certifications?.length ?? siteConfig.certification.length,
+		[certData],
+	)
+
+	const statsTitle = (statsSettings?.stats as { title?: string })?.title || 'Knowledge & Impact'
 	const statsDescription =
 		(statsSettings?.stats as { description?: string })?.description ||
-		'Quantifying the impact of my work across security research, open source, and community engagement.'
-	
-	// GitHub stats
-	const githubStats = useMemo(() => {
-		if (!repo || repo.length === 0) return { totalStars: 0, totalForks: 0, publicRepos: 0 }
-		const totalStars = repo.reduce((sum: number, r: any) => sum + (r.stargazers_count || 0), 0)
-		const totalForks = repo.reduce((sum: number, r: any) => sum + (r.forks_count || 0), 0)
-		const publicRepos = repo.length
-		return { totalStars, totalForks, publicRepos }
-	}, [repo])
+		'At-a-glance metrics, research profile, and peer-reviewed publications.'
 
-	const mediumTotalReads = useMemo(
-		() => mediumData?.totalReads || 25624,
-		[mediumData]
+	const researchGateReady =
+		!researchGateLoading &&
+		researchGateData != null &&
+		!researchGateData.error &&
+		((researchGateData.researchInterestScore ?? 0) > 0 ||
+			(researchGateData.citations ?? 0) > 0 ||
+			(researchGateData.hIndex ?? 0) > 0 ||
+			(researchGateData.totalReads ?? researchGateData.reads ?? 0) > 0)
+
+	const mediumStatsReady = !mediumLoading && mediumData != null && !mediumData.error
+
+	const mediumTotalReads = mediumStatsReady ? mediumData?.totalReads ?? 0 : 0
+	const mediumTotalPosts = mediumStatsReady ? mediumData?.totalPosts ?? 0 : 0
+
+	const researchGateReads = researchGateReady
+		? researchGateData?.totalReads || researchGateData?.reads || 0
+		: 0
+	const researchInterestScore = researchGateReady ? researchGateData?.researchInterestScore ?? 0 : 0
+	const researchCitations = researchGateReady ? researchGateData?.citations ?? 0 : 0
+	const researchHIndex = researchGateReady ? researchGateData?.hIndex ?? 0 : 0
+
+	const featuredStats: StatItem[] = useMemo(
+		() => [
+			{
+				icon: BookOpen,
+				label: 'Technical Guides',
+				value: technicalGuideCount,
+				description: 'Research Core notes & chapters',
+				accent: 'amber',
+			},
+			{
+				icon: Award,
+				label: 'Certifications',
+				value: certificationsCount,
+				description: 'Professional credentials',
+				accent: 'violet',
+			},
+			{
+				icon: Code,
+				label: 'Projects',
+				value: projectsCount,
+				description: 'Live production tools',
+				accent: 'emerald',
+			},
+		],
+		[technicalGuideCount, certificationsCount, projectsCount],
 	)
-	
-	// Log for debugging
-	useEffect(() => {
-		if (mediumData) {
-			if (mediumData.error) {
-				console.warn('[Medium Stats]', mediumData.message || mediumData.error)
-			} else {
-				console.log('[Medium Stats] Loaded:', {
-					totalReads: mediumData.totalReads,
-					source: mediumData.source,
-				})
-			}
+
+	const researchStats: StatItem[] = useMemo(() => {
+		const loading = researchGateLoading
+		if (loading) {
+			return [
+				{ icon: Quote, label: 'Citations', value: 0, loading: true, accent: 'violet' },
+				{ icon: Hash, label: 'h-index', value: 0, loading: true, accent: 'violet' },
+				{ icon: BookMarked, label: 'Profile Reads', value: 0, loading: true, accent: 'violet' },
+			]
 		}
-	}, [mediumData])
+		if (!researchGateReady) return []
 
-	const researchGateReads = useMemo(
-		() => researchGateData?.totalReads || researchGateData?.reads || 4550,
-		[researchGateData]
-	)
-	
-	const researchGatePublicationReads = useMemo(
-		() => researchGateData?.publicationReads || 4002,
-		[researchGateData]
-	)
-	
-	const researchGateFullTextReads = useMemo(
-		() => researchGateData?.fullTextReads || 1512,
-		[researchGateData]
-	)
+		const items: StatItem[] = [
+			{
+				icon: Quote,
+				label: 'Citations',
+				value: researchCitations,
+				description: 'Publication citations',
+				accent: 'violet',
+			},
+			{
+				icon: Hash,
+				label: 'h-index',
+				value: researchHIndex,
+				description: 'Research impact index',
+				accent: 'violet',
+			},
+		]
 
-	// Featured stats (key metrics)
-	const featuredStats = useMemo(() => [
-		{ 
-			icon: BookOpen, 
-			label: "Research Publications", 
-			value: researchCount,
-			gradient: "from-orange-500 via-red-500 to-orange-600",
-			description: "Peer-reviewed works",
-			delay: 0,
-		},
-		{ 
-			icon: Star, 
-			label: "GitHub Stars", 
-			value: githubStats.totalStars,
-			gradient: "from-yellow-400 via-amber-500 to-orange-500",
-			description: "Repository stars",
-			delay: 0.1,
-			loading: repoLoading,
-		},
-		{ 
-			icon: Book, 
-			label: "ResearchGate Reads", 
-			value: researchGateReads,
-			gradient: "from-purple-500 via-pink-500 to-rose-500",
-			description: "Total reads",
-			delay: 0.2,
-			loading: researchGateLoading,
-		},
-	], [researchCount, githubStats.totalStars, researchGateReads, repoLoading, researchGateLoading])
+		if (researchGateReads > 0) {
+			items.push({
+				icon: BookMarked,
+				label: 'Profile Reads',
+				value: researchGateReads,
+				description: 'Total publication reads',
+				accent: 'violet',
+			})
+		}
 
-	// Research stats
-	const researchStats = useMemo(() => [
-		{ 
-			icon: BookMarked, 
-			label: "Publication Reads", 
-			value: researchGatePublicationReads,
-			gradient: "from-violet-500 via-purple-500 to-fuchsia-500",
-			description: "Publication views",
-			delay: 0,
-			loading: researchGateLoading,
-		},
-		{ 
-			icon: FileText, 
-			label: "Full-Text Reads", 
-			value: researchGateFullTextReads,
-			gradient: "from-blue-500 via-indigo-500 to-purple-500",
-			description: "Full-text views",
-			delay: 0.1,
-			loading: researchGateLoading,
-		},
-	], [researchGatePublicationReads, researchGateFullTextReads, researchGateLoading])
+		return items
+	}, [
+		researchGateLoading,
+		researchGateReady,
+		researchCitations,
+		researchHIndex,
+		researchGateReads,
+	])
 
-	// Development stats
-	const developmentStats = useMemo(() => [
-		{ 
-			icon: Code, 
-			label: "Projects", 
-			value: projectsCount,
-			gradient: "from-blue-400 to-sky-500",
-			description: "Sub Domain live Production",
-			delay: 0,
-		},
-		{ 
-			icon: GitFork, 
-			label: "GitHub Forks", 
-			value: githubStats.totalForks,
-			gradient: "from-blue-400 via-sky-500 to-blue-600",
-			description: "Repository forks",
-			delay: 0.1,
-			loading: repoLoading,
-		},
-		{ 
-			icon: Github, 
-			label: "Open Source Repos", 
-			value: githubStats.publicRepos,
-			gradient: "from-slate-600 via-slate-700 to-slate-800",
-			description: "Public repositories",
-			delay: 0.2,
-			loading: repoLoading,
-		},
-		{ 
-			icon: Layers, 
-			label: "Technologies", 
-			value: technologiesCount,
-			gradient: "from-indigo-500 via-purple-500 to-pink-500",
-			description: "Tech stack tools",
-			delay: 0.3,
-		},
-	], [projectsCount, githubStats, technologiesCount, repoLoading])
+	const mediumStats: StatItem[] = useMemo(() => {
+		if (!mediumStatsReady) return []
+		const items: StatItem[] = []
+		if (mediumTotalReads > 0) {
+			items.push({
+				icon: Eye,
+				label: 'Medium Reads',
+				value: mediumTotalReads,
+				description: 'Lifetime article reads',
+				accent: 'sky',
+			})
+		}
+		if (mediumTotalPosts > 0) {
+			items.push({
+				icon: PenLine,
+				label: 'Medium Articles',
+				value: mediumTotalPosts,
+				description: 'Published stories',
+				accent: 'sky',
+			})
+		}
+		return items
+	}, [mediumStatsReady, mediumTotalReads, mediumTotalPosts])
 
-	// Community stats
-	const communityStats = useMemo(() => [
-		{ 
-			icon: Award, 
-			label: "Certifications", 
-			value: certificationsCount,
-			gradient: "from-yellow-400 via-amber-500 to-yellow-600",
-			description: "Professional credentials",
-			delay: 0,
-		},
-		{ 
-			icon: Eye, 
-			label: "Medium Reads", 
-			value: mediumTotalReads,
-			gradient: "from-emerald-500 via-teal-500 to-emerald-600",
-			description: "Article reads",
-			delay: 0.1,
-			loading: mediumLoading,
-		},
-	], [certificationsCount, mediumTotalReads, mediumLoading])
+	const showResearchPanel = researchGateLoading || researchStats.length > 0
 
-	// Chart data for research
-	const researchChartData = useMemo(() => {
-		if (researchGateReads === 0) return []
-		return [
-			{ name: 'Publication Reads', value: researchGatePublicationReads },
-			{ name: 'Full-Text Reads', value: researchGateFullTextReads },
-			{ name: 'Other Reads', value: researchGateReads - researchGatePublicationReads - researchGateFullTextReads },
-		].filter(item => item.value > 0)
-	}, [researchGateReads, researchGatePublicationReads, researchGateFullTextReads])
-
-	const researchChartColors = [
-		'rgba(139, 92, 246, 0.9)', // purple-500
-		'rgba(59, 130, 246, 0.9)',  // blue-500
-		'rgba(236, 72, 153, 0.9)',  // pink-500
-	]
-
-	// Chart data for development
-	const developmentChartData = useMemo(() => {
-		if (githubStats.totalStars === 0 && githubStats.totalForks === 0 && projectsCount === 0) return []
-		return [
-			{ name: 'Projects', value: projectsCount },
-			{ name: 'Stars', value: githubStats.totalStars },
-			{ name: 'Forks', value: githubStats.totalForks },
-			{ name: 'Repos', value: githubStats.publicRepos },
-		].filter(item => item.value > 0)
-	}, [projectsCount, githubStats])
-
-	const developmentChartColors = [
-		'rgba(59, 130, 246, 0.9)',  // blue-500
-		'rgba(234, 179, 8, 0.9)',   // yellow-500
-		'rgba(6, 182, 212, 0.9)',   // cyan-500
-		'rgba(100, 116, 139, 0.9)', // slate-500
-	]
-
-	return (
-		<section className="relative w-full" aria-label="Impact metrics">
-			{/* Header */}
-			<motion.div
-				initial={{ opacity: 0, y: 20 }}
-				whileInView={{ opacity: 1, y: 0 }}
-				viewport={{ once: true }}
-				transition={{ duration: 0.6 }}
-				className="mb-6 sm:mb-8"
-			>
-				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6 mb-4 sm:mb-6">
-					<div className="space-y-3 sm:space-y-4">
-						<div className="flex flex-wrap items-center gap-2 sm:gap-3">
-							<span className={PAGE_ICON_CHIP}>
-								<Zap className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden />
-							</span>
-							<h2 className={PAGE_H1}>{statsTitle}</h2>
-						</div>
-						<p className={cn(PAGE_LEAD, "max-w-3xl text-sm sm:text-base md:text-lg")}>
-							{statsDescription}
-						</p>
-					</div>
+	const headerBlock = (
+		<div className="mb-5 sm:mb-6">
+			<div className="mb-4 space-y-2 sm:mb-5 sm:space-y-3">
+				<div className="flex flex-wrap items-center gap-2 sm:gap-3">
+					<span className="inline-flex items-center justify-center rounded-xl border border-amber-300/50 bg-amber-100 p-2.5 text-amber-800 shadow-sm dark:border-border dark:bg-muted dark:text-foreground">
+						<Zap className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden />
+					</span>
+					<h2 className={PAGE_H1}>{statsTitle}</h2>
 				</div>
+				<p className={cn(PAGE_LEAD, 'max-w-3xl text-sm sm:text-base md:text-lg')}>
+					{statsDescription}
+				</p>
+			</div>
 
-				{/* Featured Stats - Large Cards */}
-				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-5 mb-6 sm:mb-8 lg:mb-10">
-					{featuredStats.map((stat, idx) => (
-						<FeaturedStatCard key={idx} stat={stat} index={idx} />
-					))}
-				</div>
-			</motion.div>
+			<div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3 lg:gap-4">
+				{featuredStats.map((stat, idx) => (
+					<FeaturedMetricCard key={stat.label} stat={stat} index={idx} />
+				))}
+			</div>
+		</div>
+	)
 
-			{/* Category Sections */}
-			<div className="space-y-6 sm:space-y-8 md:space-y-10">
-				{/* Research Section */}
-				{researchStats.length > 0 && (
-					<CategorySection
-						title="Research Reads"
-						icon={BookOpen}
-						stats={researchStats}
-						chartData={researchChartData}
-						colors={researchChartColors}
+	const researchBlock = (
+		<div className={cn(PAGE_CARD_LIGHT, 'overflow-hidden p-4 sm:p-5 md:p-6')}>
+				<div className="mb-4 sm:mb-5">
+					<PanelHeader
+						icon={GraduationCap}
+						title="Research & Publications"
+						badge={researchGateReady ? <LiveBadge /> : undefined}
+						link={{ href: siteConfig.links.researchgate, label: 'ResearchGate' }}
 					/>
+				</div>
+
+				{showResearchPanel && (
+					<div className="mb-5 grid grid-cols-1 gap-3 sm:gap-4">
+						<div
+							className={cn(
+								'relative overflow-hidden rounded-2xl border border-violet-200/70 bg-white p-4 shadow-sm sm:p-5 dark:border-violet-500/20 dark:bg-transparent',
+								ACCENT.violet.glow,
+							)}
+						>
+							<div className="relative flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+								<div className="space-y-2">
+									<div className="inline-flex items-center gap-2 rounded-full border border-violet-500/20 bg-violet-500/10 px-2.5 py-1 text-[11px] font-medium text-violet-700 dark:text-violet-300 sm:text-xs">
+										<TrendingUp className="h-3.5 w-3.5" aria-hidden />
+										Research Interest Score
+									</div>
+									<p className="text-3xl font-bold leading-none text-foreground sm:text-4xl md:text-5xl">
+										<MetricValue
+											value={researchInterestScore}
+											loading={researchGateLoading}
+											decimals={1}
+										/>
+									</p>
+									<p className="max-w-xs text-xs leading-relaxed text-muted-foreground sm:text-sm">
+										Combined reach across publications, reads, and citations on ResearchGate.
+									</p>
+								</div>
+							</div>
+						</div>
+
+						<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+							{researchStats.map((stat, idx) => (
+								<CompactMetric key={stat.label} stat={stat} index={idx} />
+							))}
+						</div>
+					</div>
 				)}
 
-				{/* Community Section */}
-				<CategorySection
-					title="Community & Credentials"
-					icon={Users}
-					stats={communityStats}
-				/>
-			</div>
+				{mediumStats.length > 0 && (
+					<div className="mb-5 border-t border-border/60 pt-4">
+						<div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+							<p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground sm:text-xs">
+								Writing reach
+							</p>
+							<PlatformLink href={siteConfig.links.medium} label="Medium" />
+						</div>
+						<div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+							{mediumStats.map((stat, idx) => (
+								<CompactMetric key={stat.label} stat={stat} index={idx} />
+							))}
+						</div>
+					</div>
+				)}
+
+				<div className={cn(showResearchPanel || mediumStats.length > 0 ? 'border-t border-border/60 pt-5' : '')}>
+					<PublicationsBand />
+				</div>
+		</div>
+	)
+
+	return (
+		<section className="relative w-full" aria-label="Knowledge and impact metrics">
+			{lightMotion ? headerBlock : (
+				<motion.div
+					initial={{ opacity: 0, y: 20 }}
+					whileInView={{ opacity: 1, y: 0 }}
+					viewport={{ once: true }}
+					transition={{ duration: 0.5 }}
+				>
+					{headerBlock}
+				</motion.div>
+			)}
+			{lightMotion ? researchBlock : (
+				<motion.div
+					initial={{ opacity: 0, y: 24 }}
+					whileInView={{ opacity: 1, y: 0 }}
+					viewport={{ once: true }}
+					transition={{ duration: 0.5 }}
+				>
+					{researchBlock}
+				</motion.div>
+			)}
 		</section>
 	)
 })

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Smoke-test key routes — run while dev server is up.
+ * Smoke-test key routes  run while dev server is up.
  * Usage: node scripts/smoke-routes.mjs [baseUrl]
  */
 const base = process.argv[2] || "http://localhost:3001"

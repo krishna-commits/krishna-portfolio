@@ -86,7 +86,7 @@ export default function PrivacyPage() {
 					<h2>Legal bases and use</h2>
 					<p>
 						We process information as necessary to operate the Site, respond to you, meet legal obligations, and pursue
-						legitimate interests such as security, analytics, and product improvement—always consistent with applicable
+						legitimate interests such as security, analytics, and product improvementalways consistent with applicable
 						law.
 					</p>
 

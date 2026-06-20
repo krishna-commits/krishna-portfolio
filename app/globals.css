@@ -91,7 +91,7 @@
    ============================================ */
 @layer base {
   :root {
-    /* Slate-50 / slate-950 system — avoid pure white/black */
+    /* Slate-50 / slate-950 system  avoid pure white/black */
     --background: 210 40% 98%;
     --foreground: 222.2 84% 4.9%;
 
@@ -240,7 +240,7 @@
 		color: rgb(248 250 252);
 	}
 
-	/* Keyboard focus — visible ring, offset matches page bg */
+	/* Keyboard focus  visible ring, offset matches page bg */
 	a:focus-visible,
 	button:focus-visible,
 	summary:focus-visible,
@@ -319,7 +319,7 @@
 		@apply outline-none ring-2 ring-amber-500/80 dark:ring-amber-400/80 ring-offset-2 ring-offset-background;
 	}
 
-	/* Touch targets — opt-in via .touch-target (not every link) */
+	/* Touch targets  opt-in via .touch-target (not every link) */
 	button,
 	input,
 	select,
@@ -342,7 +342,7 @@
 		@apply text-foreground;
 	}
 
-	/* Animated underline — prose / explicit links only */
+	/* Animated underline  prose / explicit links only */
 	a.link-underline {
 		position: relative;
 	}

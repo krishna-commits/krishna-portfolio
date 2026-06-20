@@ -9,7 +9,7 @@ interface PageTransitionProps {
 
 /**
  * Lightweight enter animation only.
- * Do not use AnimatePresence / exit animations on layout {children} —
+ * Do not use AnimatePresence / exit animations on layout {children} 
  * that unmounts Next.js App Router slots and throws parallelRouterKey errors.
  */
 export function PageTransition({ children }: PageTransitionProps) {

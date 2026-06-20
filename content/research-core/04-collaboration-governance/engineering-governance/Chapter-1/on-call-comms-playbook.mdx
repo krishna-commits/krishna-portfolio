@@ -47,7 +47,7 @@ Technical fixes fail when communication fails. This playbook standardizes **what
 ### Initial (internal, T+5 min)
 
 ```
-INCIDENT Sev{N} — {service}
+INCIDENT Sev{N}  {service}
 Impact: {who/what}
 IC: @{name}
 Status: Investigating
@@ -57,7 +57,7 @@ Next update: {time UTC}
 ### Update (every cadence)
 
 ```
-Update — {time UTC}
+Update  {time UTC}
 Status: Identified | Mitigating | Monitoring
 Actions: {bullets}
 ETA: {time or "unknown"}
@@ -66,7 +66,7 @@ ETA: {time or "unknown"}
 ### Resolution
 
 ```
-Resolved — {time UTC}
+Resolved  {time UTC}
 Duration: {X}
 Root cause: {one sentence}
 Follow-up: Jira {link}, postmortem {date}

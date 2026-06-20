@@ -4,17 +4,23 @@ export type ContactPageConfig = {
 	pageTitle: string
 	pageLead: string
 	location: string
+	email: string
 	emailDescription: string
 	phoneDescription: string
+	resumeLabel: string
+	resumeUrl: string
 }
 
 export const DEFAULT_CONTACT_PAGE: ContactPageConfig = {
 	pageTitle: 'Get In Touch',
 	pageLead:
-		"Have a project in mind or want to collaborate on security research? I'd love to hear from you.",
+		'Open to senior DevSecOps and platform security roles  remote from Kathmandu, Nepal.',
 	location: 'Kathmandu, Nepal',
-	emailDescription: 'Available upon request',
-	phoneDescription: 'Available upon request',
+	email: 'neupane.krishna33@gmail.com',
+	emailDescription: 'neupane.krishna33@gmail.com',
+	phoneDescription: 'Available upon request via contact form',
+	resumeLabel: 'Request resume',
+	resumeUrl: '/contact#send-a-message',
 }
 
 export function mergeContactPage(partial?: Partial<ContactPageConfig> | null): ContactPageConfig {

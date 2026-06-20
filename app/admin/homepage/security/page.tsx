@@ -56,7 +56,7 @@ export default function SecurityApproachPage() {
 				body: JSON.stringify(config),
 			})
 			if (!res.ok) throw new Error((await res.json()).error || 'Failed to save')
-			toast.success('Security section saved — live on homepage')
+			toast.success('Security section saved  live on homepage')
 		} catch (err: unknown) {
 			toast.error(err instanceof Error ? err.message : 'Failed to save')
 		} finally {

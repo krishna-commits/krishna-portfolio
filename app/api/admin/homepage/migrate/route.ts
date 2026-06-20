@@ -232,28 +232,15 @@ export async function POST(request: NextRequest) {
     // Migrate Hero Settings
     if (!section || section === 'hero') {
       try {
+        const { DEFAULT_HERO_DATA } = await import('lib/hero-config');
         await prisma.siteSetting.upsert({
           where: { key: 'hero' },
           update: {
-            value: JSON.stringify({
-              profileImage: siteConfig.profile_image,
-              name: siteConfig.name,
-              bio: siteConfig.bio,
-              title: siteConfig.home.title,
-              description: siteConfig.home.description,
-              talksAbout: siteConfig.talks_about,
-            }),
+            value: JSON.stringify(DEFAULT_HERO_DATA),
           },
           create: {
             key: 'hero',
-            value: JSON.stringify({
-              profileImage: siteConfig.profile_image,
-              name: siteConfig.name,
-              bio: siteConfig.bio,
-              title: siteConfig.home.title,
-              description: siteConfig.home.description,
-              talksAbout: siteConfig.talks_about,
-            }),
+            value: JSON.stringify(DEFAULT_HERO_DATA),
           },
         });
         results.hero = 1;

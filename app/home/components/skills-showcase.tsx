@@ -1,14 +1,12 @@
 'use client'
 
-import { useState, useMemo, useCallback, memo, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { useState, useMemo, useCallback, memo } from "react"
 import { siteConfig } from "config/site"
 import useSWR from "swr"
 import Image from "next/image"
-import { Code, Cloud, Database, Settings, Server, GitBranch, Zap, Shield, Container, Monitor, Search, X, Network, Layers, Grid, List, ChevronDown, ChevronUp } from "lucide-react"
+import { Code, Cloud, Database, Settings, Server, GitBranch, Zap, Shield, Container, Monitor, Search, X, Network, Layers } from "lucide-react"
 import { cn } from "app/theme/lib/utils"
-import { Badge } from "app/theme/components/ui/badge"
-import { PAGE_CARD, PAGE_H1, PAGE_ICON_CHIP, PAGE_LEAD } from "lib/page-layout"
+import { PAGE_CARD } from "lib/page-layout"
 
 type Category = {
 	name: string
@@ -149,9 +147,41 @@ const categories: Category[] = [
 	}
 ]
 
-type ViewMode = 'grid' | 'compact' | 'list'
+const CATEGORY_SHORT_LABELS: Record<string, string> = {
+	'Containerization and Orchestration': 'Containers',
+	'Infrastructure as Code (IaC)': 'IaC',
+	'Software Development Methodologies': 'Agile',
+	'Security Tools and Practices': 'Security',
+	'Logging and Monitoring': 'Observability',
+	'Database Management': 'Databases',
+	'Cloud Platforms': 'Cloud',
+	'Message Queue': 'Messaging',
+	'Version Control': 'Git',
+}
 
-/** Shared generic logos — show monogram so tiles stay distinct */
+const DOMAIN_SUMMARY = ['Cloud Platforms', 'CI/CD', 'Security Tools and Practices', 'Infrastructure as Code (IaC)'] as const
+
+const SKILL_NAME_SHORT: Record<string, string> = {
+	'Amazon Web Services': 'AWS',
+	'Google Cloud Platform': 'GCP',
+	'Azure Services': 'Azure',
+	'GitHub Actions': 'GH Actions',
+	'Bitbucket Pipelines': 'Bitbucket',
+	'Infrastructure as Code (IaC)': 'IaC',
+	'Elastic Search': 'Elasticsearch',
+	'Fluentd/Fluentbit': 'Fluentbit',
+}
+
+function categoryLabel(name: string, short = false): string {
+	if (short && CATEGORY_SHORT_LABELS[name]) return CATEGORY_SHORT_LABELS[name]
+	return name
+}
+
+function skillDisplayName(name: string): string {
+	return SKILL_NAME_SHORT[name] ?? name
+}
+
+/** Shared generic logos  show monogram so tiles stay distinct */
 const GENERIC_SKILL_IMAGES = new Set(["/aws-logo.png", "/agile.png"])
 
 function skillMonogram(name: string): string {
@@ -164,10 +194,6 @@ function skillMonogram(name: string): string {
 export const SkillsShowcase = memo(function SkillsShowcase() {
 	const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
 	const [searchQuery, setSearchQuery] = useState("")
-	const [hoveredSkill, setHoveredSkill] = useState<string | null>(null)
-	const [viewMode, setViewMode] = useState<ViewMode>('compact')
-	const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
-	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
 	const { data: techData } = useSWR<{ technology?: typeof siteConfig.technology_stack }>(
 		'/api/homepage/technology',
 		(url: string) => fetch(url).then((r) => r.json()),
@@ -180,14 +206,6 @@ export const SkillsShowcase = memo(function SkillsShowcase() {
 				: siteConfig.technology_stack,
 		[techData],
 	)
-
-	useEffect(() => {
-		const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-		setPrefersReducedMotion(mediaQuery.matches)
-		const handleChange = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches)
-		mediaQuery.addEventListener('change', handleChange)
-		return () => mediaQuery.removeEventListener('change', handleChange)
-	}, [])
 
 	const categorizeSkill = useCallback((skillName: string): string => {
 		const lowerName = skillName.toLowerCase().trim()
@@ -232,467 +250,189 @@ export const SkillsShowcase = memo(function SkillsShowcase() {
 		if (!searchQuery) return skillsToFilter
 
 		const query = searchQuery.toLowerCase()
-		return skillsToFilter.filter((skill: any) =>
+		return skillsToFilter.filter((skill) =>
 			skill.name.toLowerCase().includes(query)
 		)
 	}, [selectedCategory, categorizedSkills, searchQuery])
-
-	const displayedCategories = useMemo(
-		() => {
-			if (selectedCategory) {
-				return { [selectedCategory]: filteredSkills }
-			}
-			const grouped: Record<string, typeof allSkills> = {}
-			filteredSkills.forEach((skill: any) => {
-				const category = categorizeSkill(skill.name)
-				if (!grouped[category]) {
-					grouped[category] = []
-				}
-				grouped[category].push(skill)
-			})
-			return grouped
-		},
-		[selectedCategory, filteredSkills, categorizeSkill]
-	)
 
 	const handleCategoryChange = useCallback((category: string | null) => {
 		setSelectedCategory(category)
 		setSearchQuery("")
 	}, [])
 
-	const toggleCategory = useCallback((categoryName: string) => {
-		setExpandedCategories(prev => {
-			const next = new Set(prev)
-			if (next.has(categoryName)) {
-				next.delete(categoryName)
-			} else {
-				next.add(categoryName)
-			}
-			return next
-		})
-	}, [])
-
-	const activeCategory = useMemo(() => 
-		selectedCategory ? categories.find(c => c.name === selectedCategory) : undefined,
-		[selectedCategory]
-	)
-
-	// Sort categories by skill count
 	const sortedCategories = useMemo(() => {
 		return Object.entries(categorizedSkills)
 			.sort(([, a], [, b]) => b.length - a.length)
 			.map(([name]) => name)
 	}, [categorizedSkills])
 
+	const domainSummary = useMemo(
+		() =>
+			DOMAIN_SUMMARY.map((name) => ({
+				name,
+				label: categoryLabel(name, true),
+				count: categorizedSkills[name]?.length ?? 0,
+				category: categories.find((c) => c.name === name),
+			})).filter((d) => d.count > 0),
+		[categorizedSkills],
+	)
+
 	return (
 		<section id="technology-stack" className="relative w-full" aria-labelledby="technology-stack-heading">
-			<div className={cn(PAGE_CARD, "p-4 sm:p-6 md:p-8")}>
-			{/* Header */}
-			<motion.div
-				initial={{ opacity: 0, y: 20 }}
-				whileInView={{ opacity: 1, y: 0 }}
-				viewport={{ once: true }}
-				transition={{ duration: 0.5 }}
-				className="mb-5 sm:mb-6"
+			<div
+				className={cn(
+					PAGE_CARD,
+					'overflow-hidden border-amber-200/60 bg-gradient-to-br from-amber-50/30 via-white to-white p-4 shadow-sm dark:border-border dark:from-amber-950/10 dark:via-card sm:p-5',
+				)}
 			>
 				<div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-					<div className="space-y-2">
-						<div className="flex flex-wrap items-center gap-2 sm:gap-3">
-							<span className={PAGE_ICON_CHIP}>
-								<Layers className="h-5 w-5" aria-hidden />
-							</span>
-							<h2 id="technology-stack-heading" className={PAGE_H1}>
+					<div className="flex items-center gap-2.5">
+						<span className="inline-flex rounded-lg border border-amber-300/50 bg-amber-100 p-2 text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400">
+							<Layers className="h-4 w-4" aria-hidden />
+						</span>
+						<div>
+							<h2 id="technology-stack-heading" className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
 								Technology Stack
 							</h2>
+							<p className="text-xs text-muted-foreground sm:text-sm">
+								{allSkills.length} tools · cloud · CI/CD · security · observability
+							</p>
 						</div>
-						<p className={PAGE_LEAD}>
-							DevSecOps tools and security technologies I use to build, secure, and monitor cloud infrastructure
-						</p>
 					</div>
-					<div className="flex items-center gap-3">
-						{/* View Mode Toggle */}
-						<div className="flex items-center gap-1 p-1 rounded-xl bg-muted/60 dark:bg-muted/30 border border-border">
-							<button
-								type="button"
-								onClick={() => setViewMode('grid')}
-								className={cn(
-									"inline-flex items-center justify-center min-h-11 min-w-11 sm:min-h-10 sm:min-w-10 rounded-lg transition-colors duration-200",
-									viewMode === 'grid'
-										? "bg-card text-foreground shadow-sm border border-border"
-										: "text-muted-foreground hover:text-foreground"
-								)}
-								aria-label="Grid view"
-							>
-								<Grid className="h-4 w-4" />
-							</button>
-							<button
-								type="button"
-								onClick={() => setViewMode('compact')}
-								className={cn(
-									"inline-flex items-center justify-center min-h-11 min-w-11 sm:min-h-10 sm:min-w-10 rounded-lg transition-colors duration-200",
-									viewMode === 'compact'
-										? "bg-card text-foreground shadow-sm border border-border"
-										: "text-muted-foreground hover:text-foreground"
-								)}
-								aria-label="Compact view"
-							>
-								<Layers className="h-4 w-4" />
-							</button>
-							<button
-								type="button"
-								onClick={() => setViewMode('list')}
-								className={cn(
-									"inline-flex items-center justify-center min-h-11 min-w-11 sm:min-h-10 sm:min-w-10 rounded-lg transition-colors duration-200",
-									viewMode === 'list'
-										? "bg-card text-foreground shadow-sm border border-border"
-										: "text-muted-foreground hover:text-foreground"
-								)}
-								aria-label="List view"
-							>
-								<List className="h-4 w-4" />
-							</button>
-						</div>
-						{/* Total Count Badge */}
-						<motion.div
-							initial={{ opacity: 0, scale: 0.9 }}
-							whileInView={{ opacity: 1, scale: 1 }}
-							viewport={{ once: true }}
-							transition={{ delay: 0.2 }}
-							className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl border border-border bg-card shadow-sm"
-						>
-							<div className="p-1 rounded-md bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300">
-								<Zap className="h-3.5 w-3.5" />
-							</div>
-							<div className="flex flex-col">
-								<span className="text-sm font-bold text-slate-900 dark:text-slate-50 leading-none">{allSkills.length}</span>
-								<span className="text-xs text-slate-600 dark:text-slate-400 font-medium">Tech</span>
-							</div>
-						</motion.div>
-					</div>
+					<span className="inline-flex w-fit items-center gap-1.5 rounded-full border border-amber-200/80 bg-white px-2.5 py-1 text-xs font-bold tabular-nums text-amber-900 shadow-sm dark:border-amber-500/25 dark:bg-amber-500/10 dark:text-amber-300">
+						<Zap className="h-3 w-3" aria-hidden />
+						{allSkills.length}
+					</span>
 				</div>
 
-				{/* Search Bar */}
-				<motion.div
-					initial={{ opacity: 0, y: 10 }}
-					whileInView={{ opacity: 1, y: 0 }}
-					viewport={{ once: true }}
-					transition={{ delay: 0.1 }}
-					className="relative mb-4"
-				>
-					<div className="relative">
-						<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-4 sm:w-4 text-slate-400" />
+				<div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center">
+					<div className="relative min-w-0 flex-1">
+						<Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" aria-hidden />
 						<input
 							type="text"
-							placeholder="Search technologies..."
+							placeholder="Search tools…"
 							value={searchQuery}
 							onChange={(e) => setSearchQuery(e.target.value)}
-							className="w-full pl-10 pr-9 sm:pl-12 sm:pr-10 py-3 sm:py-3 text-sm sm:text-base rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/80 focus-visible:ring-offset-2 focus-visible:ring-offset-background min-h-11 shadow-sm"
+							className="h-9 w-full rounded-lg border border-amber-200/80 bg-white pl-8 pr-8 text-sm shadow-sm placeholder:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/70 dark:border-input dark:bg-background"
 						/>
 						{searchQuery && (
 							<button
-								onClick={() => setSearchQuery("")}
-								className="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors touch-target"
+								type="button"
+								onClick={() => setSearchQuery('')}
+								className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-0.5 text-muted-foreground hover:text-foreground"
+								aria-label="Clear search"
 							>
-								<X className="h-4 w-4 text-slate-400" />
+								<X className="h-3.5 w-3.5" />
 							</button>
 						)}
 					</div>
-				</motion.div>
+					<select
+						value={selectedCategory ?? ''}
+						onChange={(e) => handleCategoryChange(e.target.value || null)}
+						className="h-9 rounded-lg border border-amber-200/80 bg-white px-2.5 text-xs font-medium text-foreground shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/70 dark:border-input dark:bg-background sm:text-sm"
+						aria-label="Filter by domain"
+					>
+						<option value="">All domains</option>
+						{sortedCategories.map((name) => (
+							<option key={name} value={name}>
+								{categoryLabel(name, true)} ({categorizedSkills[name]?.length ?? 0})
+							</option>
+						))}
+					</select>
+				</div>
 
-				{/* Category Filters - Horizontal Scrollable */}
-				<motion.div
-					initial={{ opacity: 0, y: 15 }}
-					whileInView={{ opacity: 1, y: 0 }}
-					viewport={{ once: true }}
-					transition={{ delay: 0.15 }}
-					className="mb-4 sm:mb-6"
-				>
-					<div className="flex flex-wrap gap-2 sm:gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1 sm:mx-0 sm:px-0">
-						<motion.button
+				{domainSummary.length > 0 && !searchQuery && (
+					<div className="mb-4 flex flex-wrap gap-1.5">
+						<button
 							type="button"
-							whileHover={prefersReducedMotion ? undefined : { scale: 1.01 }}
-							whileTap={prefersReducedMotion ? undefined : { scale: 0.99 }}
 							onClick={() => handleCategoryChange(null)}
 							className={cn(
-								"px-3 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold transition-colors duration-200 border rounded-xl shadow-sm whitespace-nowrap min-h-11 inline-flex items-center",
+								'rounded-full border px-2.5 py-1 text-[11px] font-semibold transition-colors sm:text-xs',
 								selectedCategory === null
-									? "bg-amber-600 text-white border-amber-600 dark:bg-amber-600 dark:border-amber-500"
-									: "bg-card text-muted-foreground border-border hover:bg-muted/60"
+									? 'border-amber-500 bg-amber-600 text-white'
+									: 'border-amber-200/80 bg-white text-slate-600 hover:border-amber-300 dark:border-border dark:bg-card dark:text-muted-foreground',
 							)}
 						>
-							<span className="relative flex items-center gap-1.5">
-								<Zap className="h-3 w-3" />
-								<span>All</span>
-								<Badge variant="secondary" className={cn(
-									"text-xs font-bold px-1.5 py-0",
-									selectedCategory === null
-										? "bg-white/20 text-white"
-										: "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400"
-								)}>
-									{allSkills.length}
-								</Badge>
-							</span>
-						</motion.button>
-						{sortedCategories.map((categoryName, idx) => {
-							const category = categories.find(c => c.name === categoryName)
-							if (!category) return null
-							const Icon = category.icon
-							const skillCount = categorizedSkills[categoryName]?.length || 0
-							return (
-								<motion.button
-									type="button"
-									key={categoryName}
-									whileHover={prefersReducedMotion ? undefined : { scale: 1.01 }}
-									whileTap={prefersReducedMotion ? undefined : { scale: 0.99 }}
-									onClick={() => handleCategoryChange(categoryName)}
-									initial={prefersReducedMotion ? false : { opacity: 0, y: 6 }}
-									animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-									transition={{ delay: idx * 0.02 }}
-									className={cn(
-										"px-3 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold transition-colors duration-200 border rounded-xl shadow-sm flex items-center gap-1.5 sm:gap-2 whitespace-nowrap min-h-11",
-										selectedCategory === categoryName
-											? "bg-amber-600 text-white border-amber-600 dark:bg-amber-600"
-											: "bg-card text-muted-foreground border-border hover:bg-muted/60"
-									)}
-								>
-									<Icon className="h-3.5 w-3.5 flex-shrink-0" />
-									<span>{categoryName}</span>
-									<Badge variant="secondary" className={cn(
-										"text-xs font-bold px-1.5 py-0 relative z-10",
-										selectedCategory === categoryName
-											? "bg-white/20 text-white"
-											: "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400"
-									)}>
-										{skillCount}
-									</Badge>
-								</motion.button>
-							)
+							All
+						</button>
+						{domainSummary.map(({ name, label, category }) => (
+							<button
+								key={name}
+								type="button"
+								onClick={() => handleCategoryChange(selectedCategory === name ? null : name)}
+								className={cn(
+									'inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold transition-colors sm:text-xs',
+									selectedCategory === name
+										? 'border-amber-500 bg-amber-600 text-white'
+										: 'border-amber-200/80 bg-white text-slate-600 hover:border-amber-300 dark:border-border dark:bg-card dark:text-muted-foreground',
+								)}
+							>
+								{category && <category.icon className="h-3 w-3" aria-hidden />}
+								{label}
+							</button>
+						))}
+					</div>
+				)}
+
+				{filteredSkills.length > 0 ? (
+					<div className="flex flex-wrap gap-1">
+						{filteredSkills.map((skill, idx) => {
+							const category = categories.find((c) => c.name === categorizeSkill(skill.name))
+							return <SkillChip key={`${skill.name}-${idx}`} skill={skill} category={category} />
 						})}
 					</div>
-				</motion.div>
-			</motion.div>
-
-			{/* Skills Display - Dynamic based on view mode */}
-			<AnimatePresence mode="wait">
-				{Object.keys(displayedCategories).length > 0 ? (
-					<motion.div
-						key={`${selectedCategory || 'all'}-${viewMode}`}
-						initial={{ opacity: 0, y: 20 }}
-						animate={{ opacity: 1, y: 0 }}
-						exit={{ opacity: 0, y: -20 }}
-						transition={{ duration: 0.4 }}
-						className="space-y-6 sm:space-y-8"
-					>
-						{Object.entries(displayedCategories).map(([categoryName, skills]) => {
-							const category = categories.find(c => c.name === categoryName)
-							if (!skills || skills.length === 0) return null
-							
-							const isExpanded = expandedCategories.has(categoryName) || selectedCategory === categoryName
-							const displaySkills = viewMode === 'list' && !isExpanded ? skills.slice(0, 6) : skills
-							const hasMore = viewMode === 'list' && !isExpanded && skills.length > 6
-							
-							return (
-								<motion.div
-									key={categoryName}
-									initial={{ opacity: 0, y: 10 }}
-									animate={{ opacity: 1, y: 0 }}
-									transition={{ delay: 0.1 }}
-									className="space-y-4"
-								>
-									{!selectedCategory && category && (
-										<motion.div
-											initial={{ opacity: 0, x: -20 }}
-											animate={{ opacity: 1, x: 0 }}
-											transition={{ delay: 0.25 }}
-											className="flex items-center justify-between pb-3 border-b-2 border-slate-200 dark:border-slate-800"
-										>
-											<div className="flex items-center gap-3">
-												<span className="inline-flex rounded-xl border border-border bg-muted p-2.5 text-foreground">
-													<category.icon className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden />
-												</span>
-												<div>
-													<h3 className="mb-0.5 text-sm font-semibold text-foreground sm:text-base md:text-lg">
-														{categoryName}
-													</h3>
-													<p className="text-xs text-slate-600 dark:text-slate-400 font-medium">
-														{skills.length} {skills.length === 1 ? 'technology' : 'technologies'}
-													</p>
-												</div>
-											</div>
-											{viewMode === 'list' && !selectedCategory && (
-												<button
-													onClick={() => toggleCategory(categoryName)}
-													className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-												>
-													{isExpanded ? (
-														<ChevronUp className="h-4 w-4 text-slate-600 dark:text-slate-400" />
-													) : (
-														<ChevronDown className="h-4 w-4 text-slate-600 dark:text-slate-400" />
-													)}
-												</button>
-											)}
-										</motion.div>
-									)}
-									<div className={cn(
-										"grid gap-3 sm:gap-4",
-										viewMode === 'grid' && "grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8",
-										viewMode === 'compact' && "grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 2xl:grid-cols-12",
-										viewMode === 'list' && "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
-									)}>
-										<AnimatePresence>
-											{displaySkills.map((skill: any, idx: number) => (
-												<SkillCard 
-													key={`${categoryName}-${skill.name}-${idx}`} 
-													skill={skill} 
-													index={idx} 
-													category={category}
-													isHovered={hoveredSkill === skill.name}
-													onHoverStart={() => setHoveredSkill(skill.name)}
-													onHoverEnd={() => setHoveredSkill(null)}
-													viewMode={viewMode}
-													prefersReducedMotion={prefersReducedMotion}
-												/>
-											))}
-										</AnimatePresence>
-										{hasMore && (
-											<motion.button
-												initial={{ opacity: 0, scale: 0.8 }}
-												animate={{ opacity: 1, scale: 1 }}
-												whileHover={{ scale: 1.05 }}
-												whileTap={{ scale: 0.95 }}
-												onClick={() => toggleCategory(categoryName)}
-												className={cn(
-													"aspect-square rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-center",
-													viewMode === 'list' && "col-span-full"
-												)}
-											>
-												<span className="text-xs font-semibold text-slate-600 dark:text-slate-400">
-													+{skills.length - 6} more
-												</span>
-											</motion.button>
-										)}
-									</div>
-								</motion.div>
-							)
-						})}
-					</motion.div>
 				) : (
-					<motion.div
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						exit={{ opacity: 0 }}
-						className="text-center py-12"
-					>
-						<p className="text-sm text-slate-600 dark:text-slate-400">
-							No technologies found matching "{searchQuery}"
-						</p>
-					</motion.div>
+					<p className="py-6 text-center text-sm text-muted-foreground">
+						No tools match &ldquo;{searchQuery}&rdquo;
+					</p>
 				)}
-			</AnimatePresence>
 			</div>
 		</section>
 	)
 })
 
-// Skill cards: single surface style (border + soft shadow), minimal motion
-const SkillCard = memo(function SkillCard({
+const SkillChip = memo(function SkillChip({
 	skill,
-	index,
 	category,
-	isHovered,
-	onHoverStart,
-	onHoverEnd,
-	viewMode,
-	prefersReducedMotion,
 }: {
-	skill: any
-	index: number
+	skill: { name: string; imageUrl?: string }
 	category?: Category
-	isHovered: boolean
-	onHoverStart: () => void
-	onHoverEnd: () => void
-	viewMode: ViewMode
-	prefersReducedMotion: boolean
 }) {
 	const [imageError, setImageError] = useState(false)
-	const useMonogram = GENERIC_SKILL_IMAGES.has(skill.imageUrl) || imageError
-	const monogram = skillMonogram(skill.name)
+	const useMonogram = !skill.imageUrl || GENERIC_SKILL_IMAGES.has(skill.imageUrl) || imageError
+	const label = skillDisplayName(skill.name)
 
 	return (
-		<motion.div
-			initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
-			animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-			transition={{ delay: index * 0.015, duration: prefersReducedMotion ? 0 : 0.35 }}
-			whileHover={prefersReducedMotion ? undefined : { y: -2 }}
-			onMouseEnter={onHoverStart}
-			onMouseLeave={onHoverEnd}
-			className="group"
+		<div
+			title={skill.name}
+			className={cn(
+				'group inline-flex max-w-[9.5rem] items-center gap-1.5 rounded-md border border-slate-200/90 bg-white px-1.5 py-1 shadow-sm transition-all hover:border-amber-400 hover:shadow dark:border-border dark:bg-card',
+				category && 'hover:ring-1 hover:ring-amber-200/80',
+			)}
 		>
-			<div
-				title={skill.name}
-				aria-label={skill.name}
-				className={cn(
-					"relative flex flex-col items-center justify-center gap-1 overflow-hidden rounded-2xl border border-border bg-card p-2 shadow-sm transition-shadow duration-200 hover:shadow-md sm:gap-1.5 sm:p-3",
-					viewMode === "compact" && "min-h-[4.75rem] justify-start pt-2.5 sm:min-h-[5.25rem]",
-					(viewMode === "grid" || viewMode === "list") && "aspect-square gap-2",
-				)}
-			>
-				<div className="relative z-10">
-					{skill.imageUrl && !useMonogram ? (
-						<div
-							className={cn(
-								"relative flex items-center justify-center",
-								viewMode === "compact"
-									? "h-8 w-8 sm:h-10 sm:w-10"
-									: "h-10 w-10 sm:h-12 sm:h-12 md:h-14 md:w-14"
-							)}
-						>
-							<Image
-								src={skill.imageUrl}
-								alt={skill.name}
-								width={viewMode === "compact" ? 40 : 56}
-								height={viewMode === "compact" ? 40 : 56}
-								unoptimized
-								className="object-contain opacity-90 transition-opacity duration-200 group-hover:opacity-100"
-								onError={() => setImageError(true)}
-							/>
-						</div>
-					) : (
-						<div
-							className={cn(
-								"flex items-center justify-center rounded-xl border border-border bg-muted font-semibold text-amber-800 dark:text-amber-300",
-								viewMode === "compact"
-									? "h-8 w-8 text-[10px] sm:h-10 sm:w-10 sm:text-xs"
-									: "h-10 w-10 text-sm sm:h-12 sm:text-base md:h-14 md:w-14"
-							)}
-							aria-hidden={!!skill.imageUrl}
-						>
-							{monogram}
-						</div>
-					)}
-				</div>
-				<div className="relative z-10 w-full px-0.5">
-					<span
-						className={cn(
-							"line-clamp-2 block text-center font-medium leading-tight text-foreground",
-							viewMode === "compact" && "text-[10px] sm:text-[11px]",
-							viewMode === "grid" && "text-xs",
-							viewMode === "list" && "text-xs sm:text-sm",
-						)}
-					>
-						{skill.name}
-					</span>
-				</div>
-			</div>
-		</motion.div>
-	)
-}, (prevProps, nextProps) => {
-	return (
-		prevProps.skill.name === nextProps.skill.name &&
-		prevProps.index === nextProps.index &&
-		prevProps.category?.name === nextProps.category?.name &&
-		prevProps.isHovered === nextProps.isHovered &&
-		prevProps.viewMode === nextProps.viewMode &&
-		prevProps.prefersReducedMotion === nextProps.prefersReducedMotion
+			{skill.imageUrl && !useMonogram ? (
+				<span className="relative flex h-4 w-4 shrink-0 items-center justify-center sm:h-5 sm:w-5">
+					<Image
+						src={skill.imageUrl}
+						alt=""
+						width={20}
+						height={20}
+						unoptimized
+						className="max-h-full max-w-full object-contain"
+						onError={() => setImageError(true)}
+					/>
+				</span>
+			) : (
+				<span
+					className="flex h-4 w-4 shrink-0 items-center justify-center rounded bg-amber-50 text-[8px] font-bold text-amber-800 dark:bg-muted dark:text-amber-300 sm:h-5 sm:w-5 sm:text-[9px]"
+					aria-hidden
+				>
+					{skillMonogram(skill.name)}
+				</span>
+			)}
+			<span className="truncate text-[10px] font-medium leading-none text-slate-700 group-hover:text-amber-900 dark:text-foreground dark:group-hover:text-amber-300 sm:text-[11px]">
+				{label}
+			</span>
+		</div>
 	)
 })

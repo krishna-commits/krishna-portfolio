@@ -1,6 +1,6 @@
 ---
 title: GitOps and CI/CD Patterns
-description: Delivery patterns — trunk-based CI, GitOps reconciliation, progressive rollout, and security gates in the pipeline.
+description: Delivery patterns  trunk-based CI, GitOps reconciliation, progressive rollout, and security gates in the pipeline.
 parent: "Chapter 2: Tools and Cloud Depth"
 grand_parent: DevOps Learning Hub
 order: 4
@@ -66,7 +66,7 @@ infra-repo/
 
 Rules:
 
-- **Immutable tags** in production — no `:latest`
+- **Immutable tags** in production  no `:latest`
 - Separate repos or paths for app source vs deployment manifests
 - PR reviews on every prod change
 
@@ -99,7 +99,7 @@ Rules:
 1. Fork a sample app.
 2. Add GitHub Actions: test → build → push to registry with digest tag.
 3. Add Argo CD Application pointing at `kustomize` overlay.
-4. Change replica count in git; watch sync — never `kubectl scale` by hand.
+4. Change replica count in git; watch sync  never `kubectl scale` by hand.
 
 ---
 

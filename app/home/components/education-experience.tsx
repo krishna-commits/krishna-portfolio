@@ -31,7 +31,7 @@ export function EducationExperience() {
 				whileInView={{ opacity: 1, y: 0 }}
 				viewport={{ once: true }}
 				transition={{ duration: 0.5 }}
-				className="mb-6 sm:mb-8"
+				className="mb-5 sm:mb-6"
 			>
 				<div className="mb-3 inline-flex items-center gap-2 sm:mb-4 sm:gap-3">
 					<span className={PAGE_ICON_CHIP}>
@@ -47,7 +47,7 @@ export function EducationExperience() {
 			</motion.div>
 
 			{/* Three Column Layout */}
-			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
 				<EducationCard education={education} />
 				<WorkExperienceCard workExperience={workExperience} />
 				<VolunteeringCard volunteering={volunteering} />
@@ -88,19 +88,19 @@ function EducationCard({ education }: { education: any[] }) {
 										whileInView={{ opacity: 1, y: 0 }}
 										viewport={{ once: true }}
 										transition={{ delay: index * 0.1 }}
-										className="rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors overflow-hidden"
+										className="rounded-lg border border-border bg-muted/40 transition-colors hover:border-amber-500/20 hover:bg-amber-500/5 overflow-hidden"
 									>
 										<div className="p-3 sm:p-4">
 											<div className="space-y-2">
 												<div className="flex items-start justify-between gap-2">
 													<div className="flex-1 min-w-0 space-y-1">
-														<p className="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-50 leading-tight">
+														<p className="text-xs sm:text-sm font-bold text-foreground leading-tight">
 															{item.course}
 														</p>
-														<p className="text-xs text-slate-600 dark:text-slate-400">
+														<p className="text-xs text-muted-foreground">
 															{item.organization}
 														</p>
-														<p className="text-xs text-slate-500 dark:text-slate-500 flex items-center gap-1">
+														<p className="text-xs text-muted-foreground flex items-center gap-1">
 															<Calendar className="h-3 w-3" />
 															{item.time}
 														</p>
@@ -112,7 +112,7 @@ function EducationCard({ education }: { education: any[] }) {
 														<p className="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
 															Thesis:
 														</p>
-														<p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+														<p className="text-xs text-muted-foreground leading-relaxed">
 															{item.thesis}
 														</p>
 													</div>
@@ -122,7 +122,7 @@ function EducationCard({ education }: { education: any[] }) {
 													<div className="pt-2">
 														<button
 															onClick={() => setExpandedIndex(isExpanded ? null : index)}
-															className="flex items-center gap-1 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-50 transition-colors"
+															className="flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-slate-900 dark:hover:text-slate-50 transition-colors"
 														>
 															<BookOpen className="h-3 w-3" />
 															<span>Modules ({item.modules.length})</span>
@@ -143,7 +143,7 @@ function EducationCard({ education }: { education: any[] }) {
 																{item.modules.map((module: string, modIdx: number) => (
 																	<div
 																		key={modIdx}
-																		className="text-xs text-slate-600 dark:text-slate-400 pl-4 flex items-start gap-2"
+																		className="text-xs text-muted-foreground pl-4 flex items-start gap-2"
 																	>
 																		<span className="text-slate-400 dark:text-slate-500 mt-1">•</span>
 																		<span>{module}</span>
@@ -169,7 +169,7 @@ function EducationCard({ education }: { education: any[] }) {
 								whileTap={{ scale: 0.98 }}
 								className="cursor-pointer rounded-lg border border-dashed border-border bg-muted/30 p-6 text-center transition-colors hover:bg-muted/50"
 							>
-								<p className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 group-hover/link:text-blue-600 dark:group-hover/link:text-blue-400 transition-colors flex items-center justify-center gap-2">
+								<p className="text-xs sm:text-sm font-medium text-muted-foreground transition-colors group-hover/link:text-amber-700 dark:group-hover/link:text-amber-400 flex items-center justify-center gap-2">
 									<span>Available upon request</span>
 									<ArrowRight className="h-3 w-3 transition-transform group-hover/link:translate-x-1" />
 								</p>
@@ -210,7 +210,7 @@ function WorkExperienceCard({ workExperience }: { workExperience: any[] }) {
 									whileInView={{ opacity: 1, y: 0 }}
 									viewport={{ once: true }}
 									transition={{ delay: index * 0.1 }}
-									className="p-3 sm:p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors"
+									className="p-3 sm:p-4 rounded-lg border border-border bg-muted/40 hover:border-amber-500/20 hover:bg-amber-500/5 transition-colors"
 								>
 									{item.imageUrl && (
 										<Image
@@ -222,11 +222,11 @@ function WorkExperienceCard({ workExperience }: { workExperience: any[] }) {
 										/>
 									)}
 									<div className="flex-1 min-w-0 space-y-1.5">
-										<p className="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-50 leading-tight">
+										<p className="text-xs sm:text-sm font-bold text-foreground leading-tight">
 											{item.organization}
 										</p>
-										<p className="text-xs text-slate-600 dark:text-slate-400">{item.role}</p>
-										<p className="text-xs text-slate-500 dark:text-slate-500 flex items-center gap-1">
+										<p className="text-xs text-muted-foreground">{item.role}</p>
+										<p className="text-xs text-muted-foreground flex items-center gap-1">
 											<Calendar className="h-3 w-3" />
 											{item.time}
 										</p>
@@ -254,7 +254,7 @@ function WorkExperienceCard({ workExperience }: { workExperience: any[] }) {
 								whileTap={{ scale: 0.98 }}
 								className="cursor-pointer rounded-lg border border-dashed border-border bg-muted/30 p-6 text-center transition-colors hover:bg-muted/50"
 							>
-								<p className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 group-hover/link:text-yellow-600 dark:group-hover/link:text-yellow-400 transition-colors flex items-center justify-center gap-2">
+								<p className="text-xs sm:text-sm font-medium text-muted-foreground group-hover/link:text-amber-700 dark:group-hover/link:text-amber-400 transition-colors flex items-center justify-center gap-2">
 									<span>Available upon request</span>
 									<ArrowRight className="h-3 w-3 transition-transform group-hover/link:translate-x-1" />
 								</p>
@@ -295,23 +295,23 @@ function VolunteeringCard({ volunteering }: { volunteering: any[] }) {
 									whileInView={{ opacity: 1, y: 0 }}
 									viewport={{ once: true }}
 									transition={{ delay: index * 0.1 }}
-									className="p-3 sm:p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors"
+									className="p-3 sm:p-4 rounded-lg border border-border bg-muted/40 hover:border-amber-500/20 hover:bg-amber-500/5 transition-colors"
 								>
 									<div className="space-y-2">
 										<div className="flex items-start justify-between gap-2">
 											<div className="flex-1 min-w-0 space-y-1">
-												<p className="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-50 leading-tight">
+												<p className="text-xs sm:text-sm font-bold text-foreground leading-tight">
 													{item.organization}
 												</p>
-												<p className="text-xs text-slate-600 dark:text-slate-400">
+												<p className="text-xs text-muted-foreground">
 													{item.role}
 												</p>
-												<p className="text-xs text-slate-500 dark:text-slate-500 flex items-center gap-1">
+												<p className="text-xs text-muted-foreground flex items-center gap-1">
 													<Calendar className="h-3 w-3" />
 													{item.time}
 												</p>
 												{item.duration && (
-													<p className="text-xs text-slate-500 dark:text-slate-500">
+													<p className="text-xs text-muted-foreground">
 														{item.duration}
 													</p>
 												)}
@@ -339,7 +339,7 @@ function VolunteeringCard({ volunteering }: { volunteering: any[] }) {
 								whileTap={{ scale: 0.98 }}
 								className="cursor-pointer rounded-lg border border-dashed border-border bg-muted/30 p-6 text-center transition-colors hover:bg-muted/50"
 							>
-								<p className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 group-hover/link:text-rose-600 dark:group-hover/link:text-rose-400 transition-colors flex items-center justify-center gap-2">
+								<p className="text-xs sm:text-sm font-medium text-muted-foreground group-hover/link:text-amber-700 dark:group-hover/link:text-amber-400 transition-colors flex items-center justify-center gap-2">
 									<span>Available upon request</span>
 									<ArrowRight className="h-3 w-3 transition-transform group-hover/link:translate-x-1" />
 								</p>

@@ -5,9 +5,10 @@ import { motion } from 'framer-motion'
 import useSWR from 'swr'
 import { Activity, Calendar, TrendingUp, Clock } from 'lucide-react'
 import { cn } from 'app/theme/lib/utils'
-import { PAGE_CARD, PAGE_H1, PAGE_ICON_CHIP, PAGE_LEAD } from 'lib/page-layout'
+import { PAGE_CARD, PAGE_H1, PAGE_ICON_CHIP, PAGE_LEAD, PAGE_CARD_LIGHT } from 'lib/page-layout'
 import Link from 'next/link'
 import { useSocialLinks } from 'lib/hooks/use-homepage-data'
+import { useLightMotion } from 'lib/hooks/use-light-motion'
 import moment from 'moment'
 import { GitHubMetricsSkeleton } from 'app/components/skeleton-loaders'
 
@@ -114,6 +115,7 @@ function getContributionColor(level: number, isDark: boolean = false): string {
 
 export function GitHubContributionGraph() {
   const { links } = useSocialLinks()
+  const lightMotion = useLightMotion()
   const [hoveredDay, setHoveredDay] = useState<ContributionDay | null>(null)
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
   const [isDark, setIsDark] = useState(false)
@@ -197,15 +199,10 @@ export function GitHubContributionGraph() {
   }
 
   return (
-    <section className="relative w-full">
+    <section className="relative w-full min-h-[520px]">
+      <div className={cn(PAGE_CARD_LIGHT, 'overflow-hidden p-4 sm:p-6 md:p-8')}>
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-        className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6"
-      >
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 sm:gap-3 mb-3 sm:mb-4">
         <div className="space-y-2">
           <div className="flex flex-wrap items-start gap-3">
             <span className={PAGE_ICON_CHIP}>
@@ -244,23 +241,19 @@ export function GitHubContributionGraph() {
             </svg>
           </Link>
         </div>
-      </motion.div>
+      </div>
 
       {/* Stats Summary */}
-      <div className="mb-4 grid grid-cols-1 gap-3 sm:mb-6 sm:grid-cols-3 sm:gap-4">
+      <div className="mb-3 grid grid-cols-1 gap-2.5 sm:mb-4 sm:grid-cols-3 sm:gap-3">
         {[
           { label: 'Total Contributions', value: data.totalContributions.toLocaleString(), icon: TrendingUp },
           { label: 'Longest Streak', value: `${data.longestStreak} days`, icon: Calendar },
           { label: 'Current Streak', value: `${data.currentStreak} days`, icon: Activity },
-        ].map((stat, i) => {
+        ].map((stat) => {
           const Icon = stat.icon
           return (
-            <motion.div
+            <div
               key={stat.label}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.3, delay: i * 0.05 }}
               className={cn(PAGE_CARD, 'p-4 transition-shadow hover:shadow-md')}
             >
               <div className="flex items-center justify-between">
@@ -272,19 +265,13 @@ export function GitHubContributionGraph() {
                   <Icon className="h-5 w-5" aria-hidden />
                 </span>
               </div>
-            </motion.div>
+            </div>
           )
         })}
       </div>
 
       {/* Contribution Graph */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-        className={cn(PAGE_CARD, 'relative overflow-x-auto p-3 sm:p-4 md:p-6')}
-      >
+      <div className={cn(PAGE_CARD, 'relative overflow-x-auto p-3 sm:p-4 md:p-6')}>
         {/* Tooltip */}
         {hoveredDay && (
           <div
@@ -346,26 +333,35 @@ export function GitHubContributionGraph() {
                     const contributionDate = moment(day.date)
                     const isToday = contributionDate.isSame(moment(), 'day')
                     
+                    const cellClass = cn(
+                      'w-3 h-3 rounded-sm transition-all duration-200 cursor-pointer',
+                      getContributionColor(day.level, isDark),
+                      'hover:ring-2 hover:ring-slate-400 dark:hover:ring-slate-600',
+                      isToday && 'ring-2 ring-blue-500 dark:ring-blue-400',
+                    )
+                    const cellProps = {
+                      key: `${weekIdx}-${dayIdx}`,
+                      className: cellClass,
+                      onMouseEnter: (e: React.MouseEvent<HTMLDivElement>) => {
+                        setHoveredDay(day)
+                        const rect = e.currentTarget.getBoundingClientRect()
+                        setTooltipPosition({
+                          x: rect.left + rect.width / 2,
+                          y: rect.top,
+                        })
+                      },
+                      onMouseLeave: () => setHoveredDay(null),
+                      title: `${day.count} contributions on ${moment(day.date).format('MMM D, YYYY')}`,
+                    }
+
+                    if (lightMotion) {
+                      return <div {...cellProps} />
+                    }
+
                     return (
                       <motion.div
-                        key={`${weekIdx}-${dayIdx}`}
-                        className={cn(
-                          'w-3 h-3 rounded-sm transition-all duration-200 cursor-pointer',
-                          getContributionColor(day.level, isDark),
-                          'hover:ring-2 hover:ring-slate-400 dark:hover:ring-slate-600',
-                          isToday && 'ring-2 ring-blue-500 dark:ring-blue-400'
-                        )}
-                        onMouseEnter={(e) => {
-                          setHoveredDay(day)
-                          const rect = e.currentTarget.getBoundingClientRect()
-                          setTooltipPosition({
-                            x: rect.left + rect.width / 2,
-                            y: rect.top,
-                          })
-                        }}
-                        onMouseLeave={() => setHoveredDay(null)}
+                        {...cellProps}
                         whileHover={{ scale: 1.2 }}
-                        title={`${day.count} contributions on ${moment(day.date).format('MMM D, YYYY')}`}
                       />
                     )
                   })}
@@ -388,7 +384,8 @@ export function GitHubContributionGraph() {
           </div>
           <span>More</span>
         </div>
-      </motion.div>
+      </div>
+      </div>
     </section>
   )
 }

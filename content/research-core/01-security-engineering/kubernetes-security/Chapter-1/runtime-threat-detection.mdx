@@ -35,10 +35,10 @@ Falco uses kernel events (eBPF) to detect suspicious behavior:
 ## Response playbook
 
 1. **Alert** → SIEM with pod, namespace, image digest
-2. **Triage** — Known deploy vs anomaly
-3. **Contain** — NetworkPolicy deny-all on pod; scale to zero if critical
-4. **Forensics** — Capture logs, memory dump policy, rotate secrets
-5. **Post-incident** — Patch image, tighten admission policy
+2. **Triage**  Known deploy vs anomaly
+3. **Contain**  NetworkPolicy deny-all on pod; scale to zero if critical
+4. **Forensics**  Capture logs, memory dump policy, rotate secrets
+5. **Post-incident**  Patch image, tighten admission policy
 
 ## Integration
 

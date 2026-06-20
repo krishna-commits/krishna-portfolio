@@ -73,7 +73,7 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'cdn.simpleicons.org',
       },
-      /* Any path under /npm/ (e.g. simple-icons@11.x) — do not use /npm/simple-icons/** only */
+      /* Any path under /npm/ (e.g. simple-icons@11.x)  do not use /npm/simple-icons/** only */
       {
         protocol: 'https',
         hostname: 'cdn.jsdelivr.net',

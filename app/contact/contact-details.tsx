@@ -21,14 +21,14 @@ export default function ContactDetail() {
                     <Mail className='h-6 w-6' />
                   </div>
                   <h3 className="text-sm font-medium text-slate-900 dark:text-slate-50">Email</h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">Available upon request</p>
+                  <a href="mailto:neupane.krishna33@gmail.com" className="text-sm text-slate-600 dark:text-slate-400 hover:text-amber-700 dark:hover:text-amber-400">neupane.krishna33@gmail.com</a>
                 </div>
                 <div className="mx-auto flex max-w-xs flex-col gap-y-3">
                   <div className="mx-auto p-3 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
                     <Phone className='h-6 w-6' />
                   </div>
                   <h3 className="text-sm font-medium text-slate-900 dark:text-slate-50">Phone</h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">Available upon request</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">Via contact form</p>
                 </div>
                 <div className="mx-auto flex max-w-xs flex-col gap-y-3">
                   <div className="mx-auto p-3 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">

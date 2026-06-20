@@ -9,7 +9,7 @@ import { Search, X, ArrowRight, Clock, BookOpen } from "lucide-react"
 import { StaggerContainer, StaggerItem } from "../components/scroll-animations"
 import { CopyrightFooter } from "../components/copyright-footer"
 import { ReadingTime, ShareButtons, RelatedArticles } from "../components/blog-enhancements"
-import { PullToRefresh } from "../components/mobile-interactions"
+import { ContentCrossLink } from "../components/content-cross-link"
 import {
 	PAGE_H1,
 	PAGE_ICON_CHIP,
@@ -111,6 +111,8 @@ export default function BlogPage() {
 						Technical insights, research reflections, and engineering practices documented for continuous learning and knowledge sharing.
 					</p>
 				</div>
+
+				<ContentCrossLink variant="blog-to-research" className="mt-6" />
 
 				{/* Search */}
 				<div className="relative pt-2">

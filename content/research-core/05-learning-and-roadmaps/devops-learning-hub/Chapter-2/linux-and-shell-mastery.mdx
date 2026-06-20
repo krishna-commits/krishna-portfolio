@@ -14,13 +14,13 @@ keywords:
 
 # Linux and Shell Mastery Guide
 
-Every container eventually runs on a Linux kernel. Platform engineers debug nodes, sidecars, and CI runners — comfort on the shell is non-negotiable.
+Every container eventually runs on a Linux kernel. Platform engineers debug nodes, sidecars, and CI runners  comfort on the shell is non-negotiable.
 
 ---
 
 ## Command tiers
 
-### Tier 1 — daily
+### Tier 1  daily
 
 | Command | Use |
 |---------|-----|
@@ -36,7 +36,7 @@ Every container eventually runs on a Linux kernel. Platform engineers debug node
 | `curl`, `wget` | HTTP checks |
 | `ssh`, `scp` | Remote access |
 
-### Tier 2 — weekly in production
+### Tier 2  weekly in production
 
 | Command | Use |
 |---------|-----|
@@ -48,7 +48,7 @@ Every container eventually runs on a Linux kernel. Platform engineers debug node
 | `iptables` / `nft` basics | Firewall rules on nodes |
 | `mount`, `lsblk` | Volumes |
 
-### Tier 3 — incident mode
+### Tier 3  incident mode
 
 | Command | Use |
 |---------|-----|
@@ -85,15 +85,15 @@ done
 
 ### Disk full
 
-1. `df -h` — which mount?
-2. `du -sh /*` — largest top-level dirs
-3. `journalctl --disk-usage` — logs?
+1. `df -h`  which mount?
+2. `du -sh /*`  largest top-level dirs
+3. `journalctl --disk-usage`  logs?
 4. Rotate or truncate with approval; fix log shipping
 
 ### High CPU
 
-1. `top` — which PID?
-2. `ps -p PID -o args` — what process?
+1. `top`  which PID?
+2. `ps -p PID -o args`  what process?
 3. Thread dump or profiler per application type
 4. Scale horizontally if load is legitimate
 
@@ -124,4 +124,4 @@ Build a **bootstrap script** that:
 3. Configures fail2ban for SSH
 4. Ships logs to a central collector (even a filebeat sidecar counts)
 
-Commit to git with README — portfolio-grade proof.
+Commit to git with README  portfolio-grade proof.

@@ -8,7 +8,7 @@ import { Instagram, ExternalLink, Share2, Mail, MessageSquare, ArrowRight } from
 import { Button } from "app/theme/components/ui/button"
 import { Icons } from "app/theme/components/theme/icons"
 import { cn } from "app/theme/lib/utils"
-import { PAGE_CARD, PAGE_ICON_CHIP, PAGE_H1, PAGE_LEAD } from "lib/page-layout"
+import { PAGE_CARD, PAGE_ICON_CHIP, PAGE_H1, PAGE_LEAD, PAGE_CARD_LIGHT } from "lib/page-layout"
 import useSWR from "swr"
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
@@ -25,7 +25,7 @@ type SocialLinkDef = {
 const SOCIAL_DEFS: SocialLinkDef[] = [
 	{ name: 'GitHub', key: 'github', icon: Icons.gitHub, iconType: 'component', description: 'Open source contributions', ariaLabel: 'GitHub profile' },
 	{ name: 'LinkedIn', key: 'linkedIn', icon: Icons.linkedIn, iconType: 'component', description: 'Professional network', ariaLabel: 'LinkedIn profile' },
-	{ name: 'ResearchGate', key: 'researchgate', icon: Icons.researchgate, iconType: 'component', description: 'Research publications', ariaLabel: 'ResearchGate profile' },
+	{ name: 'ResearchGate', key: 'researchgate', icon: Icons.researchgate, iconType: 'component', description: 'Academic profile & theses', ariaLabel: 'ResearchGate profile' },
 	{ name: 'ORCID', key: 'orcid', icon: Icons.orcid, iconType: 'component', description: 'Research profile', ariaLabel: 'ORCID profile' },
 	{ name: 'Medium', key: 'medium', icon: ExternalLink, iconType: 'lucide', description: 'Technical articles', ariaLabel: 'Medium profile' },
 	{ name: 'Instagram', key: 'instagram', icon: Instagram, iconType: 'lucide', description: 'Personal updates', ariaLabel: 'Instagram profile' },
@@ -53,11 +53,11 @@ export function SocialLinks() {
 				whileInView={{ opacity: 1, y: 0 }}
 				viewport={{ once: true }}
 				transition={{ duration: 0.5 }}
-				className="mb-8 sm:mb-10"
+				className="mb-5 sm:mb-6"
 			>
 				<div className="mb-3 flex flex-wrap items-center gap-2 sm:gap-3">
 					<span className={PAGE_ICON_CHIP}>
-						<Share2 className="h-5 w-5" aria-hidden />
+						<Share2 className="h-5 w-5 text-amber-700 dark:text-amber-400" aria-hidden />
 					</span>
 					<div>
 						<h2 id="social-heading" className={PAGE_H1}>
@@ -70,7 +70,7 @@ export function SocialLinks() {
 				</div>
 			</motion.div>
 
-			<div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:gap-5 lg:grid-cols-6">
+			<div className="mb-5 grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 md:gap-4 lg:grid-cols-6">
 				{socialLinks.map((social, idx) => {
 					const Icon = social.icon
 					const isComponent = social.iconType === "component"
@@ -92,12 +92,12 @@ export function SocialLinks() {
 								transition={{ delay: idx * 0.06, duration: 0.35 }}
 								whileHover={{ y: -4 }}
 								className={cn(
-									PAGE_CARD,
-									"p-4 text-center transition-shadow hover:shadow-md sm:p-5 md:p-6",
+									PAGE_CARD_LIGHT,
+									"p-4 text-center transition-all hover:border-amber-400 hover:shadow-md sm:p-5 md:p-6",
 								)}
 							>
 								<div className="relative z-10 space-y-3">
-									<span className="mx-auto inline-flex rounded-lg border border-border bg-muted p-2.5 text-foreground sm:p-3">
+									<span className="mx-auto inline-flex rounded-lg border border-amber-500/20 bg-amber-500/10 p-2.5 text-amber-700 dark:text-amber-400 sm:p-3">
 										{isComponent ? (
 											<Icon className="h-5 w-5 fill-current sm:h-6 sm:w-6" aria-hidden />
 										) : (
@@ -105,7 +105,7 @@ export function SocialLinks() {
 										)}
 									</span>
 									<div className="space-y-1">
-										<h3 className="text-xs font-semibold text-foreground transition-colors group-hover/social:text-primary sm:text-sm">
+										<h3 className="text-xs font-semibold text-foreground transition-colors group-hover/social:text-amber-700 dark:group-hover/social:text-amber-400 sm:text-sm">
 											{social.name}
 										</h3>
 										<p className="line-clamp-2 text-[10px] leading-relaxed text-muted-foreground sm:text-xs">
@@ -124,7 +124,7 @@ export function SocialLinks() {
 				whileInView={{ opacity: 1, y: 0 }}
 				viewport={{ once: true }}
 				transition={{ duration: 0.5, delay: 0.3 }}
-				className={cn(PAGE_CARD, "p-5 sm:p-6 md:p-8 lg:p-10")}
+				className={cn(PAGE_CARD_LIGHT, "p-5 sm:p-6 md:p-8 lg:p-10")}
 			>
 				<div className="flex flex-col items-center justify-between gap-4 sm:flex-row sm:gap-6">
 					<div className="flex items-center gap-3 sm:gap-4">

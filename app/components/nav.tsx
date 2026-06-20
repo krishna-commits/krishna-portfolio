@@ -8,12 +8,13 @@ import { useState, useEffect } from 'react';
 import { useNavigationConfig } from 'lib/hooks/use-navigation-config';
 import { getNavIcon } from 'lib/nav-icon-map';
 
-function NavItem({ path, name, icon: Icon, ariaLabel, isAnchor }: { 
+function NavItem({ path, name, icon: Icon, ariaLabel, isAnchor, isContact }: { 
 	path: string; 
 	name: string; 
 	icon: React.ComponentType<{ className?: string }>; 
 	ariaLabel: string; 
 	isAnchor: boolean;
+	isContact?: boolean;
 }) {
 	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
 	const pathname = usePathname() || '/';
@@ -77,16 +78,19 @@ function NavItem({ path, name, icon: Icon, ariaLabel, isAnchor }: {
 		<Link
 			href={path}
 			aria-label={ariaLabel}
+			title={name}
 			aria-current={isActive ? 'page' : undefined}
-			className="no-underline relative group touch-target"
+			className="no-underline relative group flex-shrink-0"
 			onClick={handleClick}
 		>
 			<motion.div
 				className={cn(
-					"relative flex items-center gap-1 min-h-11 px-2.5 sm:px-3 rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background overflow-hidden",
+					"relative flex items-center justify-center gap-1.5 min-h-10 min-w-10 px-2 lg:px-2.5 xl:px-3 rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
 					isActive
 						? "bg-amber-600 text-white shadow-sm dark:bg-amber-600"
-						: "border border-border bg-muted/50 text-foreground hover:bg-muted"
+						: isContact
+							? "border border-amber-300/80 bg-amber-50 text-amber-900 hover:bg-amber-100 dark:border-amber-700 dark:bg-amber-950/50 dark:text-amber-100 dark:hover:bg-amber-950/70"
+							: "border border-border bg-muted/50 text-foreground hover:bg-muted"
 				)}
 				whileHover={prefersReducedMotion ? {} : { scale: 1.03, y: -1 }}
 				whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
@@ -112,7 +116,7 @@ function NavItem({ path, name, icon: Icon, ariaLabel, isAnchor }: {
 							: "text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-slate-50"
 					)} />
 					<span className={cn(
-						"text-xs sm:text-sm font-semibold transition-all duration-200 whitespace-nowrap",
+						"hidden xl:inline text-xs font-semibold transition-all duration-200 whitespace-nowrap lg:text-sm",
 						isActive 
 							? "text-white font-bold" 
 							: "text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-50"
@@ -120,15 +124,6 @@ function NavItem({ path, name, icon: Icon, ariaLabel, isAnchor }: {
 						{name}
 					</span>
 				</div>
-
-				{isActive && (
-					<motion.div
-						initial={prefersReducedMotion ? {} : { scale: 0 }}
-						animate={prefersReducedMotion ? {} : { scale: 1 }}
-						transition={prefersReducedMotion ? {} : { duration: 0.2 }}
-						className="absolute -right-1 -top-1 w-2 h-2 bg-white rounded-full shadow-lg border border-blue-600/50 z-20"
-					/>
-				)}
 			</motion.div>
 		</Link>
 	);
@@ -142,7 +137,7 @@ export function Navbar({
 
 	return (
 		<nav
-			className={cn("flex items-center gap-2 flex-shrink-0 overflow-x-auto scrollbar-hide", className)}
+			className={cn("flex items-center gap-1 lg:gap-1.5 xl:gap-2 min-w-0 overflow-x-auto scrollbar-hide", className)}
 			aria-label="Main navigation"
 			{...props}
 		>
@@ -157,6 +152,7 @@ export function Navbar({
 							icon={Icon}
 							ariaLabel={item.ariaLabel}
 							isAnchor={item.isAnchor}
+							isContact={item.path === '/contact'}
 						/>
 					);
 				})}

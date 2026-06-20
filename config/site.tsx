@@ -1,3 +1,5 @@
+import { getCareerYearsExperience } from 'lib/career-years'
+
 export const siteConfig = {
   name: "Krishna Neupane",
   title: "कृष्ण",
@@ -10,22 +12,20 @@ export const siteConfig = {
     linkedIn: "https://www.linkedin.com/in/krishna-neupane-50082091/",
     medium: "https://medium.com/@neupane.krishna33/"
   },
-  bio: "Senior DevSecOps Engineer | Cybersecurity Expert | Security Researcher",
-  talks_about: "#DevOps, #DevSecOps, #clientside, #CyberSecurity, #Learner, #Researcher, #edgenetwork",
+  bio: "Senior DevSecOps Engineer | Applied Security Researcher",
+  talks_about: "#DevOps, #DevSecOps, #clientside, #CyberSecurity, #Learner, #AppliedResearch, #edgenetwork",
   profile_image: "https://yqymybxe5e8jynd2.public.blob.vercel-storage.com/public/photo.JPG",
   home: {
     title: "Building Secure, Scalable Systems | DevSecOps & Cybersecurity Expert",
     description: `
-          Senior DevSecOps Engineer with 8+ years securing cloud infrastructure and automating security into CI/CD pipelines. 
-          I design security-first architectures, build automated threat detection systems, and implement defense-in-depth strategies 
-          for multi-cloud environments. My expertise spans infrastructure security, container hardening, vulnerability management, 
-          and incident response. I combine hands-on security engineering with research-driven approaches to solve complex 
-          cybersecurity challenges.
-      `,
+          Senior DevSecOps Engineer with ${getCareerYearsExperience()} years securing cloud infrastructure and automating security into CI/CD pipelines.
+          I design security-first architectures, build automated threat detection systems, and implement defense-in-depth strategies
+          for multi-cloud environments  from container hardening and vulnerability management to incident response.
+      `.trim(),
     chip: {
-      label: "Open to Work. ",
-      link: `Read More `,
-      url: `#`
+      label: "Open to Work",
+      link: "Get in touch",
+      url: "/contact"
     }
   },
   copyright: {

@@ -9,7 +9,7 @@ import { Textarea } from 'app/theme/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from 'app/theme/components/ui/dialog';
 import { Badge } from 'app/theme/components/ui/badge';
 import { 
-  MessageSquare, Plus, Edit, Trash2, Loader2, ArrowLeft, Save, User
+  MessageSquare, Plus, Edit, Trash2, Loader2, ArrowLeft, Save, User, Download
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
@@ -30,6 +30,7 @@ export default function RecommendationsManagementPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<RecommendationItem | null>(null);
   const [saving, setSaving] = useState(false);
+  const [importing, setImporting] = useState(false);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -124,6 +125,44 @@ export default function RecommendationsManagementPage() {
     }
   };
 
+  const handleImportFromConfig = async () => {
+    if (
+      !confirm(
+        'Import all LinkedIn recommendations from config/site.tsx? This replaces existing database entries.',
+      )
+    ) {
+      return;
+    }
+
+    try {
+      setImporting(true);
+      const response = await fetch('/api/admin/homepage/migrate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ section: 'recommendations' }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || data.details || 'Import failed');
+      }
+
+      const count = data.results?.recommendations ?? 0;
+      if (data.results?.recommendations_error) {
+        throw new Error(String(data.results.recommendations_error));
+      }
+
+      toast.success(`Imported ${count} recommendation${count === 1 ? '' : 's'} from config`);
+      fetchItems();
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to import from config');
+      console.error('Error importing recommendations:', error);
+    } finally {
+      setImporting(false);
+    }
+  };
+
   const handleDelete = async (id: number) => {
     if (!confirm('Are you sure you want to delete this recommendation?')) {
       return;
@@ -181,10 +220,29 @@ export default function RecommendationsManagementPage() {
                 </p>
               </div>
             </div>
-            <Button onClick={handleCreate} className="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Recommendation
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="outline"
+                onClick={handleImportFromConfig}
+                disabled={importing}
+              >
+                {importing ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Importing...
+                  </>
+                ) : (
+                  <>
+                    <Download className="h-4 w-4 mr-2" />
+                    Import from Config
+                  </>
+                )}
+              </Button>
+              <Button onClick={handleCreate} className="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Recommendation
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -194,12 +252,31 @@ export default function RecommendationsManagementPage() {
             <CardContent className="py-12 text-center">
               <MessageSquare className="h-12 w-12 text-slate-400 mx-auto mb-4" />
               <p className="text-slate-600 dark:text-slate-400 mb-4">
-                No recommendations yet. Add your first recommendation!
+                No recommendations in the database yet. Import from config or add manually.
               </p>
-              <Button onClick={handleCreate} className="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Recommendation
-              </Button>
+              <div className="flex flex-wrap justify-center gap-2">
+                <Button
+                  variant="outline"
+                  onClick={handleImportFromConfig}
+                  disabled={importing}
+                >
+                  {importing ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Importing...
+                    </>
+                  ) : (
+                    <>
+                      <Download className="h-4 w-4 mr-2" />
+                      Import from Config
+                    </>
+                  )}
+                </Button>
+                <Button onClick={handleCreate} className="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Recommendation
+                </Button>
+              </div>
             </CardContent>
           </Card>
         ) : (

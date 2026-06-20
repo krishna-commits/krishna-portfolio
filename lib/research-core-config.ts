@@ -72,7 +72,7 @@ export const DEFAULT_SENIOR_GAP_ITEMS: ChecklistItemConfig[] = [
 export const DEFAULT_RESEARCH_CORE_CONFIG: ResearchCoreConfig = {
 	pageTitle: 'Research Core',
 	pageLead:
-		'Five research pillars — Security Engineering, Platform & Cloud, Operations & Reliability, Collaboration, and Learning & Roadmaps — with structured tracks, chapters, and applied technical documentation.',
+		'Applied security and platform research notes  structured tracks, chapters, and hands-on technical documentation. These are engineering research notes, not peer-reviewed journal publications.',
 	startHere: {
 		badge: 'Start here',
 		heading: 'New to this library? Begin with the Learning Hub',
@@ -99,7 +99,7 @@ export const DEFAULT_RESEARCH_CORE_CONFIG: ResearchCoreConfig = {
 		],
 	},
 	heroCta: {
-		enabled: true,
+		enabled: false,
 		label: 'Start at DevOps Learning Hub',
 		href: '/research-core/05-learning-and-roadmaps/devops-learning-hub/introduction',
 	},

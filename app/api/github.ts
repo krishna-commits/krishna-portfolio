@@ -33,6 +33,26 @@ export function useGetGithubRepos() {
       return memoizedValue;
 }
 
+export function useGetGithubStats() {
+  const URL = '/api/github/stats';
+  const { data, isLoading, error, isValidating } = useSWR(URL, fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: true,
+    refreshInterval: 300000,
+  });
+
+  return useMemo(
+    () => ({
+      stats: data ?? null,
+      statsLoading: isLoading,
+      statsError: error,
+      statsValidating: isValidating,
+      statsReady: !isLoading && data != null && !data.error,
+    }),
+    [data, error, isLoading, isValidating],
+  );
+}
+
 export function useGetGithubRepoLanguages({ uid }: { uid: string }) {
   const URL = `https://api.github.com/repos/${uid}/languages`;
   const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);

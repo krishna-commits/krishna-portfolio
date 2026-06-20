@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from 'lib/prisma';
 import { isAuthenticated } from 'lib/auth';
+import { DEFAULT_STATS_SETTINGS, mergeStatsSettings } from 'lib/stats-config';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,12 +21,12 @@ export async function GET(request: NextRequest) {
       where: { key: 'stats' },
     });
 
-    let statsData = {};
+    let statsData = DEFAULT_STATS_SETTINGS;
     if (setting) {
       try {
-        statsData = JSON.parse(setting.value);
+        statsData = mergeStatsSettings(JSON.parse(setting.value));
       } catch {
-        statsData = {};
+        statsData = DEFAULT_STATS_SETTINGS;
       }
     }
 

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { motion, useInView, useScroll, useTransform, useSpring } from 'framer-motion'
 import { cn } from 'app/theme/lib/utils'
+import { useLightMotion } from 'lib/hooks/use-light-motion'
 
 interface ScrollAnimationProps {
 	children: ReactNode
@@ -21,6 +22,7 @@ export function ScrollAnimation({
 }: ScrollAnimationProps) {
 	const ref = useRef(null)
 	const isInView = useInView(ref, { once: true, margin: '-100px' })
+	const lightMotion = useLightMotion()
 	const [reduceMotion, setReduceMotion] = useState(false)
 
 	useEffect(() => {
@@ -31,7 +33,7 @@ export function ScrollAnimation({
 		return () => mq.removeEventListener('change', fn)
 	}, [])
 
-	if (reduceMotion) {
+	if (reduceMotion || lightMotion) {
 		return <div ref={ref} className={className}>{children}</div>
 	}
 

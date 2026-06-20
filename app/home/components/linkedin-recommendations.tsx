@@ -1,139 +1,258 @@
 'use client'
 
-import { motion } from "framer-motion"
-import { Quote, Linkedin, ExternalLink, Users } from "lucide-react"
-import Link from "next/link"
-import { siteConfig } from "config/site"
+import { useMemo, useState } from 'react'
+import { motion } from 'framer-motion'
+import { Quote, Linkedin, ExternalLink, ChevronDown } from 'lucide-react'
+import Link from 'next/link'
 import useSWR from 'swr'
 import { useSocialLinks } from 'lib/hooks/use-homepage-data'
-import { PAGE_CARD, PAGE_H1, PAGE_ICON_CHIP, PAGE_LEAD } from "lib/page-layout"
-import { cn } from "app/theme/lib/utils"
+import { PAGE_CARD, PAGE_H1, PAGE_ICON_CHIP, PAGE_LEAD } from 'lib/page-layout'
+import { cn } from 'app/theme/lib/utils'
+import type { LinkedInRecommendationItem } from 'lib/linkedin-recommendations'
 
-interface Recommendation {
-	name: string
-	title: string
-	company?: string
-	text: string
-	date?: string
-	linkedinUrl?: string
+const fetcher = (url: string) => fetch(url).then((res) => res.json())
+
+const CLAMP_LINES = 5
+
+function initials(name: string): string {
+	return name
+		.split(/\s+/)
+		.filter(Boolean)
+		.slice(0, 2)
+		.map((part) => part[0]?.toUpperCase() ?? '')
+		.join('')
 }
 
-const fetcher = (url: string) => fetch(url).then(res => res.json())
-
-export function LinkedInRecommendations() {
-	const { data: recData } = useSWR('/api/homepage/recommendations', fetcher)
-	const { links } = useSocialLinks()
-	const recommendations = (recData?.recommendations || siteConfig.linkedin_recommendations || []) as Recommendation[]
-	
-	// Normalize recommendations data - use siteConfig LinkedIn URL as fallback
-	const normalizedRecommendations: Recommendation[] = recommendations.map((rec: Recommendation) => ({
-		...rec,
-		linkedinUrl: rec.linkedinUrl || links.linkedIn,
-	}))
-	
-	if (normalizedRecommendations.length === 0) return null
+function Avatar({ name }: { name: string }) {
+	const label = initials(name) || '?'
 
 	return (
-		<section className="relative w-full">
-			{/* Header */}
+		<div
+			className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-amber-500/25 bg-gradient-to-br from-amber-100 to-amber-50 text-sm font-bold text-amber-800 dark:from-amber-900/50 dark:to-amber-950/30 dark:text-amber-200"
+			aria-hidden
+		>
+			{label}
+		</div>
+	)
+}
+
+function RecommendationCard({
+	rec,
+	index,
+	featured = false,
+	profileUrl,
+}: {
+	rec: LinkedInRecommendationItem
+	index: number
+	featured?: boolean
+	profileUrl: string
+}) {
+	const [expanded, setExpanded] = useState(false)
+	const isLong = rec.text.length > 280
+
+	return (
+		<motion.article
+			initial={{ opacity: 0, y: 20 }}
+			whileInView={{ opacity: 1, y: 0 }}
+			viewport={{ once: true, margin: '-40px' }}
+			transition={{ delay: index * 0.06, duration: 0.45 }}
+			className="group relative"
+		>
+			<div
+				className={cn(
+					PAGE_CARD,
+					'relative flex h-full flex-col overflow-hidden transition-all duration-300 hover:shadow-md hover:ring-1 hover:ring-amber-500/15',
+					featured ? 'p-6 sm:p-7 md:p-8' : 'p-5 sm:p-6',
+				)}
+			>
+				<div
+					className="pointer-events-none absolute inset-0 bg-gradient-to-br from-amber-500/[0.04] via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+					aria-hidden
+				/>
+
+				<div className="relative flex h-full flex-col gap-4">
+					<div className="flex items-start justify-between gap-3">
+						<span className="inline-flex rounded-lg border border-amber-500/20 bg-amber-500/10 p-2.5 text-amber-700 dark:text-amber-400">
+							<Quote className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden />
+						</span>
+						{featured && (
+							<span className="rounded-full border border-amber-500/25 bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-300 sm:text-xs">
+								Latest
+							</span>
+						)}
+					</div>
+
+					<blockquote
+						className={cn(
+							'flex-1 text-sm leading-relaxed text-muted-foreground sm:text-base',
+							!expanded && isLong && `line-clamp-${CLAMP_LINES}`,
+						)}
+						style={
+							!expanded && isLong
+								? {
+										display: '-webkit-box',
+										WebkitLineClamp: CLAMP_LINES,
+										WebkitBoxOrient: 'vertical',
+										overflow: 'hidden',
+									}
+								: undefined
+						}
+					>
+						&ldquo;{rec.text}&rdquo;
+					</blockquote>
+
+					{isLong && (
+						<button
+							type="button"
+							onClick={() => setExpanded((v) => !v)}
+							className="inline-flex w-fit items-center gap-1 text-xs font-semibold text-amber-700 transition-colors hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-300 sm:text-sm"
+						>
+							{expanded ? 'Show less' : 'Read full recommendation'}
+							<ChevronDown
+								className={cn('h-4 w-4 transition-transform', expanded && 'rotate-180')}
+								aria-hidden
+							/>
+						</button>
+					)}
+
+					<footer className="mt-auto border-t border-border/80 pt-4">
+						<div className="flex items-center gap-3">
+							<Avatar name={rec.name} />
+							<div className="min-w-0 flex-1">
+								<p className="truncate text-sm font-semibold text-foreground sm:text-base">
+									{rec.name}
+								</p>
+								<p className="line-clamp-2 text-xs text-muted-foreground sm:text-sm">
+									{rec.title}
+									{rec.company ? ` · ${rec.company}` : ''}
+								</p>
+								{rec.date && (
+									<p className="mt-0.5 text-[11px] text-muted-foreground sm:text-xs">{rec.date}</p>
+								)}
+							</div>
+							<Link
+								href={rec.linkedinUrl || profileUrl}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="shrink-0 rounded-lg border border-border bg-muted/60 p-2.5 text-foreground transition-colors hover:border-amber-500/30 hover:bg-amber-500/10 hover:text-amber-700 dark:hover:text-amber-400"
+								aria-label={`View ${rec.name} on LinkedIn`}
+							>
+								<Linkedin className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden />
+							</Link>
+						</div>
+					</footer>
+				</div>
+			</div>
+		</motion.article>
+	)
+}
+
+function RecommendationsSkeleton() {
+	return (
+		<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+			{Array.from({ length: 3 }).map((_, i) => (
+				<div key={i} className={cn(PAGE_CARD, 'h-64 animate-pulse bg-muted/40')} aria-hidden />
+			))}
+		</div>
+	)
+}
+
+const SLIM_MAX = 3
+
+export function LinkedInRecommendations({ variant = 'full' }: { variant?: 'full' | 'slim' }) {
+	const { data, isLoading } = useSWR('/api/homepage/recommendations', fetcher, {
+		revalidateOnFocus: false,
+	})
+	const { links } = useSocialLinks()
+
+	const recommendations = (data?.recommendations ?? []) as LinkedInRecommendationItem[]
+	const count = data?.count ?? recommendations.length
+	const profileUrl = data?.profileUrl || links.linkedIn
+	const isSlim = variant === 'slim'
+
+	const [featured, rest] = useMemo((): [LinkedInRecommendationItem | null, LinkedInRecommendationItem[]] => {
+		if (recommendations.length === 0) return [null, []]
+		if (isSlim) return [null, recommendations.slice(0, SLIM_MAX)]
+		return [recommendations[0], recommendations.slice(1)]
+	}, [recommendations, isSlim])
+
+	if (isLoading) {
+		return (
+			<section id="recommendations" className="relative w-full scroll-mt-24" aria-labelledby="recommendations-heading">
+				<div className={cn('animate-pulse rounded-2xl bg-muted/40', isSlim ? 'mb-5 h-14' : 'mb-8 h-24')} aria-hidden />
+				<RecommendationsSkeleton />
+			</section>
+		)
+	}
+
+	if (recommendations.length === 0) return null
+
+	return (
+		<section id="recommendations" className="relative w-full scroll-mt-24" aria-labelledby="recommendations-heading">
 			<motion.div
 				initial={{ opacity: 0, y: 20 }}
 				whileInView={{ opacity: 1, y: 0 }}
 				viewport={{ once: true }}
 				transition={{ duration: 0.5 }}
-				className="mb-8 sm:mb-10"
+				className={isSlim ? 'mb-5 sm:mb-6' : 'mb-8 sm:mb-10'}
 			>
-				<div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-					<div className="space-y-3">
-						<div className="flex flex-wrap items-center gap-3">
+				<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+					<div className={cn('space-y-2', isSlim && 'space-y-1')}>
+						<div className="flex flex-wrap items-center gap-2 sm:gap-3">
 							<span className={PAGE_ICON_CHIP}>
-								<Users className="h-5 w-5" aria-hidden />
+								<Linkedin className="h-5 w-5 text-amber-700 dark:text-amber-400" aria-hidden />
 							</span>
-							<h2 className={PAGE_H1}>Recommendations</h2>
+							<h2 id="recommendations-heading" className={cn(PAGE_H1, isSlim && 'text-xl sm:text-2xl')}>
+								LinkedIn Recommendations
+							</h2>
+							<span className="rounded-full border border-amber-500/25 bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold tabular-nums text-amber-800 dark:text-amber-300">
+								{count}
+							</span>
 						</div>
-						<p className={cn(PAGE_LEAD, "text-base sm:text-lg")}>
-							What colleagues and collaborators say
-						</p>
+						{!isSlim && (
+							<p className={cn(PAGE_LEAD, 'max-w-2xl text-sm sm:text-base')}>
+								What colleagues and collaborators say about working together.
+							</p>
+						)}
+						{isSlim && (
+							<p className="text-sm text-muted-foreground">
+								Colleague endorsements from LinkedIn  imported via admin.
+							</p>
+						)}
 					</div>
 					<Link
-						href={links.linkedIn}
+						href={profileUrl}
 						target="_blank"
 						rel="noopener noreferrer"
-						className="no-underline hidden items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-muted lg:flex"
+						className="inline-flex w-fit items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-sm font-semibold text-foreground shadow-sm transition-colors hover:border-amber-500/30 hover:bg-amber-500/5 sm:px-4 sm:py-2.5"
 					>
 						View on LinkedIn
-						<ExternalLink className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+						<ExternalLink className="h-4 w-4" aria-hidden />
 					</Link>
 				</div>
 			</motion.div>
 
-			{/* Recommendations Grid */}
-			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-				{normalizedRecommendations.map((rec: Recommendation, idx: number) => (
-					<RecommendationCard key={idx} rec={rec} index={idx} />
-				))}
-			</div>
+			{featured && (
+				<RecommendationCard rec={featured} index={0} featured profileUrl={profileUrl} />
+			)}
 
-			{/* Mobile CTA */}
-			<div className="lg:hidden mt-8">
-				<Link
-					href={links.linkedIn}
-					target="_blank"
-					rel="noopener noreferrer"
-					className="flex items-center justify-center gap-2 w-full py-3 text-base font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-50 border-t-2 border-slate-200 dark:border-slate-800 pt-6 transition-colors"
+			{rest.length > 0 && (
+				<div
+					className={cn(
+						'grid grid-cols-1 gap-4 sm:gap-5',
+						isSlim ? 'sm:grid-cols-2 lg:grid-cols-3' : 'sm:grid-cols-2 lg:grid-cols-3',
+					)}
 				>
-					View on LinkedIn
-					<ExternalLink className="h-5 w-5" />
-				</Link>
-			</div>
-		</section>
-	)
-}
-
-function RecommendationCard({ rec, index }: { rec: Recommendation; index: number }) {
-	return (
-		<motion.div
-			initial={{ opacity: 0, y: 20 }}
-			whileInView={{ opacity: 1, y: 0 }}
-			viewport={{ once: true, margin: "-50px" }}
-			transition={{ delay: index * 0.1, duration: 0.5 }}
-			whileHover={{ y: -4 }}
-			className="group relative"
-		>
-			<div className={cn(PAGE_CARD, "relative flex h-full flex-col overflow-hidden p-6 transition-shadow hover:shadow-md")}>
-				<div className="relative flex h-full flex-col space-y-4">
-					<span className="inline-flex w-fit rounded-lg border border-border bg-muted p-2.5 text-foreground">
-						<Quote className="h-5 w-5" aria-hidden />
-					</span>
-
-					<p className="line-clamp-6 flex-1 text-sm leading-relaxed text-muted-foreground sm:text-base">
-						&ldquo;{rec.text}&rdquo;
-					</p>
-
-					<div className="mt-auto border-t border-border pt-4">
-						<div className="flex items-center justify-between gap-3">
-							<div className="min-w-0 flex-1 space-y-1">
-								<p className="text-sm font-semibold text-foreground sm:text-base">{rec.name}</p>
-								<p className="line-clamp-2 text-xs text-muted-foreground sm:text-sm">
-									{rec.title} {rec.company && `at ${rec.company}`}
-								</p>
-								{rec.date && <p className="text-xs text-muted-foreground">{rec.date}</p>}
-							</div>
-							{rec.linkedinUrl && (
-								<Link
-									href={rec.linkedinUrl}
-									target="_blank"
-									rel="noopener noreferrer"
-									className="no-underline shrink-0 rounded-lg border border-border bg-muted p-2.5 text-foreground transition-colors hover:bg-muted/80"
-									aria-label={`View ${rec.name}'s LinkedIn profile`}
-								>
-									<Linkedin className="h-5 w-5" aria-hidden />
-								</Link>
-							)}
-						</div>
-					</div>
+					{rest.map((rec, idx) => (
+						<RecommendationCard
+							key={`${rec.name}-${rec.date ?? idx}`}
+							rec={rec}
+							index={idx + (featured ? 1 : 0)}
+							profileUrl={profileUrl}
+						/>
+					))}
 				</div>
-			</div>
-		</motion.div>
+			)}
+		</section>
 	)
 }

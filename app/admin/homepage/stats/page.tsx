@@ -7,10 +7,11 @@ import { Input } from 'app/theme/components/ui/input';
 import { Label } from 'app/theme/components/ui/label';
 import { Badge } from 'app/theme/components/ui/badge';
 import { 
-  BarChart3, Loader2, ArrowLeft, Save, Plus, Edit, Trash2, TrendingUp
+  BarChart3, Loader2, ArrowLeft, Save, Plus, Edit, Trash2, TrendingUp, RefreshCw, Info
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
+import { DEFAULT_STATS_SETTINGS, LIVE_STATS_SOURCES, type StatsSettings } from 'lib/stats-config';
 
 interface StatItem {
   id: string;
@@ -21,23 +22,13 @@ interface StatItem {
   enabled: boolean;
 }
 
-interface StatsSettings {
-  title: string;
-  description: string;
-  stats: StatItem[];
-}
-
 export default function StatsManagementPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   
-  const [formData, setFormData] = useState<StatsSettings>({
-    title: 'Impact Metrics',
-    description: 'Quantifying the impact of my work across security research, open source, and community engagement.',
-    stats: [],
-  });
+  const [formData, setFormData] = useState<StatsSettings>(DEFAULT_STATS_SETTINGS);
 
   const [statForm, setStatForm] = useState<StatItem>({
     id: '',
@@ -70,6 +61,24 @@ export default function StatsManagementPage() {
       console.error('Error fetching settings:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleReset = async () => {
+    if (!confirm('Reset section title and description to defaults? Live GitHub/ResearchGate/Medium metrics are controlled by environment variables.')) {
+      return;
+    }
+    try {
+      setSaving(true);
+      const response = await fetch('/api/admin/homepage/stats/reset', { method: 'POST' });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Failed to reset');
+      setFormData(data.stats);
+      toast.success('Stats section reset to defaults');
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Failed to reset');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -171,19 +180,46 @@ export default function StatsManagementPage() {
               </div>
               <div>
                 <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-50">
-                  Impact Metrics
+                  Knowledge & Impact
                 </h1>
                 <p className="text-slate-600 dark:text-slate-400">
-                  Manage statistics and metrics displayed on homepage
+                  Section title/description  metric values load live from GitHub, ResearchGate, and Medium
                 </p>
               </div>
             </div>
-            <Button onClick={handleAddStat} className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Metric
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button type="button" variant="outline" onClick={handleReset} disabled={saving}>
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Reset defaults
+              </Button>
+              <Button onClick={handleAddStat} className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Metric
+              </Button>
+            </div>
           </div>
         </div>
+
+        <Card className="mb-6 border-indigo-200 dark:border-indigo-900/50 bg-indigo-50/50 dark:bg-indigo-950/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Info className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+              Live data sources
+            </CardTitle>
+            <CardDescription>
+              Homepage numbers are fetched automatically. Set values in <code className="text-xs">.env.local</code> or Vercel environment variables.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            {LIVE_STATS_SOURCES.map((source) => (
+              <div key={source.name} className="rounded-lg border border-border bg-background/80 p-3">
+                <p className="font-semibold text-foreground">{source.name}</p>
+                <p className="text-muted-foreground">{source.metrics}</p>
+                <p className="mt-1 font-mono text-xs text-muted-foreground">{source.env.join(', ')}</p>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
 
         {/* Section Settings */}
         <Card className="mb-6">
@@ -200,7 +236,7 @@ export default function StatsManagementPage() {
                 id="title"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                placeholder="e.g., Impact Metrics"
+                placeholder="e.g., Knowledge & Impact"
                 required
               />
             </div>
