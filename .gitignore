@@ -33,12 +33,12 @@ yarn-error.log*
 # Environment files - ALL variations
 .env
 .env.local
+.env.example
 .env.development.local
 .env.test.local
 .env.production.local
 .env*.local
 .env.*
-!.env.example
 
 # vercel
 .vercel
