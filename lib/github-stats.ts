@@ -69,7 +69,9 @@ export function aggregateGitHubStats(repos: GitHubRepo[]): Omit<GitHubAggregated
 	const publicRepos = repos.filter((r) => !r.private).length || repos.length
 	const totalStars = repos.reduce((sum, r) => sum + (r.stargazers_count || 0), 0)
 	const totalForks = repos.reduce((sum, r) => sum + (r.forks_count || 0), 0)
-	const languages = [...new Set(repos.map((r) => r.language).filter(Boolean) as string[])].sort()
+	const languages = Array.from(
+		new Set(repos.map((r) => r.language).filter(Boolean) as string[])
+	).sort()
 
 	return {
 		publicRepos,
