@@ -4,13 +4,31 @@ import { getEducationFromConfig, getWorkExperienceFromConfig } from 'lib/homepag
 
 type JsonLd = Record<string, unknown>
 
+type StructuredDataEducation = {
+	organization: string
+	course: string
+	university: string
+	time: string
+	thesis: string
+	modules: string[]
+}
+
+type StructuredDataWorkExperience = {
+	organization: string
+	role: string
+	time: string
+	description?: string
+	imageUrl?: string
+	url?: string
+}
+
 export async function buildHomeStructuredData(siteOrigin: string): Promise<JsonLd> {
 	const personId = `${siteOrigin}/#person`
 	const websiteId = `${siteOrigin}/#website`
 	const homeDescription = siteConfig.home.description.trim()
 
-	let education = getEducationFromConfig()
-	let workExperience = getWorkExperienceFromConfig()
+	let education: StructuredDataEducation[] = getEducationFromConfig()
+	let workExperience: StructuredDataWorkExperience[] = getWorkExperienceFromConfig()
 
 	if (prisma) {
 		try {
@@ -18,7 +36,16 @@ export async function buildHomeStructuredData(siteOrigin: string): Promise<JsonL
 				prisma.education.findMany({ orderBy: { orderIndex: 'asc' } }),
 				prisma.workExperience.findMany({ orderBy: { orderIndex: 'asc' } }),
 			])
-			if (dbEducation.length > 0) education = dbEducation
+			if (dbEducation.length > 0) {
+				education = dbEducation.map((e) => ({
+					organization: e.organization,
+					course: e.course,
+					university: e.university ?? '',
+					time: e.time,
+					thesis: e.thesis ?? '',
+					modules: e.modules,
+				}))
+			}
 			if (dbWork.length > 0) {
 				workExperience = dbWork.map((w) => ({
 					organization: w.organization,
