@@ -166,6 +166,15 @@ const homepageSections = [
     href: '/admin/homepage/github',
     color: 'text-slate-600',
   },
+  {
+    id: 'integrations',
+    title: 'External Integrations',
+    description: 'Medium, ResearchGate, ORCID stats & overrides',
+    icon: Globe,
+    gradient: 'from-cyan-500 to-blue-600',
+    href: '/admin/homepage/integrations',
+    color: 'text-cyan-500',
+  },
 ];
 
 export default function HomepageManagementPage() {

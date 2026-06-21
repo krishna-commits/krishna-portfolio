@@ -8,6 +8,7 @@ import { cn } from 'app/theme/lib/utils'
 import { PAGE_CARD, PAGE_H1, PAGE_ICON_CHIP, PAGE_LEAD, PAGE_CARD_LIGHT } from 'lib/page-layout'
 import Link from 'next/link'
 import { useSocialLinks } from 'lib/hooks/use-homepage-data'
+import { homepageFetcher, homepageSwrOptions } from 'lib/hooks/use-homepage-api'
 import { useLightMotion } from 'lib/hooks/use-light-motion'
 import moment from 'moment'
 import { GitHubMetricsSkeleton } from 'app/components/skeleton-loaders'
@@ -24,6 +25,7 @@ interface ContributionData {
   longestStreak: number
   currentStreak: number
   timestamp: string
+  disabled?: boolean
 }
 
 const fetcher = async (url: string) => {
@@ -120,8 +122,14 @@ export function GitHubContributionGraph() {
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
   const [isDark, setIsDark] = useState(false)
   
+  const { data: githubSettings } = useSWR<{ github?: { enabled?: boolean } }>(
+    '/api/homepage/github',
+    homepageFetcher,
+    homepageSwrOptions,
+  )
+
   const { data, error, isLoading, mutate } = useSWR<ContributionData>(
-    '/api/github/contributions',
+    githubSettings?.github?.enabled === false ? null : '/api/github/contributions',
     fetcher,
     {
       refreshInterval: 300000, // Refresh every 5 minutes
@@ -167,6 +175,10 @@ export function GitHubContributionGraph() {
   }, [])
 
   const dayLabels = ['Mon', 'Wed', 'Fri']
+
+  if (githubSettings?.github?.enabled === false) {
+    return null
+  }
 
   if (isLoading) {
     return (

@@ -1,4 +1,9 @@
 import { siteConfig } from 'config/site'
+import {
+	getAdminSocialLinks,
+	parseResearchGateSlug,
+} from 'lib/integration-settings'
+import { getIntegrationStatsOverrides } from 'lib/integration-stats-config'
 
 export type ResearchGateStats = {
 	researchInterestScore: number
@@ -11,14 +16,12 @@ export type ResearchGateStats = {
 	otherReads: number
 	questionReads: number
 	answerReads: number
-	source: 'researchgate' | 'environment' | 'fallback'
+	source: 'researchgate' | 'environment' | 'admin' | 'fallback'
 	profileUrl: string
 	fetchedAt: string
 }
 
-const PROFILE_SLUG = 'Krishna-Neupane'
-const PROFILE_URL = `https://www.researchgate.net/profile/${PROFILE_SLUG}`
-const STATS_URL = `${PROFILE_URL}/stats`
+const DEFAULT_PROFILE_SLUG = 'Krishna-Neupane'
 
 function parseIntEnv(key: string, fallback = 0): number {
 	const raw = process.env[key]
@@ -32,6 +35,16 @@ function parseFloatEnv(key: string, fallback = 0): number {
 	if (!raw) return fallback
 	const n = parseFloat(raw)
 	return Number.isFinite(n) ? n : fallback
+}
+
+async function resolveProfileUrl(): Promise<{ profileUrl: string; statsUrl: string }> {
+	const links = await getAdminSocialLinks()
+	const profileUrl = links.researchgate || siteConfig.links.researchgate || `https://www.researchgate.net/profile/${DEFAULT_PROFILE_SLUG}`
+	const slug = parseResearchGateSlug(profileUrl) || DEFAULT_PROFILE_SLUG
+	return {
+		profileUrl,
+		statsUrl: `https://www.researchgate.net/profile/${slug}/stats`,
+	}
 }
 
 function statsFromEnv(): Omit<ResearchGateStats, 'source' | 'profileUrl' | 'fetchedAt'> | null {
@@ -67,6 +80,23 @@ function statsFromEnv(): Omit<ResearchGateStats, 'source' | 'profileUrl' | 'fetc
 	}
 }
 
+function statsFromAdminOverride(
+	override: NonNullable<Awaited<ReturnType<typeof getIntegrationStatsOverrides>>['researchgate']>,
+): Omit<ResearchGateStats, 'source' | 'profileUrl' | 'fetchedAt'> {
+	return {
+		researchInterestScore: override.researchInterestScore ?? 0,
+		citations: override.citations ?? 0,
+		hIndex: override.hIndex ?? 0,
+		recommendations: override.recommendations ?? 0,
+		totalReads: override.totalReads ?? 0,
+		publicationReads: override.publicationReads ?? 0,
+		fullTextReads: override.fullTextReads ?? 0,
+		otherReads: 0,
+		questionReads: 0,
+		answerReads: 0,
+	}
+}
+
 function extractStat(html: string, patterns: RegExp[]): number | null {
 	for (const pattern of patterns) {
 		const match = html.match(pattern)
@@ -78,9 +108,11 @@ function extractStat(html: string, patterns: RegExp[]): number | null {
 	return null
 }
 
-async function tryScrapeResearchGateStats(): Promise<Omit<ResearchGateStats, 'source' | 'profileUrl' | 'fetchedAt'> | null> {
+async function tryScrapeResearchGateStats(
+	statsUrl: string,
+): Promise<Omit<ResearchGateStats, 'source' | 'profileUrl' | 'fetchedAt'> | null> {
 	try {
-		const response = await fetch(STATS_URL, {
+		const response = await fetch(statsUrl, {
 			headers: {
 				'User-Agent': 'Mozilla/5.0 (compatible; KrishnaPortfolio/1.0)',
 				Accept: 'text/html,application/xhtml+xml',
@@ -135,9 +167,19 @@ async function tryScrapeResearchGateStats(): Promise<Omit<ResearchGateStats, 'so
 
 export async function fetchResearchGateStats(): Promise<ResearchGateStats> {
 	const fetchedAt = new Date().toISOString()
-	const profileUrl = siteConfig.links.researchgate || PROFILE_URL
+	const { profileUrl, statsUrl } = await resolveProfileUrl()
+	const overrides = await getIntegrationStatsOverrides()
 
-	const scraped = await tryScrapeResearchGateStats()
+	if (overrides.researchgate && overrides.researchgate.useLiveFetch === false) {
+		return {
+			...statsFromAdminOverride(overrides.researchgate),
+			source: 'admin',
+			profileUrl,
+			fetchedAt,
+		}
+	}
+
+	const scraped = await tryScrapeResearchGateStats(statsUrl)
 	if (
 		scraped &&
 		(scraped.totalReads > 0 || scraped.citations > 0 || scraped.researchInterestScore > 0)
@@ -150,7 +192,15 @@ export async function fetchResearchGateStats(): Promise<ResearchGateStats> {
 		return { ...fromEnv, source: 'environment', profileUrl, fetchedAt }
 	}
 
-	// Documented fallbacks from public profile (update via env when stats change)
+	if (overrides.researchgate) {
+		return {
+			...statsFromAdminOverride(overrides.researchgate),
+			source: 'admin',
+			profileUrl,
+			fetchedAt,
+		}
+	}
+
 	return {
 		researchInterestScore: 38.2,
 		citations: 6,

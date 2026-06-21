@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import moment from 'moment'
-
-const GITHUB_API_BASE = 'https://api.github.com'
-const OWNER = 'krishna-commits'
+import { getGitHubIntegrationSettings } from 'lib/integration-settings'
+import { getGitHubOwner } from 'lib/github-stats'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -23,7 +22,7 @@ function getContributionLevel(count: number): 0 | 1 | 2 | 3 | 4 {
 
 async function fetchGitHubData(token: string, endpoint: string) {
   try {
-    const url = `${GITHUB_API_BASE}${endpoint}`
+    const url = `https://api.github.com${endpoint}`
     const response = await fetch(url, {
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -47,10 +46,9 @@ async function fetchGitHubData(token: string, endpoint: string) {
   }
 }
 
-async function fetchAllCommits(token: string) {
+async function fetchAllCommits(token: string, owner: string) {
   try {
-    // Fetch all repositories
-    const reposResponse = await fetchGitHubData(token, `/users/${OWNER}/repos?sort=updated&per_page=100`)
+    const reposResponse = await fetchGitHubData(token, `/users/${owner}/repos?sort=updated&per_page=100`)
     
     if (reposResponse?.error || !Array.isArray(reposResponse)) {
       console.error('[GitHub API] Error fetching repositories:', reposResponse)
@@ -82,7 +80,7 @@ async function fetchAllCommits(token: string) {
         const since = startDate.toISOString()
         const commitsData = await fetchGitHubData(
           token,
-          `/repos/${OWNER}/${repo.name}/commits?since=${since}&per_page=100`
+          `/repos/${owner}/${repo.name}/commits?since=${since}&per_page=100`
         )
         
         if (commitsData?.error || !Array.isArray(commitsData)) {
@@ -157,6 +155,19 @@ function calculateStreaks(contributions: ContributionDay[]): { longestStreak: nu
 
 export async function GET(request: NextRequest) {
   try {
+    const githubSettings = await getGitHubIntegrationSettings()
+    if (!githubSettings.enabled) {
+      return NextResponse.json({
+        disabled: true,
+        contributions: [],
+        totalContributions: 0,
+        longestStreak: 0,
+        currentStreak: 0,
+        timestamp: new Date().toISOString(),
+      })
+    }
+
+    const owner = await getGitHubOwner()
     const token = process.env.GITHUB_ACCESS_TOKEN
 
     if (!token) {
@@ -171,10 +182,9 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    console.log(`[GitHub API] Fetching contributions for user: ${OWNER}`)
+    console.log(`[GitHub API] Fetching contributions for user: ${owner}`)
 
-    // Fetch all commits
-    const contributions = await fetchAllCommits(token)
+    const contributions = await fetchAllCommits(token, owner)
     
     if (contributions.length === 0) {
       return NextResponse.json({

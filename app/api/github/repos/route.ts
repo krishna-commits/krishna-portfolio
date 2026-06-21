@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { fetchAllGitHubRepos, GITHUB_OWNER } from 'lib/github-stats'
+import { fetchAllGitHubRepos, getGitHubOwner } from 'lib/github-stats'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 300
@@ -7,13 +7,14 @@ export const revalidate = 300
 export async function GET(_request: NextRequest) {
 	try {
 		const token = process.env.GITHUB_ACCESS_TOKEN
+		const owner = await getGitHubOwner()
 		if (!token) {
 			console.warn('[GitHub API] GITHUB_ACCESS_TOKEN not set, using unauthenticated API (rate limited)')
 		} else {
-			console.log(`[GitHub API] Using authenticated API for user: ${GITHUB_OWNER}`)
+			console.log(`[GitHub API] Using authenticated API for user: ${owner}`)
 		}
 
-		const repos = await fetchAllGitHubRepos(token)
+		const repos = await fetchAllGitHubRepos(token, owner)
 		console.log(`[GitHub API] Successfully fetched ${repos.length} repositories`)
 
 		return NextResponse.json({

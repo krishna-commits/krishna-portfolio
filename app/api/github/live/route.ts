@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getGitHubOwner } from 'lib/github-stats'
 
 const GITHUB_API_BASE = 'https://api.github.com'
-const OWNER = 'krishna-commits'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -126,10 +126,10 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    console.log(`[GitHub API] Token found, fetching data for user: ${OWNER}`)
+    const owner = await getGitHubOwner()
+    console.log(`[GitHub API] Token found, fetching data for user: ${owner}`)
 
-    // Fetch recent commits from all repositories
-    const reposResponse = await fetchGitHubData(token, `/users/${OWNER}/repos?sort=updated&per_page=10`)
+    const reposResponse = await fetchGitHubData(token, `/users/${owner}/repos?sort=updated&per_page=10`)
     
     // Check if response has error
     if (reposResponse && typeof reposResponse === 'object' && 'error' in reposResponse) {
@@ -181,7 +181,7 @@ export async function GET(request: NextRequest) {
         return []
       }
       
-      const commitsData = await fetchGitHubData(token, `/repos/${OWNER}/${repo.name}/commits?per_page=5`)
+      const commitsData = await fetchGitHubData(token, `/repos/${owner}/${repo.name}/commits?per_page=5`)
       
       // Check if response has error
       if (commitsData && typeof commitsData === 'object' && 'error' in commitsData) {
@@ -208,7 +208,7 @@ export async function GET(request: NextRequest) {
           full_name: repo.full_name,
           url: repo.html_url,
         },
-        url: commit.html_url || `https://github.com/${OWNER}/${repo.name}`,
+        url: commit.html_url || `https://github.com/${owner}/${repo.name}`,
       }))
     })
 
@@ -216,7 +216,7 @@ export async function GET(request: NextRequest) {
     console.log(`[GitHub API] Found ${commits.length} commits`)
 
     // Fetch open pull requests
-    const pullRequestsData = await fetchGitHubData(token, `/search/issues?q=author:${OWNER}+type:pr+state:open&per_page=10`)
+    const pullRequestsData = await fetchGitHubData(token, `/search/issues?q=author:${owner}+type:pr+state:open&per_page=10`)
     
     // Check if response has error
     if (pullRequestsData && typeof pullRequestsData === 'object' && 'error' in pullRequestsData) {
@@ -254,7 +254,7 @@ export async function GET(request: NextRequest) {
     const deploymentsPromises = repos.map(async (repo: any) => {
       if (!repo || !repo.name) return []
       
-      const deploymentsData = await fetchGitHubData(token, `/repos/${OWNER}/${repo.name}/deployments?per_page=5`)
+      const deploymentsData = await fetchGitHubData(token, `/repos/${owner}/${repo.name}/deployments?per_page=5`)
       
       // Check if response has error
       if (deploymentsData && typeof deploymentsData === 'object' && 'error' in deploymentsData) {
@@ -281,7 +281,7 @@ export async function GET(request: NextRequest) {
           login: deployment.creator?.login || 'unknown',
           avatar_url: deployment.creator?.avatar_url || '',
         },
-        url: `https://github.com/${OWNER}/${repo.name}/deployments`,
+        url: `https://github.com/${owner}/${repo.name}/deployments`,
       }))
     })
 

@@ -26,16 +26,31 @@ export default function BlogPage() {
 	useEffect(() => {
 		const fetchPosts = async () => {
 			try {
-				const response = await fetch(
-					`https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@neupane.krishna33`
-				)
-				
-				if (!response.ok) {
-					throw new Error('Failed to fetch posts')
-				}
-				
-				const data = await response.json()
-				setPosts(data.items || [])
+				const [mediumRes, localRes] = await Promise.all([
+					fetch('/api/medium', { cache: 'no-store' }),
+					fetch('/api/content/blog', { cache: 'no-store' }),
+				])
+
+				const mediumData = mediumRes.ok ? await mediumRes.json() : { posts: [] }
+				const localData = localRes.ok ? await localRes.json() : { items: [] }
+
+				const mediumPosts = (mediumData.posts || []).map((post: { title: string; link: string; pubDate: string; description?: string }) => ({
+					title: post.title,
+					link: post.link,
+					pubDate: post.pubDate,
+					description: post.description || '',
+					source: 'medium',
+				}))
+
+				const localPosts = (localData.items || []).map((item: { title: string; slug: string; date?: string; description?: string }) => ({
+					title: item.title,
+					link: `/blog/${item.slug}`,
+					pubDate: item.date || new Date().toISOString(),
+					description: item.description || '',
+					source: 'local',
+				}))
+
+				setPosts([...localPosts, ...mediumPosts])
 				setError(null)
 			} catch (err) {
 				setError('Failed to load blog posts. Please try again later.')

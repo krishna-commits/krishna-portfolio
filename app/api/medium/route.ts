@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { siteConfig } from 'config/site'
-import { fetchMediumStats } from 'lib/medium-stats'
+import { fetchMediumStats, getMediumRssUsername } from 'lib/medium-stats'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 3600
@@ -9,7 +8,7 @@ export async function GET(_request: NextRequest) {
 	try {
 		const stats = await fetchMediumStats()
 
-		const mediumUsername = siteConfig.links.medium.split('@').pop()?.split('/')[0] || 'neupane.krishna33'
+		const mediumUsername = await getMediumRssUsername()
 		const rssUrl = `https://medium.com/feed/@${mediumUsername}`
 
 		let posts: { title: string; link: string; pubDate: string }[] = []

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated } from 'lib/auth';
 import { listMDXFiles, readMDXFile, writeMDXFile, deleteMDXFile, ContentType } from 'app/lib/content-utils';
+import { upsertMdxDocument, deleteMdxDocument } from 'lib/mdx-document-store';
 import path from 'path';
 
 export const dynamic = 'force-dynamic';
@@ -70,10 +71,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const fullPath = await writeMDXFile(type, filepath, frontmatter, bodyContent);
+    try {
+      await writeMDXFile(type, filepath, frontmatter, bodyContent);
+    } catch (fsError) {
+      console.warn('[Content API] Filesystem write failed (DB sync continues):', fsError);
+    }
+    await upsertMdxDocument(type, filepath, frontmatter, bodyContent);
 
     return NextResponse.json(
-      { message: 'Content created successfully', filepath: fullPath },
+      { message: 'Content created successfully', filepath },
       { status: 201 }
     );
   } catch (error: any) {
@@ -109,19 +115,33 @@ export async function PUT(request: NextRequest) {
 
     // If filepath changed, delete old file and create new one
     if (newFilepath && newFilepath !== filepath) {
-      await deleteMDXFile(type, filepath);
-      const fullPath = await writeMDXFile(type, newFilepath, frontmatter, bodyContent);
+      try {
+        await deleteMDXFile(type, filepath);
+      } catch {
+        /* fs may be read-only in production */
+      }
+      await deleteMdxDocument(filepath);
+      try {
+        await writeMDXFile(type, newFilepath, frontmatter, bodyContent);
+      } catch (fsError) {
+        console.warn('[Content API] Filesystem write failed (DB sync continues):', fsError);
+      }
+      await upsertMdxDocument(type, newFilepath, frontmatter, bodyContent);
       return NextResponse.json(
-        { message: 'Content updated and moved successfully', filepath: fullPath },
+        { message: 'Content updated and moved successfully', filepath: newFilepath },
         { status: 200 }
       );
     }
 
-    // Otherwise, just update the existing file
-    const fullPath = await writeMDXFile(type, filepath, frontmatter, bodyContent);
+    try {
+      await writeMDXFile(type, filepath, frontmatter, bodyContent);
+    } catch (fsError) {
+      console.warn('[Content API] Filesystem write failed (DB sync continues):', fsError);
+    }
+    await upsertMdxDocument(type, filepath, frontmatter, bodyContent);
 
     return NextResponse.json(
-      { message: 'Content updated successfully', filepath: fullPath },
+      { message: 'Content updated successfully', filepath },
       { status: 200 }
     );
   } catch (error: any) {
@@ -153,7 +173,12 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Missing filepath parameter' }, { status: 400 });
     }
 
-    await deleteMDXFile(type, filepath);
+    try {
+      await deleteMDXFile(type, filepath);
+    } catch {
+      /* fs may be read-only in production */
+    }
+    await deleteMdxDocument(filepath);
 
     return NextResponse.json(
       { message: 'Content deleted successfully' },

@@ -284,3 +284,17 @@ model AnalyticsDrainEvent {
   @@index([createdAt])
   @@map("analytics_drain_events")
 }
+
+// MDX content synced from admin (production source of truth when DB is configured)
+model MdxDocument {
+  id          Int      @id @default(autoincrement())
+  type        String   @db.VarChar(20)
+  filepath    String   @unique @db.VarChar(500)
+  frontmatter String   @db.Text
+  body        String   @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([type])
+  @@map("mdx_documents")
+}

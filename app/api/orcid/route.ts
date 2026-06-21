@@ -1,38 +1,52 @@
-import { NextResponse } from 'next/server'
-import { siteConfig } from 'config/site'
+import { getAdminSocialLinks, parseOrcidId } from 'lib/integration-settings'
+import { getIntegrationStatsOverrides } from 'lib/integration-stats-config'
+import { publicJson } from 'lib/public-api-response'
+
+export const dynamic = 'force-dynamic'
 
 export async function GET() {
 	try {
-		const orcidId = siteConfig.links.orcid.split('/').pop()
-		
-		if (!orcidId) {
-			return NextResponse.json({ error: 'ORCID ID not found' }, { status: 400 })
+		const overrides = await getIntegrationStatsOverrides()
+		if (overrides.orcid && overrides.orcid.useLiveFetch === false) {
+			return publicJson({
+				works: [],
+				count: overrides.orcid.workCount ?? 0,
+				source: 'admin',
+			})
 		}
 
-		// ORCID Public API endpoint (no authentication required for public works)
+		const links = await getAdminSocialLinks()
+		const orcidId = parseOrcidId(links.orcid || '')
+
+		if (!orcidId) {
+			return publicJson({ error: 'ORCID ID not found' }, 400)
+		}
+
 		const response = await fetch(`https://pub.orcid.org/v3.0/${orcidId}/works`, {
-			headers: {
-				'Accept': 'application/json',
-			},
-			next: { revalidate: 3600 }, // Cache for 1 hour
+			headers: { Accept: 'application/json' },
+			next: { revalidate: 3600 },
 		})
 
 		if (!response.ok) {
-			// If API fails, return empty data instead of error
-			return NextResponse.json({ works: [], count: 0 }, { status: 200 })
+			const adminCount = overrides.orcid?.workCount
+			return publicJson({
+				works: [],
+				count: adminCount ?? 0,
+				source: adminCount != null ? 'admin' : 'error',
+			})
 		}
 
 		const data = await response.json()
 		const works = data.group || []
-		
-		return NextResponse.json({
+		const count = overrides.orcid?.workCount ?? works.length
+
+		return publicJson({
 			works,
-			count: works.length,
-		}, { status: 200 })
+			count,
+			source: overrides.orcid?.workCount != null ? 'admin' : 'orcid',
+		})
 	} catch (error) {
 		console.error('ORCID API error:', error)
-		// Return empty data on error to prevent breaking the UI
-		return NextResponse.json({ works: [], count: 0 }, { status: 200 })
+		return publicJson({ works: [], count: 0, source: 'error' })
 	}
 }
-

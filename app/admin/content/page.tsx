@@ -1,10 +1,12 @@
 'use client';
 
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'app/theme/components/ui/card';
 import { Button } from 'app/theme/components/ui/button';
-import { FileText, BookOpen, Code, Sparkles, ArrowRight, Database } from 'lucide-react';
+import { FileText, BookOpen, Code, Sparkles, ArrowRight, Database, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 
 const contentTypes = [
   {
@@ -50,6 +52,22 @@ const contentTypes = [
 ];
 
 export default function ContentIndexPage() {
+  const [importing, setImporting] = useState(false);
+
+  const importToDatabase = async () => {
+    setImporting(true);
+    try {
+      const res = await fetch('/api/admin/content/migrate', { method: 'POST', body: '{}' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Import failed');
+      toast.success(`Imported ${data.imported} documents to database`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Import failed');
+    } finally {
+      setImporting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen pt-16 lg:pt-0">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
@@ -137,8 +155,24 @@ export default function ContentIndexPage() {
               • <strong>Mantras:</strong> Stored in <code className="bg-slate-200 dark:bg-slate-800 px-2 py-1 rounded text-xs">content/mantras/</code>
             </p>
             <p className="mt-4 pt-4 border-t border-blue-200 dark:border-blue-800">
-              <strong>Note:</strong> After creating or updating content, Contentlayer will automatically regenerate the site. Changes may take a few moments to appear.
+              <strong>Production:</strong> Saves sync to the database and appear on the live site immediately.
+              Run <strong>Import to Database</strong> once after deploy to seed existing MDX files.
             </p>
+            <div className="pt-4">
+              <Button onClick={importToDatabase} disabled={importing} variant="outline">
+                {importing ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Importing…
+                  </>
+                ) : (
+                  <>
+                    <Database className="h-4 w-4 mr-2" />
+                    Import to Database
+                  </>
+                )}
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>

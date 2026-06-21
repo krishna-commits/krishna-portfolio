@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation'
-import { allMantras } from 'contentlayer/generated'
 import { Metadata } from 'next'
 import { Mdx } from 'app/components/mdx'
 import { MdxHtmlBody } from 'app/components/mdx-html'
@@ -9,57 +8,37 @@ import { getContentBySlug } from 'lib/mdx-content-resolver'
 export const dynamic = 'force-dynamic'
 
 interface PostProps {
-	params: {
-		slug: string[]
-	}
+	params: { slug: string[] }
 }
 
 async function getPostFromParams(params: PostProps['params']) {
 	const slug = params?.slug?.join('/')
 	if (!slug) return null
-
-	const resolved = await getContentBySlug('mantra', slug)
-	if (resolved) return resolved
-
-	const clPost = allMantras.find((post) => post.slugAsParams === slug)
-	if (!clPost) return null
-
-	return {
-		slug,
-		title: clPost.title,
-		description: clPost.description,
-		date: clPost.date ? String(clPost.date) : undefined,
-		keywords: clPost.keywords,
-		renderKind: 'contentlayer' as const,
-		bodyCode: clPost.body.code,
-		source: 'contentlayer' as const,
-		filepath: `${slug}.mdx`,
-	}
+	return getContentBySlug('blog', slug)
 }
 
 export async function generateMetadata({ params }: PostProps): Promise<Metadata> {
 	const post = await getPostFromParams(params)
 	if (!post) return {}
 
-	const slug = params.slug.join('/')
 	return generatePageMetadata({
 		title: String(post.title),
 		description: post.description ? String(post.description) : undefined,
-		path: `/mantras/${slug}`,
+		path: `/blog/${params.slug.join('/')}`,
 		keywords: Array.isArray(post.keywords) ? post.keywords.map(String) : undefined,
 	})
 }
 
-export default async function PostPage({ params }: PostProps) {
+export default async function BlogPostPage({ params }: PostProps) {
 	const post = await getPostFromParams(params)
 	if (!post) notFound()
 
 	return (
-		<div className="mx-auto max-w-5xl">
-			<article className="py-6 prose dark:prose-invert max-w-6xl mb-10">
-				<h1 className="mb-2">{post.title}</h1>
+		<main className="min-h-screen bg-background px-4 py-8 max-w-3xl mx-auto">
+			<article className="prose dark:prose-invert max-w-none">
+				<h1>{post.title}</h1>
 				{post.date && (
-					<p className="text-sm not-prose text-slate-500 dark:text-slate-400 mt-1 mb-0">
+					<p className="text-sm text-slate-500 not-prose">
 						{new Date(String(post.date)).toLocaleDateString(undefined, {
 							year: 'numeric',
 							month: 'long',
@@ -67,16 +46,14 @@ export default async function PostPage({ params }: PostProps) {
 						})}
 					</p>
 				)}
-				{post.description && (
-					<p className="text-xl mt-0 text-slate-700 dark:text-slate-200">{post.description}</p>
-				)}
-				<hr className="my-4" />
+				{post.description && <p className="lead">{post.description}</p>}
+				<hr />
 				{post.renderKind === 'html' && post.bodyHtml ? (
 					<MdxHtmlBody html={post.bodyHtml} />
 				) : post.bodyCode ? (
 					<Mdx code={post.bodyCode} />
 				) : null}
 			</article>
-		</div>
+		</main>
 	)
 }

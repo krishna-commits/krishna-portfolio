@@ -1,5 +1,15 @@
+import { getGitHubIntegrationSettings } from 'lib/integration-settings'
+
 const GITHUB_API_BASE = 'https://api.github.com'
-export const GITHUB_OWNER = 'krishna-commits'
+export const DEFAULT_GITHUB_OWNER = 'krishna-commits'
+
+/** @deprecated use getGitHubOwner() */
+export const GITHUB_OWNER = DEFAULT_GITHUB_OWNER
+
+export async function getGitHubOwner(): Promise<string> {
+	const settings = await getGitHubIntegrationSettings()
+	return settings.githubUsername || DEFAULT_GITHUB_OWNER
+}
 
 export type GitHubRepo = {
 	name: string
@@ -36,14 +46,15 @@ function githubHeaders(token?: string): HeadersInit {
 	return headers
 }
 
-export async function fetchAllGitHubRepos(token?: string): Promise<GitHubRepo[]> {
+export async function fetchAllGitHubRepos(token?: string, owner?: string): Promise<GitHubRepo[]> {
+	const githubOwner = owner ?? (await getGitHubOwner())
 	const repos: GitHubRepo[] = []
 	let page = 1
 	const perPage = 100
 
 	while (page <= 10) {
 		const response = await fetch(
-			`${GITHUB_API_BASE}/users/${GITHUB_OWNER}/repos?sort=updated&direction=desc&per_page=${perPage}&page=${page}`,
+			`${GITHUB_API_BASE}/users/${githubOwner}/repos?sort=updated&direction=desc&per_page=${perPage}&page=${page}`,
 			{
 				headers: githubHeaders(token),
 				next: { revalidate: 300 },
@@ -70,7 +81,7 @@ export function aggregateGitHubStats(repos: GitHubRepo[]): Omit<GitHubAggregated
 	const totalStars = repos.reduce((sum, r) => sum + (r.stargazers_count || 0), 0)
 	const totalForks = repos.reduce((sum, r) => sum + (r.forks_count || 0), 0)
 	const languages = Array.from(
-		new Set(repos.map((r) => r.language).filter(Boolean) as string[])
+		new Set(repos.map((r) => r.language).filter(Boolean) as string[]),
 	).sort()
 
 	return {
@@ -83,9 +94,10 @@ export function aggregateGitHubStats(repos: GitHubRepo[]): Omit<GitHubAggregated
 }
 
 export async function fetchGitHubStats(token?: string): Promise<GitHubAggregatedStats> {
+	const githubOwner = await getGitHubOwner()
 	const [repos, userResponse] = await Promise.all([
-		fetchAllGitHubRepos(token),
-		fetch(`${GITHUB_API_BASE}/users/${GITHUB_OWNER}`, {
+		fetchAllGitHubRepos(token, githubOwner),
+		fetch(`${GITHUB_API_BASE}/users/${githubOwner}`, {
 			headers: githubHeaders(token),
 			next: { revalidate: 300 },
 		}),
@@ -103,7 +115,7 @@ export async function fetchGitHubStats(token?: string): Promise<GitHubAggregated
 	return {
 		...aggregated,
 		source: 'github',
-		username: GITHUB_OWNER,
+		username: githubOwner,
 		fetchedAt: new Date().toISOString(),
 	}
 }
