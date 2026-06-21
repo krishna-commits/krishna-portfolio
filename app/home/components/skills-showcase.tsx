@@ -7,6 +7,7 @@ import Image from "next/image"
 import { Code, Cloud, Database, Settings, Server, GitBranch, Zap, Shield, Container, Monitor, Search, X, Network, Layers } from "lucide-react"
 import { cn } from "app/theme/lib/utils"
 import { PAGE_CARD } from "lib/page-layout"
+import { homepageFetcher, homepageSwrOptions } from "lib/hooks/use-homepage-api"
 
 type Category = {
 	name: string
@@ -196,8 +197,8 @@ export const SkillsShowcase = memo(function SkillsShowcase() {
 	const [searchQuery, setSearchQuery] = useState("")
 	const { data: techData } = useSWR<{ technology?: typeof siteConfig.technology_stack }>(
 		'/api/homepage/technology',
-		(url: string) => fetch(url).then((r) => r.json()),
-		{ revalidateOnFocus: true },
+		homepageFetcher,
+		homepageSwrOptions,
 	)
 	const allSkills = useMemo(
 		() =>

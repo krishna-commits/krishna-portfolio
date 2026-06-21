@@ -1,5 +1,6 @@
 import { siteConfig } from 'config/site'
 import { prisma } from 'lib/prisma'
+import { importRecommendationsFromConfigIfEmpty } from 'lib/migrate-config-section'
 
 export type LinkedInRecommendationItem = {
 	name: string
@@ -54,13 +55,32 @@ async function fromDatabase(): Promise<LinkedInRecommendationItem[] | null> {
 	}
 }
 
-/** Recommendations from admin database only  no local config fallback. */
+function fromConfig(): LinkedInRecommendationItem[] {
+	return (siteConfig.linkedin_recommendations || []).map((rec) => ({
+		name: rec.name,
+		title: rec.title,
+		company: rec.company || undefined,
+		text: rec.text,
+		date: rec.date,
+		linkedinUrl: profileUrl(),
+	}))
+}
+
+/** Recommendations: database first, then config/site.tsx fallback. */
 export async function fetchLinkedInRecommendations(): Promise<LinkedInRecommendationsResult> {
 	const fetchedAt = new Date().toISOString()
 	const url = profileUrl()
 
-	const dbRecs = await fromDatabase()
-	const recommendations = sortByDateDesc(dbRecs ?? [])
+	let recommendations = sortByDateDesc((await fromDatabase()) ?? [])
+
+	if (recommendations.length === 0) {
+		await importRecommendationsFromConfigIfEmpty()
+		recommendations = sortByDateDesc((await fromDatabase()) ?? [])
+	}
+
+	if (recommendations.length === 0) {
+		recommendations = sortByDateDesc(fromConfig())
+	}
 
 	return {
 		recommendations,

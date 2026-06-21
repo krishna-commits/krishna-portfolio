@@ -10,17 +10,16 @@ import { cn } from "app/theme/lib/utils"
 import { PAGE_CARD, PAGE_ICON_CHIP } from "lib/page-layout"
 import { Badge } from "app/theme/components/ui/badge"
 import useSWR from 'swr'
-
-const fetcher = (url: string) => fetch(url).then(res => res.json())
+import { homepageFetcher, homepageSwrOptions } from 'lib/hooks/use-homepage-api'
 
 export function EducationExperience() {
-	const { data: educationData } = useSWR('/api/homepage/education', fetcher)
+	const { data: educationData } = useSWR('/api/homepage/education', homepageFetcher, homepageSwrOptions)
 	const education = educationData?.education || siteConfig.education || []
 	
-	const { data: workData } = useSWR('/api/homepage/work', fetcher)
+	const { data: workData } = useSWR('/api/homepage/work', homepageFetcher, homepageSwrOptions)
 	const workExperience = workData?.workExperience || siteConfig.work_experience || []
 	
-	const { data: volunteeringData } = useSWR('/api/homepage/volunteering', fetcher)
+	const { data: volunteeringData } = useSWR('/api/homepage/volunteering', homepageFetcher, homepageSwrOptions)
 	const volunteering = volunteeringData?.volunteering || siteConfig.volunteering || []
 
 	return (

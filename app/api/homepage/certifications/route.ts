@@ -1,22 +1,24 @@
-import { NextResponse } from 'next/server';
 import { prisma } from 'lib/prisma';
 import { siteConfig } from 'config/site';
+import { publicJson } from 'lib/public-api-response';
 
 export const dynamic = 'force-dynamic';
+
+function certificationsFromConfig() {
+  return (siteConfig.certification || []).map((c: { title: string; issuedby: string; imageURL: string; link?: string; time: string }) => ({
+    title: c.title,
+    issuedby: c.issuedby,
+    imageURL: c.imageURL,
+    link: c.link,
+    time: c.time,
+  }));
+}
 
 // GET - List all certifications (public)
 export async function GET() {
   try {
     if (!prisma) {
-      return NextResponse.json({ 
-        certifications: (siteConfig.certification || []).map((c: any) => ({
-          title: c.title,
-          issuedby: c.issuedby,
-          imageURL: c.imageURL,
-          link: c.link,
-          time: c.time,
-        }))
-      }, { status: 200 });
+      return publicJson({ certifications: certificationsFromConfig() });
     }
 
     try {
@@ -25,18 +27,9 @@ export async function GET() {
       });
 
       if (certifications.length === 0) {
-        return NextResponse.json({ 
-          certifications: (siteConfig.certification || []).map((c: any) => ({
-            title: c.title,
-            issuedby: c.issuedby,
-            imageURL: c.imageURL,
-            link: c.link,
-            time: c.time,
-          }))
-        }, { status: 200 });
+        return publicJson({ certifications: certificationsFromConfig() });
       }
 
-      // Map to match config format
       const formattedCertifications = certifications.map(cert => ({
         title: cert.title,
         issuedby: cert.issuedby,
@@ -45,34 +38,17 @@ export async function GET() {
         time: cert.time,
       }));
 
-      return NextResponse.json({ certifications: formattedCertifications }, { status: 200 });
-    } catch (dbError: any) {
-      // Handle database connection errors gracefully
-      if (dbError.code === 'P1001' || dbError.message?.includes('Can\'t reach database server')) {
+      return publicJson({ certifications: formattedCertifications });
+    } catch (dbError: unknown) {
+      const err = dbError as { code?: string; message?: string };
+      if (err.code === 'P1001' || err.message?.includes("Can't reach database server")) {
         console.warn('[Certifications API] Database connection error - using config fallback');
-        return NextResponse.json({
-          certifications: (siteConfig.certification || []).map((c: any) => ({
-            title: c.title,
-            issuedby: c.issuedby,
-            imageURL: c.imageURL,
-            link: c.link,
-            time: c.time,
-          }))
-        }, { status: 200 });
+        return publicJson({ certifications: certificationsFromConfig() });
       }
-      throw dbError; // Re-throw other errors
+      throw dbError;
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[Certifications API] Error:', error);
-    return NextResponse.json({ 
-      certifications: (siteConfig.certification || []).map((c: any) => ({
-        title: c.title,
-        issuedby: c.issuedby,
-        imageURL: c.imageURL,
-        link: c.link,
-        time: c.time,
-      }))
-    }, { status: 200 });
+    return publicJson({ certifications: certificationsFromConfig() });
   }
 }
-

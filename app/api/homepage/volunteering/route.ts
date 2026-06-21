@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server';
 import { prisma } from 'lib/prisma';
 import { siteConfig } from 'config/site';
+import { publicJson } from 'lib/public-api-response';
 
 export const dynamic = 'force-dynamic';
 
@@ -8,9 +8,9 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   try {
     if (!prisma) {
-      return NextResponse.json({ 
-        volunteering: siteConfig.volunteering || [] 
-      }, { status: 200 });
+      return publicJson({
+        volunteering: siteConfig.volunteering || [],
+      });
     }
 
     const volunteering = await prisma.volunteering.findMany({
@@ -18,12 +18,11 @@ export async function GET() {
     });
 
     if (volunteering.length === 0) {
-      return NextResponse.json({ 
-        volunteering: siteConfig.volunteering || [] 
-      }, { status: 200 });
+      return publicJson({
+        volunteering: siteConfig.volunteering || [],
+      });
     }
 
-    // Map to match config format
     const formattedVolunteering = volunteering.map(vol => ({
       organization: vol.organization,
       role: vol.role,
@@ -32,12 +31,11 @@ export async function GET() {
       type: vol.type,
     }));
 
-    return NextResponse.json({ volunteering: formattedVolunteering }, { status: 200 });
-  } catch (error: any) {
+    return publicJson({ volunteering: formattedVolunteering });
+  } catch (error: unknown) {
     console.error('[Volunteering API] Error:', error);
-    return NextResponse.json({ 
-      volunteering: siteConfig.volunteering || [] 
-    }, { status: 200 });
+    return publicJson({
+      volunteering: siteConfig.volunteering || [],
+    });
   }
 }
-

@@ -3,14 +3,13 @@
 import useSWR from 'swr'
 import { siteConfig } from 'config/site'
 import { DEFAULT_HERO_DATA, mergeHeroData, type HeroData } from 'lib/hero-config'
-
-const fetcher = (url: string) => fetch(url).then((r) => r.json())
+import { homepageFetcher, homepageSwrOptions } from 'lib/hooks/use-homepage-api'
 
 export function useHero() {
 	const { data, error, isLoading, mutate } = useSWR<{ hero?: Partial<HeroData> }>(
 		'/api/homepage/hero',
-		fetcher,
-		{ revalidateOnFocus: true },
+		homepageFetcher,
+		{ ...homepageSwrOptions, revalidateOnFocus: true },
 	)
 
 	const hero = mergeHeroData(data?.hero)
@@ -21,8 +20,8 @@ export function useHero() {
 export function useSocialLinks() {
 	const { data, error, isLoading, mutate } = useSWR<{ links?: Record<string, string> }>(
 		'/api/homepage/social',
-		fetcher,
-		{ revalidateOnFocus: true },
+		homepageFetcher,
+		homepageSwrOptions,
 	)
 
 	const links = {

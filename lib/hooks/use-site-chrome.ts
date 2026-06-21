@@ -6,14 +6,13 @@ import {
 	mergeSiteChrome,
 	type SiteChromeConfig,
 } from 'lib/site-chrome-config'
-
-const fetcher = (url: string) => fetch(url).then((r) => r.json())
+import { homepageFetcher, homepageSwrOptions } from 'lib/hooks/use-homepage-api'
 
 export function useSiteChrome() {
 	const { data, isLoading, mutate } = useSWR<{ chrome?: Partial<SiteChromeConfig> }>(
 		'/api/homepage/site-chrome',
-		fetcher,
-		{ revalidateOnFocus: true },
+		homepageFetcher,
+		homepageSwrOptions,
 	)
 
 	return {

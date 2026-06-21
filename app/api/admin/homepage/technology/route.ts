@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from 'lib/prisma';
 import { isAuthenticated } from 'lib/auth';
 import { getTechnologyStackFromConfig } from 'lib/homepage-data';
+import { importTechnologyFromConfigIfEmpty } from 'lib/migrate-config-section';
+import { putByAdminId } from 'lib/admin-put-by-id';
 
 export const dynamic = 'force-dynamic';
 
@@ -115,22 +117,24 @@ export async function PUT(request: NextRequest) {
         { status: 500 }
       );
     }
+    const db = prisma;
 
     const body = await request.json();
     const { id, name, imageUrl, category, orderIndex } = body;
 
-    if (!id) {
-      return NextResponse.json({ error: 'Missing id' }, { status: 400 });
-    }
+    const data = {
+      name,
+      imageUrl,
+      category: category || null,
+      orderIndex: orderIndex ?? 0,
+    };
 
-    const technology = await prisma.technologyStack.update({
-      where: { id },
-      data: {
-        name,
-        imageUrl,
-        category: category || null,
-        orderIndex: orderIndex || 0,
-      },
+    const technology = await putByAdminId({
+      id,
+      importIfEmpty: importTechnologyFromConfigIfEmpty,
+      listOrdered: () => db.technologyStack.findMany({ orderBy: { orderIndex: 'asc' } }),
+      update: (dbId) => db.technologyStack.update({ where: { id: dbId }, data }),
+      create: () => db.technologyStack.create({ data }),
     });
 
     return NextResponse.json(

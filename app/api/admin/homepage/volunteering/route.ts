@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from 'lib/prisma';
 import { isAuthenticated } from 'lib/auth';
 import { getVolunteeringFromConfig } from 'lib/homepage-data';
+import { importVolunteeringFromConfigIfEmpty } from 'lib/migrate-config-section';
+import { putByAdminId } from 'lib/admin-put-by-id';
 
 export const dynamic = 'force-dynamic';
 
@@ -120,24 +122,26 @@ export async function PUT(request: NextRequest) {
         { status: 500 }
       );
     }
+    const db = prisma;
 
     const body = await request.json();
     const { id, organization, role, time, duration, type, orderIndex } = body;
 
-    if (!id) {
-      return NextResponse.json({ error: 'Missing id' }, { status: 400 });
-    }
+    const data = {
+      organization,
+      role,
+      time,
+      duration: duration || null,
+      type: type || null,
+      orderIndex: orderIndex ?? 0,
+    };
 
-    const volunteering = await prisma.volunteering.update({
-      where: { id },
-      data: {
-        organization,
-        role,
-        time,
-        duration: duration || null,
-        type: type || null,
-        orderIndex: orderIndex || 0,
-      },
+    const volunteering = await putByAdminId({
+      id,
+      importIfEmpty: importVolunteeringFromConfigIfEmpty,
+      listOrdered: () => db.volunteering.findMany({ orderBy: { orderIndex: 'asc' } }),
+      update: (dbId) => db.volunteering.update({ where: { id: dbId }, data }),
+      create: () => db.volunteering.create({ data }),
     });
 
     return NextResponse.json(

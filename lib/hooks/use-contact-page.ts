@@ -6,14 +6,13 @@ import {
 	mergeContactPage,
 	type ContactPageConfig,
 } from 'lib/contact-page-config'
-
-const fetcher = (url: string) => fetch(url).then((r) => r.json())
+import { homepageFetcher, homepageSwrOptions } from 'lib/hooks/use-homepage-api'
 
 export function useContactPage() {
 	const { data, isLoading, mutate } = useSWR<{ contact?: Partial<ContactPageConfig> }>(
 		'/api/homepage/contact',
-		fetcher,
-		{ revalidateOnFocus: true },
+		homepageFetcher,
+		homepageSwrOptions,
 	)
 
 	return {

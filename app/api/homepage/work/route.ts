@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from 'lib/prisma';
 import { siteConfig } from 'config/site';
+import { publicJson } from 'lib/public-api-response';
 
 export const dynamic = 'force-dynamic';
 
@@ -8,9 +9,9 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   try {
     if (!prisma) {
-      return NextResponse.json({ 
+      return publicJson({ 
         workExperience: siteConfig.work_experience || [] 
-      }, { status: 200 });
+      });
     }
 
     const workExperience = await prisma.workExperience.findMany({
@@ -18,17 +19,17 @@ export async function GET() {
     });
 
     if (workExperience.length === 0) {
-      return NextResponse.json({ 
+      return publicJson({ 
         workExperience: siteConfig.work_experience || [] 
-      }, { status: 200 });
+      });
     }
 
-    return NextResponse.json({ workExperience }, { status: 200 });
+    return publicJson({ workExperience });
   } catch (error: any) {
     console.error('[Work Experience API] Error:', error);
-    return NextResponse.json({ 
+    return publicJson({ 
       workExperience: siteConfig.work_experience || [] 
-    }, { status: 200 });
+    });
   }
 }
 

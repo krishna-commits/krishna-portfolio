@@ -10,7 +10,7 @@ import { PAGE_CARD, PAGE_H1, PAGE_ICON_CHIP, PAGE_LEAD } from 'lib/page-layout'
 import { cn } from 'app/theme/lib/utils'
 import type { LinkedInRecommendationItem } from 'lib/linkedin-recommendations'
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
+import { homepageFetcher, homepageSwrOptions } from 'lib/hooks/use-homepage-api'
 
 const CLAMP_LINES = 5
 
@@ -160,9 +160,7 @@ function RecommendationsSkeleton() {
 const SLIM_MAX = 3
 
 export function LinkedInRecommendations({ variant = 'full' }: { variant?: 'full' | 'slim' }) {
-	const { data, isLoading } = useSWR('/api/homepage/recommendations', fetcher, {
-		revalidateOnFocus: false,
-	})
+	const { data, isLoading } = useSWR('/api/homepage/recommendations', homepageFetcher, homepageSwrOptions)
 	const { links } = useSocialLinks()
 
 	const recommendations = (data?.recommendations ?? []) as LinkedInRecommendationItem[]

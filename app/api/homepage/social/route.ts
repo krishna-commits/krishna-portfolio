@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server'
 import { siteConfig } from 'config/site'
 import { getSiteSettingJson } from 'lib/site-settings'
 import { getSocialLinksFromConfig } from 'lib/homepage-data'
+import { publicJson } from 'lib/public-api-response'
 
 export const dynamic = 'force-dynamic'
 
@@ -32,10 +32,10 @@ export async function GET() {
 			instagram: stored?.instagram || fallback.instagram || '',
 		}
 
-		return NextResponse.json({ links }, { status: 200 })
+		return publicJson({ links })
 	} catch (error: unknown) {
 		console.error('[Social Links Public API]', error)
 		const fallback = getSocialLinksFromConfig()
-		return NextResponse.json({ links: { ...fallback } }, { status: 200 })
+		return publicJson({ links: { ...fallback } })
 	}
 }

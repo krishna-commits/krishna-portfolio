@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from 'lib/prisma';
 import { isAuthenticated } from 'lib/auth';
 import { getCertificationsFromConfig } from 'lib/homepage-data';
+import { importCertificationsFromConfigIfEmpty } from 'lib/migrate-config-section';
+import { putByAdminId } from 'lib/admin-put-by-id';
 
 export const dynamic = 'force-dynamic';
 
@@ -120,24 +122,26 @@ export async function PUT(request: NextRequest) {
         { status: 500 }
       );
     }
+    const db = prisma;
 
     const body = await request.json();
     const { id, title, issuedby, imageUrl, link, time, orderIndex } = body;
 
-    if (!id) {
-      return NextResponse.json({ error: 'Missing id' }, { status: 400 });
-    }
+    const data = {
+      title,
+      issuedby,
+      imageUrl,
+      link: link || null,
+      time,
+      orderIndex: orderIndex ?? 0,
+    };
 
-    const certification = await prisma.certification.update({
-      where: { id },
-      data: {
-        title,
-        issuedby,
-        imageUrl,
-        link: link || null,
-        time,
-        orderIndex: orderIndex || 0,
-      },
+    const certification = await putByAdminId({
+      id,
+      importIfEmpty: importCertificationsFromConfigIfEmpty,
+      listOrdered: () => db.certification.findMany({ orderBy: { orderIndex: 'asc' } }),
+      update: (dbId) => db.certification.update({ where: { id: dbId }, data }),
+      create: () => db.certification.create({ data }),
     });
 
     return NextResponse.json(

@@ -1,14 +1,13 @@
-import { NextResponse } from 'next/server'
 import { fetchLinkedInRecommendations } from 'lib/linkedin-recommendations'
+import { publicJson } from 'lib/public-api-response'
 
 export const dynamic = 'force-dynamic'
-export const revalidate = 3600
 
 export async function GET() {
 	try {
 		const data = await fetchLinkedInRecommendations()
 
-		return NextResponse.json({
+		return publicJson({
 			recommendations: data.recommendations,
 			count: data.count,
 			profileUrl: data.profileUrl,
@@ -16,7 +15,7 @@ export async function GET() {
 		})
 	} catch (error) {
 		console.error('[Recommendations API] Error:', error)
-		return NextResponse.json(
+		return publicJson(
 			{
 				recommendations: [],
 				count: 0,
@@ -24,7 +23,7 @@ export async function GET() {
 				error: error instanceof Error ? error.message : 'Unknown error',
 				lastUpdated: new Date().toISOString(),
 			},
-			{ status: 500 },
+			500,
 		)
 	}
 }

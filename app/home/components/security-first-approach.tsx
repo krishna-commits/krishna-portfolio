@@ -6,9 +6,8 @@ import { PAGE_CARD, PAGE_ICON_CHIP, PAGE_H1, PAGE_LEAD } from "lib/page-layout"
 import { cn } from "app/theme/lib/utils"
 import useSWR from "swr"
 import { DEFAULT_SECURITY_APPROACH, mergeSecurityApproach } from "lib/security-approach-config"
+import { homepageFetcher, homepageSwrOptions } from "lib/hooks/use-homepage-api"
 import type { SecurityMethodology, SecurityPipelineStage } from "lib/security-approach-config"
-
-const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
 const METHODOLOGY_ICONS = { Code, Server, Eye } as const
 const PIPELINE_ICONS = { Code, Container, CheckCircle2, Cloud, Eye } as const
@@ -24,8 +23,8 @@ function pipelineIcon(item: SecurityPipelineStage) {
 export function SecurityFirstApproach() {
 	const { data } = useSWR<{ securityApproach?: Parameters<typeof mergeSecurityApproach>[0] }>(
 		'/api/homepage/security-approach',
-		fetcher,
-		{ revalidateOnFocus: true },
+		homepageFetcher,
+		homepageSwrOptions,
 	)
 	const config = mergeSecurityApproach(data?.securityApproach ?? DEFAULT_SECURITY_APPROACH)
 

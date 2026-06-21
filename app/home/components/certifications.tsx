@@ -9,10 +9,9 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Button } from "app/theme/components/ui/button"
 import { useState } from "react"
 import useSWR from 'swr'
+import { homepageFetcher, homepageSwrOptions } from 'lib/hooks/use-homepage-api'
 import { PAGE_CARD, PAGE_H1, PAGE_ICON_CHIP, PAGE_LEAD } from "lib/page-layout"
 import { cn } from "app/theme/lib/utils"
-
-const fetcher = (url: string) => fetch(url).then(res => res.json())
 
 const getCertificationsByProvider = (certifications: any[] = []) => {
 	const certs = certifications
@@ -186,7 +185,7 @@ function CertificationProviderCard({
 }
 
 export function Certifications({ limit }: { limit?: number }) {
-	const { data } = useSWR('/api/homepage/certifications', fetcher)
+	const { data } = useSWR('/api/homepage/certifications', homepageFetcher, homepageSwrOptions)
 	const allCertifications = data?.certifications || siteConfig.certification || []
 	const [showAll, setShowAll] = useState(false)
 

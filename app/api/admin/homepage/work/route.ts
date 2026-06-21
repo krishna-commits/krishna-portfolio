@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from 'lib/prisma';
 import { isAuthenticated } from 'lib/auth';
 import { getWorkExperienceFromConfig } from 'lib/homepage-data';
+import { configAdminIndex, parseAdminRecordId } from 'lib/admin-db-id';
+import { importWorkFromConfigIfEmpty } from 'lib/migrate-config-section';
 
 export const dynamic = 'force-dynamic';
 
@@ -126,22 +128,54 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const { id, organization, role, time, description, imageUrl, url, orderIndex } = body;
 
-    if (!id) {
-      return NextResponse.json({ error: 'Missing id' }, { status: 400 });
+    if (!organization || !role || !time) {
+      return NextResponse.json(
+        { error: 'Missing required fields: organization, role, time' },
+        { status: 400 }
+      );
     }
 
-    const workExperience = await prisma.workExperience.update({
-      where: { id },
-      data: {
-        organization,
-        role,
-        time,
-        description: description || null,
-        imageUrl: imageUrl || null,
-        url: url || null,
-        orderIndex: orderIndex || 0,
-      },
-    });
+    await importWorkFromConfigIfEmpty();
+
+    const data = {
+      organization,
+      role,
+      time,
+      description: description || null,
+      imageUrl: imageUrl || null,
+      url: url || null,
+      orderIndex: orderIndex ?? 0,
+    };
+
+    const dbId = parseAdminRecordId(id);
+    if (dbId) {
+      const workExperience = await prisma.workExperience.update({
+        where: { id: dbId },
+        data,
+      });
+      return NextResponse.json(
+        { message: 'Work experience entry updated successfully', workExperience },
+        { status: 200 }
+      );
+    }
+
+    const configIndex = configAdminIndex(id);
+    if (configIndex !== null) {
+      const rows = await prisma.workExperience.findMany({ orderBy: { orderIndex: 'asc' } });
+      const target = rows[configIndex];
+      if (target) {
+        const workExperience = await prisma.workExperience.update({
+          where: { id: target.id },
+          data,
+        });
+        return NextResponse.json(
+          { message: 'Work experience entry updated successfully', workExperience },
+          { status: 200 }
+        );
+      }
+    }
+
+    const workExperience = await prisma.workExperience.create({ data });
 
     return NextResponse.json(
       { message: 'Work experience entry updated successfully', workExperience },

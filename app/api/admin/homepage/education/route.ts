@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from 'lib/prisma';
 import { isAuthenticated } from 'lib/auth';
 import { getEducationFromConfig } from 'lib/homepage-data';
+import { importEducationFromConfigIfEmpty } from 'lib/migrate-config-section';
+import { putByAdminId } from 'lib/admin-put-by-id';
 
 export const dynamic = 'force-dynamic';
 
@@ -122,25 +124,27 @@ export async function PUT(request: NextRequest) {
         { status: 500 }
       );
     }
+    const db = prisma;
 
     const body = await request.json();
     const { id, organization, course, university, time, thesis, modules, orderIndex } = body;
 
-    if (!id) {
-      return NextResponse.json({ error: 'Missing id' }, { status: 400 });
-    }
+    const data = {
+      organization,
+      course,
+      university: university || null,
+      time,
+      thesis: thesis || null,
+      modules: modules || [],
+      orderIndex: orderIndex ?? 0,
+    };
 
-    const education = await prisma.education.update({
-      where: { id },
-      data: {
-        organization,
-        course,
-        university: university || null,
-        time,
-        thesis: thesis || null,
-        modules: modules || [],
-        orderIndex: orderIndex || 0,
-      },
+    const education = await putByAdminId({
+      id,
+      importIfEmpty: importEducationFromConfigIfEmpty,
+      listOrdered: () => db.education.findMany({ orderBy: { orderIndex: 'asc' } }),
+      update: (dbId) => db.education.update({ where: { id: dbId }, data }),
+      create: () => db.education.create({ data }),
     });
 
     return NextResponse.json(

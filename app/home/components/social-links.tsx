@@ -10,8 +10,7 @@ import { Icons } from "app/theme/components/theme/icons"
 import { cn } from "app/theme/lib/utils"
 import { PAGE_CARD, PAGE_ICON_CHIP, PAGE_H1, PAGE_LEAD, PAGE_CARD_LIGHT } from "lib/page-layout"
 import useSWR from "swr"
-
-const fetcher = (url: string) => fetch(url).then((r) => r.json())
+import { homepageFetcher, homepageSwrOptions } from "lib/hooks/use-homepage-api"
 
 type SocialLinkDef = {
 	name: string
@@ -34,8 +33,8 @@ const SOCIAL_DEFS: SocialLinkDef[] = [
 export function SocialLinks() {
 	const { data } = useSWR<{ links?: Record<string, string> }>(
 		'/api/homepage/social',
-		fetcher,
-		{ revalidateOnFocus: true },
+		homepageFetcher,
+		homepageSwrOptions,
 	)
 
 	const socialLinks = useMemo(() => {

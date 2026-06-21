@@ -6,14 +6,13 @@ import {
 	mergeNavigationConfig,
 	type NavigationConfig,
 } from 'lib/navigation-config'
-
-const fetcher = (url: string) => fetch(url).then((r) => r.json())
+import { homepageFetcher, homepageSwrOptions } from 'lib/hooks/use-homepage-api'
 
 export function useNavigationConfig() {
 	const { data, isLoading, mutate } = useSWR<{ navigation?: Partial<NavigationConfig> }>(
 		'/api/homepage/navigation',
-		fetcher,
-		{ revalidateOnFocus: true },
+		homepageFetcher,
+		homepageSwrOptions,
 	)
 
 	const navigation = mergeNavigationConfig(data?.navigation)

@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server'
 import {
 	CONTACT_PAGE_KEY,
 	DEFAULT_CONTACT_PAGE,
 	mergeContactPage,
 } from 'lib/contact-page-config'
 import { getSiteSettingJson } from 'lib/site-settings'
+import { publicJson } from 'lib/public-api-response'
 
 export const dynamic = 'force-dynamic'
 
@@ -14,9 +14,9 @@ export async function GET() {
 			CONTACT_PAGE_KEY,
 			null,
 		)
-		return NextResponse.json({ contact: mergeContactPage(stored) }, { status: 200 })
+		return publicJson({ contact: mergeContactPage(stored) })
 	} catch (error: unknown) {
 		console.error('[Contact Page Public API]', error)
-		return NextResponse.json({ contact: DEFAULT_CONTACT_PAGE }, { status: 200 })
+		return publicJson({ contact: DEFAULT_CONTACT_PAGE })
 	}
 }

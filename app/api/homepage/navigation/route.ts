@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server'
 import {
 	DEFAULT_NAVIGATION_CONFIG,
 	NAVIGATION_CONFIG_KEY,
 	mergeNavigationConfig,
 } from 'lib/navigation-config'
 import { getSiteSettingJson } from 'lib/site-settings'
+import { publicJson } from 'lib/public-api-response'
 
 export const dynamic = 'force-dynamic'
 
@@ -14,9 +14,9 @@ export async function GET() {
 			NAVIGATION_CONFIG_KEY,
 			null,
 		)
-		return NextResponse.json({ navigation: mergeNavigationConfig(stored) }, { status: 200 })
+		return publicJson({ navigation: mergeNavigationConfig(stored) })
 	} catch (error: unknown) {
 		console.error('[Navigation Public API]', error)
-		return NextResponse.json({ navigation: DEFAULT_NAVIGATION_CONFIG }, { status: 200 })
+		return publicJson({ navigation: DEFAULT_NAVIGATION_CONFIG })
 	}
 }

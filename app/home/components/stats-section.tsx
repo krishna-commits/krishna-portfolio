@@ -23,6 +23,7 @@ import { cn } from 'app/theme/lib/utils'
 import { PAGE_CARD, PAGE_H1, PAGE_ICON_CHIP, PAGE_LEAD, PAGE_CARD_LIGHT } from 'lib/page-layout'
 import { PublicationsBand } from './publications-section'
 import { useLightMotion } from 'lib/hooks/use-light-motion'
+import { homepageFetcher, homepageSwrOptions } from 'lib/hooks/use-homepage-api'
 
 const fetcher = async (url: string) => {
 	const res = await fetch(url)
@@ -345,8 +346,8 @@ export const StatsSection = memo(function StatsSection({
 	projectsCount?: number
 }) {
 	const lightMotion = useLightMotion()
-	const { data: certData } = useSWR('/api/homepage/certifications', fetcher, { revalidateOnFocus: true })
-	const { data: statsSettings } = useSWR('/api/homepage/stats', fetcher, { revalidateOnFocus: true })
+	const { data: certData } = useSWR('/api/homepage/certifications', homepageFetcher, homepageSwrOptions)
+	const { data: statsSettings } = useSWR('/api/homepage/stats', homepageFetcher, homepageSwrOptions)
 	const { data: researchGateData, isLoading: researchGateLoading } = useSWR(
 		'/api/researchgate',
 		fetcher,

@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server'
 import { getSiteSettingJson } from 'lib/site-settings'
 import {
 	DEFAULT_PERSONAL_NOTE,
 	mergePersonalNote,
 	type PersonalNoteConfig,
 } from 'lib/personal-note-config'
+import { publicJson } from 'lib/public-api-response'
 
 export const dynamic = 'force-dynamic'
 
@@ -15,9 +15,9 @@ export async function GET() {
 			null,
 		)
 		const personalNote = mergePersonalNote(stored)
-		return NextResponse.json({ personalNote }, { status: 200 })
+		return publicJson({ personalNote })
 	} catch (error: unknown) {
 		console.error('[Personal Note Public API]', error)
-		return NextResponse.json({ personalNote: DEFAULT_PERSONAL_NOTE }, { status: 200 })
+		return publicJson({ personalNote: DEFAULT_PERSONAL_NOTE })
 	}
 }

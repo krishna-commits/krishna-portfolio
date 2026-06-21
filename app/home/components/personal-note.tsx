@@ -4,11 +4,10 @@ import { motion } from 'framer-motion'
 import { Heart, Sparkles, Target, Zap } from 'lucide-react'
 import useSWR from 'swr'
 import { DEFAULT_PERSONAL_NOTE, mergePersonalNote } from 'lib/personal-note-config'
+import { homepageFetcher, homepageSwrOptions } from 'lib/hooks/use-homepage-api'
 import type { PersonalNoteCard } from 'lib/personal-note-config'
 import { PAGE_CARD, PAGE_H1, PAGE_LEAD } from 'lib/page-layout'
 import { cn } from 'app/theme/lib/utils'
-
-const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
 const CARD_ICONS = { Target, Sparkles, Zap } as const
 
@@ -19,8 +18,8 @@ function cardIcon(card: PersonalNoteCard) {
 export function PersonalNote() {
 	const { data } = useSWR<{ personalNote?: Parameters<typeof mergePersonalNote>[0] }>(
 		'/api/homepage/personal-note',
-		fetcher,
-		{ revalidateOnFocus: true },
+		homepageFetcher,
+		homepageSwrOptions,
 	)
 	const config = mergePersonalNote(data?.personalNote ?? DEFAULT_PERSONAL_NOTE)
 
