@@ -3,6 +3,15 @@ import { ThemeProvider } from "./components/theme-provider"
 import { ClientLayoutWrapper } from './client-layout';
 import { SiteShell } from './components/site-shell';
 import { rootLayoutMetadata } from './metadata';
+import { siteConfig } from 'config/site';
+
+const profileImageOrigin = (() => {
+	try {
+		return new URL(siteConfig.profile_image).origin
+	} catch {
+		return 'https://yqymybxe5e8jynd2.public.blob.vercel-storage.com'
+	}
+})()
 
 export const metadata = rootLayoutMetadata
 
@@ -20,6 +29,8 @@ export default function RootLayout({
         <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href={profileImageOrigin} />
+        <link rel="dns-prefetch" href={profileImageOrigin} />
         <link rel="dns-prefetch" href="https://api.github.com" />
         <link rel="dns-prefetch" href="https://github.com" />
       </head>

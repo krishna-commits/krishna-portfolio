@@ -62,6 +62,33 @@ const requiredVars: Record<string, EnvVarConfig> = {
   },
 };
 
+const optionalIntegrations: Record<string, EnvVarConfig> = {
+  'CLOUDFLARE_ZONE_ID': {
+    description: 'Cloudflare Analytics Hub',
+    required: false,
+  },
+  'CLOUDFLARE_API_TOKEN': {
+    description: 'Cloudflare API token (Analytics Read)',
+    required: false,
+  },
+  'VERCEL_ACCESS_TOKEN': {
+    description: 'Vercel Observability API',
+    required: false,
+  },
+  'VERCEL_TEAM_ID': {
+    description: 'Vercel team ID for analytics API',
+    required: false,
+  },
+  'VERCEL_PROJECT_ID': {
+    description: 'Vercel project ID for analytics API',
+    required: false,
+  },
+  'VERCEL_ANALYTICS_DRAIN_SECRET': {
+    description: 'Auth secret for /api/analytics/drain/vercel',
+    required: false,
+  },
+};
+
 console.log('📋 Environment Variables Status:\n');
 console.log('='.repeat(60));
 
@@ -101,10 +128,21 @@ for (const [varName, config] of Object.entries(requiredVars)) {
     if (containsForbidden && isProduction) {
       console.log(`❌ ${varName}: Contains forbidden value (localhost/127.0.0.1)`);
       console.log(`   ${config.description}`);
-      console.log(`   ⚠️  Production cannot use localhost - check Vercel environment variables`);
+      console.log(`   ⚠️  Production cannot use localhost - set to the same direct URL as POSTGRES_URL`);
       hasErrors = true;
       console.log('');
       continue;
+    }
+
+    if (containsForbidden && !isProduction && varName === 'POSTGRES_URL_NON_POOLING') {
+      const remoteUrl = process.env.POSTGRES_URL || process.env.DATABASE_URL || '';
+      if (remoteUrl && !remoteUrl.includes('localhost')) {
+        console.log(`⚠️  ${varName}: Points to localhost but POSTGRES_URL is remote`);
+        console.log(`   Copy POSTGRES_URL into POSTGRES_URL_NON_POOLING for db push / migrations`);
+        hasWarnings = true;
+        console.log('');
+        continue;
+      }
     }
   }
   
@@ -120,6 +158,15 @@ for (const [varName, config] of Object.entries(requiredVars)) {
 }
 
 console.log('='.repeat(60));
+
+console.log('\n📡 Optional integrations (Analytics Hub):\n');
+
+for (const [varName, config] of Object.entries(optionalIntegrations)) {
+  const isSet = !!process.env[varName];
+  console.log(`${isSet ? '✅' : '○'} ${varName}: ${isSet ? 'Set' : 'Not set'} — ${config.description}`);
+}
+
+console.log('\n' + '='.repeat(60));
 
 if (hasErrors) {
   console.log('\n❌ ERRORS FOUND:');

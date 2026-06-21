@@ -11,8 +11,6 @@ import { PageTransition } from './page-transitions'
 import { PerformanceMonitor } from './performance-monitor'
 import { VisitorTracker } from './visitor-tracker'
 import { PerformanceTracker } from './performance-tracker'
-import { SpeedInsights } from '@vercel/speed-insights/next'
-import { Analytics } from '@vercel/analytics/react'
 
 /**
  * Renders public site chrome once. Admin routes pass children through unchanged
@@ -41,8 +39,6 @@ export function SiteShell({ children }: { children: ReactNode }) {
 				<VisitorTracker />
 			</Suspense>
 			<PerformanceTracker />
-			<SpeedInsights />
-			<Analytics />
 		</>
 	)
 }

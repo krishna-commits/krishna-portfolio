@@ -6,6 +6,7 @@
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 import { spawn } from 'child_process';
+import { resolveDirectDatabaseUrl } from '../lib/db-env';
 
 // Load .env.local first (highest priority)
 const envLocalPath = path.join(process.cwd(), '.env.local');
@@ -35,10 +36,9 @@ if (!prismaUrl && !nonPoolingUrl) {
   process.exit(1);
 }
 
-if (!process.env.POSTGRES_URL_NON_POOLING && nonPoolingUrl) {
-  // Set it from POSTGRES_URL if available
-  process.env.POSTGRES_URL_NON_POOLING = nonPoolingUrl;
-  console.log('ℹ️  Using POSTGRES_URL as POSTGRES_URL_NON_POOLING\n');
+const { usedFallback } = resolveDirectDatabaseUrl();
+if (usedFallback) {
+  console.warn('⚠️  POSTGRES_URL_NON_POOLING points to localhost; using POSTGRES_URL for Prisma Studio.\n');
 }
 
 // Run prisma studio with environment variables

@@ -2,8 +2,6 @@
 
 import { motion } from 'framer-motion'
 import { memo, useMemo, useEffect, useState, type ComponentType } from 'react'
-import { allResearchCores } from 'contentlayer/generated'
-import { allProjects } from 'contentlayer/generated'
 import { siteConfig } from 'config/site'
 import useSWR from 'swr'
 import Link from 'next/link'
@@ -339,7 +337,13 @@ function PanelHeader({
 	)
 }
 
-export const StatsSection = memo(function StatsSection() {
+export const StatsSection = memo(function StatsSection({
+	researchCoreCount = 0,
+	projectsCount = 0,
+}: {
+	researchCoreCount?: number
+	projectsCount?: number
+}) {
 	const lightMotion = useLightMotion()
 	const { data: certData } = useSWR('/api/homepage/certifications', fetcher, { revalidateOnFocus: true })
 	const { data: statsSettings } = useSWR('/api/homepage/stats', fetcher, { revalidateOnFocus: true })
@@ -354,8 +358,8 @@ export const StatsSection = memo(function StatsSection() {
 		{ revalidateOnFocus: false, revalidateOnReconnect: true, refreshInterval: 3600000 },
 	)
 
-	const technicalGuideCount = useMemo(() => allResearchCores.length, [])
-	const projectsCount = useMemo(() => allProjects.length, [])
+	const technicalGuideCount = researchCoreCount
+	const projectsCountResolved = projectsCount
 	const certificationsCount = useMemo(
 		() => certData?.certifications?.length ?? siteConfig.certification.length,
 		[certData],
@@ -406,12 +410,12 @@ export const StatsSection = memo(function StatsSection() {
 			{
 				icon: Code,
 				label: 'Projects',
-				value: projectsCount,
+				value: projectsCountResolved,
 				description: 'Live production tools',
 				accent: 'emerald',
 			},
 		],
-		[technicalGuideCount, certificationsCount, projectsCount],
+		[technicalGuideCount, certificationsCount, projectsCountResolved],
 	)
 
 	const researchStats: StatItem[] = useMemo(() => {

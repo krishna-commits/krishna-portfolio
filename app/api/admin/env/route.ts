@@ -1,54 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from 'lib/prisma';
 import { isAuthenticated } from 'lib/auth';
-import crypto from 'crypto';
-
-const ALGORITHM = 'aes-256-gcm';
-const IV_LENGTH = 16;
-const SALT_LENGTH = 64;
-const TAG_LENGTH = 16;
-const TAG_POSITION = SALT_LENGTH + IV_LENGTH;
-const ENCRYPTED_POSITION = TAG_POSITION + TAG_LENGTH;
-
-function getEncryptionKey(): Buffer {
-  const secret = process.env.AUTH_SECRET || 'default-secret-key-change-this-in-production';
-  return crypto.scryptSync(secret, 'salt', 32);
-}
-
-function encrypt(text: string): string {
-  const key = getEncryptionKey();
-  const iv = crypto.randomBytes(IV_LENGTH);
-  const salt = crypto.randomBytes(SALT_LENGTH);
-  
-  const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
-  
-  let encrypted = cipher.update(text, 'utf8');
-  encrypted = Buffer.concat([encrypted, cipher.final()]);
-  const tag = cipher.getAuthTag();
-  
-  return Buffer.concat([salt, iv, tag, encrypted]).toString('hex');
-}
-
-function decrypt(encryptedText: string): string {
-  try {
-    const data = Buffer.from(encryptedText, 'hex');
-    const salt = data.subarray(0, SALT_LENGTH);
-    const iv = data.subarray(SALT_LENGTH, TAG_POSITION);
-    const tag = data.subarray(TAG_POSITION, ENCRYPTED_POSITION);
-    const encrypted = data.subarray(ENCRYPTED_POSITION);
-    
-    const key = getEncryptionKey();
-    const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);
-    decipher.setAuthTag(tag);
-    
-    let decrypted = decipher.update(encrypted);
-    decrypted = Buffer.concat([decrypted, decipher.final()]);
-    
-    return decrypted.toString('utf8');
-  } catch (error) {
-    throw new Error('Decryption failed');
-  }
-}
+import {
+  encryptSecret,
+  decryptSecret,
+  isSensitiveEnvKey,
+  maskSecretValue,
+} from 'lib/env-secrets';
 
 export const dynamic = 'force-dynamic';
 
@@ -79,18 +37,11 @@ const PROTECTED_KEYS = [
 ];
 
 function isSensitive(key: string): boolean {
-  const lowerKey = key.toLowerCase();
-  return SENSITIVE_KEYS.some(sensitive => lowerKey.includes(sensitive));
+  return isSensitiveEnvKey(key);
 }
 
 function maskValue(value: string, maskChar: string = '*'): string {
-  if (!value || value.length <= 8) {
-    return maskChar.repeat(8);
-  }
-  const visibleStart = value.substring(0, 3);
-  const visibleEnd = value.substring(value.length - 3);
-  const masked = maskChar.repeat(Math.max(0, value.length - 6));
-  return `${visibleStart}${masked}${visibleEnd}`;
+  return maskSecretValue(value, maskChar);
 }
 
 // GET - Get all environment variables (with masking)
@@ -206,7 +157,7 @@ export async function POST(request: NextRequest) {
     // Encrypt sensitive values before storing
     let encryptedValue = value;
     if (isSensitive(key)) {
-      encryptedValue = encrypt(value);
+      encryptedValue = encryptSecret(value);
     }
 
     const settingKey = `env:${key}`;

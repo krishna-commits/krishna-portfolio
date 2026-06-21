@@ -265,3 +265,22 @@ model ActiveSession {
   @@index([expiresAt])
   @@map("active_sessions")
 }
+
+// Events received from Vercel Web Analytics Drains (and other external drains)
+model AnalyticsDrainEvent {
+  id        Int      @id @default(autoincrement())
+  source    String   @db.VarChar(50)
+  eventType String   @map("event_type") @db.VarChar(50)
+  pathname  String?  @db.VarChar(500)
+  origin    String?  @db.VarChar(255)
+  country   String?  @db.VarChar(10)
+  deviceId  String?  @map("device_id") @db.VarChar(100)
+  referrer  String?  @db.VarChar(500)
+  payload   String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([source])
+  @@index([pathname])
+  @@index([createdAt])
+  @@map("analytics_drain_events")
+}

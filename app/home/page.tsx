@@ -5,33 +5,15 @@ import dynamic from "next/dynamic"
 import { Suspense } from "react"
 import {
 	GitHubMetricsSkeleton,
-	HeroSkeleton,
 	SkillsShowcaseSkeleton,
-	StatsCardSkeleton,
 } from "../components/skeleton-loaders"
 import { ErrorBoundary } from "../components/error-boundary"
 import { CopyrightFooter } from "../components/copyright-footer"
 import { buildHomeStructuredData } from "lib/build-home-structured-data"
+import { PROJECT_COUNT, RESEARCH_CORE_COUNT } from "lib/content-counts"
 import { cn } from "app/theme/lib/utils"
-
-const HeroSection = dynamic(
-	() => import("./components/hero-section").then((mod) => ({ default: mod.HeroSection })),
-	{ loading: () => <HeroSkeleton />, ssr: true },
-)
-
-const StatsSection = dynamic(
-	() => import("./components/stats-section").then((mod) => ({ default: mod.StatsSection })),
-	{
-		loading: () => (
-			<div className="grid grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
-				{Array.from({ length: 4 }).map((_, i) => (
-					<StatsCardSkeleton key={i} />
-				))}
-			</div>
-		),
-		ssr: true,
-	},
-)
+import { HeroSection } from "./components/hero-section"
+import { StatsSection } from "./components/stats-section"
 
 const FeaturedProjects = dynamic(
 	() => import("./components/featured-projects").then((mod) => ({ default: mod.FeaturedProjects })),
@@ -159,7 +141,10 @@ export default async function HomePage() {
 
 				<main className="relative w-full" role="main" aria-label="Main content">
 					<SectionShell id="stats-heading" className={MUTED_SECTION}>
-						<StatsSection />
+						<StatsSection
+							researchCoreCount={RESEARCH_CORE_COUNT}
+							projectsCount={PROJECT_COUNT}
+						/>
 						<div className="mt-5 border-t border-border/60 pt-4">
 							<ContentHubLinks />
 						</div>

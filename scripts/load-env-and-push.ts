@@ -6,6 +6,7 @@
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 import { execSync } from 'child_process';
+import { resolveDirectDatabaseUrl } from '../lib/db-env';
 
 // Load .env.local first (highest priority)
 const envLocalPath = path.join(process.cwd(), '.env.local');
@@ -39,6 +40,13 @@ if (!process.env.POSTGRES_URL_NON_POOLING && nonPoolingUrl) {
   // Set it from POSTGRES_URL if available
   process.env.POSTGRES_URL_NON_POOLING = nonPoolingUrl;
   console.log('ℹ️  Using POSTGRES_URL as POSTGRES_URL_NON_POOLING\n');
+}
+
+// db push uses directUrl — localhost often stale when the app uses hosted Postgres/Accelerate
+const { usedFallback } = resolveDirectDatabaseUrl();
+if (usedFallback) {
+  console.warn('⚠️  POSTGRES_URL_NON_POOLING points to localhost but POSTGRES_URL is remote.');
+  console.warn('   Using POSTGRES_URL for schema push (update .env.local to match production).\n');
 }
 
 // Run prisma db push

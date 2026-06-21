@@ -1,7 +1,8 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { ReactNode } from 'react'
+import { usePathname } from 'next/navigation'
 
 interface PageTransitionProps {
 	children: ReactNode
@@ -9,10 +10,17 @@ interface PageTransitionProps {
 
 /**
  * Lightweight enter animation only.
- * Do not use AnimatePresence / exit animations on layout {children} 
- * that unmounts Next.js App Router slots and throws parallelRouterKey errors.
+ * Skipped on homepage — initial opacity:0 delays LCP.
  */
 export function PageTransition({ children }: PageTransitionProps) {
+	const pathname = usePathname()
+	const prefersReducedMotion = useReducedMotion()
+	const skipAnimation = pathname === '/' || prefersReducedMotion
+
+	if (skipAnimation) {
+		return <div className="w-full">{children}</div>
+	}
+
 	return (
 		<motion.div
 			initial={{ opacity: 0, y: 8 }}

@@ -26,6 +26,7 @@ import {
   Cloud,
   RefreshCw,
   X,
+  Globe2,
 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from 'app/theme/lib/utils';
@@ -326,6 +327,13 @@ export default function AdminDashboard() {
               </div>
             </CardHeader>
             <CardContent className="space-y-3">
+              <Link href="/admin/analytics/integrations">
+                <Button variant="outline" className="w-full justify-start group hover:bg-emerald-50 dark:hover:bg-emerald-950/20 transition-colors">
+                  <Globe2 className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
+                  Analytics Hub
+                  <ArrowUpRight className="ml-auto h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </Button>
+              </Link>
               <Link href="/admin/analytics">
                 <Button variant="outline" className="w-full justify-start group hover:bg-emerald-50 dark:hover:bg-emerald-950/20 transition-colors">
                   <BarChart3 className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />

@@ -83,7 +83,7 @@ export default function CloudflareAnalyticsPage() {
                   <li>Go to Cloudflare Dashboard → Your Domain → Overview</li>
                   <li>Copy your Zone ID (found in the right sidebar)</li>
                   <li>Create an API Token: Account → API Tokens → Create Token</li>
-                  <li>Grant permissions: Zone → Zone → Read</li>
+                  <li>Grant permissions: <strong>Zone → Analytics → Read</strong> (and Zone → Zone → Read)</li>
                   <li>Add to Vercel Environment Variables:
                     <ul className="list-disc list-inside ml-4 mt-1 space-y-1">
                       <li><code className="bg-slate-100 dark:bg-slate-700 px-1 py-0.5 rounded">CLOUDFLARE_ZONE_ID</code></li>

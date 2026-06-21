@@ -23,6 +23,7 @@ import {
     Shield,
     Cloud,
     BookMarked,
+    Globe2,
   } from 'lucide-react';
 import { Button } from 'app/theme/components/ui/button';
 import toast from 'react-hot-toast';
@@ -81,6 +82,12 @@ const adminNavItems = [
     href: '/admin/content',
     icon: FileText,
     description: 'Manage MDX content',
+  },
+  {
+    title: 'Analytics Hub',
+    href: '/admin/analytics/integrations',
+    icon: Globe2,
+    description: 'Cloudflare, Vercel & on-site metrics',
   },
   {
     title: 'Analytics',

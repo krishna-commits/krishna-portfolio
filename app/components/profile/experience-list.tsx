@@ -4,12 +4,13 @@ import { siteConfig } from "config/site";
 import Link from "next/link";
 
 export interface WorkExperienceItem {
-  imageUrl: string;
+  imageUrl?: string;
   organization: string;
   time: string;
   role: string;
-  url: string;
-  course: string; // used as a unique key in the component
+  url?: string;
+  description?: string;
+  course?: string;
 }
 
 export interface SiteConfig {

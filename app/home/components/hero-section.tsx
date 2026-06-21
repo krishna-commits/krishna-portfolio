@@ -1,41 +1,32 @@
 'use client'
 
-import { useState, useEffect, useCallback, memo } from "react"
+import { useState, useCallback, memo } from "react"
 import Image from "next/image"
 import { cn } from "app/theme/lib/utils"
 import { Badge } from "app/theme/components/ui/badge"
-import { CheckCircle2, Shield, ArrowRight, Mail, ChevronDown, MoreHorizontal } from "lucide-react"
+import { CheckCircle2, Shield, ArrowRight, Mail, ChevronDown, MoreHorizontal, FileText } from "lucide-react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { useDeferredValue as useReactDeferredValue } from "react"
-import { RevealText } from "../../components/animated-typography"
 import { useHero } from "lib/hooks/use-homepage-data"
+import { useLightMotion } from "lib/hooks/use-light-motion"
 
 const VIEWS = ["Academic", "Enterprise"] as const
 type ViewType = (typeof VIEWS)[number]
 
 export const HeroSection = memo(function HeroSection() {
 	const { hero } = useHero()
+	const lightMotion = useLightMotion()
 
 	const [activeView, setActiveView] = useState<ViewType>("Enterprise")
-	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
 	const [descExpanded, setDescExpanded] = useState(false)
 	const [moreOpen, setMoreOpen] = useState(false)
 
 	const deferredView = useReactDeferredValue(activeView)
+	const skipMotion = lightMotion
 
 	const handleViewChange = useCallback((view: ViewType) => {
 		setActiveView(view)
-	}, [])
-
-	useEffect(() => {
-		const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-		setPrefersReducedMotion(mediaQuery.matches)
-
-		const handleChange = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches)
-		mediaQuery.addEventListener('change', handleChange)
-
-		return () => mediaQuery.removeEventListener('change', handleChange)
 	}, [])
 
 	return (
@@ -50,9 +41,9 @@ export const HeroSection = memo(function HeroSection() {
 						<div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 lg:gap-6 items-start">
 							<div className="lg:col-span-7 space-y-2.5 sm:space-y-3">
 								<motion.div
-									initial={prefersReducedMotion ? {} : { opacity: 0, y: 10 }}
-									animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
-									transition={prefersReducedMotion ? {} : { duration: 0.4, ease: "easeOut" }}
+									initial={skipMotion ? false : { opacity: 0, y: 10 }}
+									animate={skipMotion ? undefined : { opacity: 1, y: 0 }}
+									transition={skipMotion ? undefined : { duration: 0.4, ease: "easeOut" }}
 									className="flex items-center gap-1.5 flex-wrap"
 								>
 									<Badge className="border-0 bg-amber-600 px-2 py-1 text-xs font-semibold text-white shadow-sm dark:bg-amber-600">
@@ -65,13 +56,13 @@ export const HeroSection = memo(function HeroSection() {
 								</motion.div>
 
 								<motion.div
-									initial={prefersReducedMotion ? {} : { opacity: 0, y: 10 }}
-									animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
-									transition={prefersReducedMotion ? {} : { duration: 0.4, delay: 0.1, ease: "easeOut" }}
+									initial={skipMotion ? {} : { opacity: 0, y: 10 }}
+									animate={skipMotion ? {} : { opacity: 1, y: 0 }}
+									transition={skipMotion ? {} : { duration: 0.4, delay: 0.1, ease: "easeOut" }}
 									className="space-y-1.5 sm:space-y-2"
 								>
 									<h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight tracking-tight text-slate-900 dark:text-slate-50">
-										<RevealText variant="slide-up">{hero.name}</RevealText>
+										{hero.name}
 									</h1>
 									<p className="text-lg font-semibold leading-snug text-amber-600 dark:text-amber-400 sm:text-xl">
 										{hero.headlineLine1}
@@ -104,9 +95,9 @@ export const HeroSection = memo(function HeroSection() {
 								</div>
 
 								<motion.div
-									initial={prefersReducedMotion ? {} : { opacity: 0, y: 10 }}
-									animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
-									transition={prefersReducedMotion ? {} : { duration: 0.4, delay: 0.2, ease: "easeOut" }}
+									initial={skipMotion ? {} : { opacity: 0, y: 10 }}
+									animate={skipMotion ? {} : { opacity: 1, y: 0 }}
+									transition={skipMotion ? {} : { duration: 0.4, delay: 0.2, ease: "easeOut" }}
 									className="flex flex-wrap items-center gap-2 pt-0.5"
 								>
 									<Link
@@ -123,6 +114,13 @@ export const HeroSection = memo(function HeroSection() {
 									>
 										View Projects
 										<ArrowRight className="h-4 w-4" aria-hidden />
+									</Link>
+									<Link
+										href="/contact#send-a-message"
+										className="inline-flex items-center gap-2 rounded-lg border border-border bg-muted/50 px-4 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
+									>
+										<FileText className="h-4 w-4" aria-hidden />
+										Request Resume
 									</Link>
 									<Link
 										href="/research-core"
@@ -159,9 +157,9 @@ export const HeroSection = memo(function HeroSection() {
 
 							<div className="lg:col-span-5 space-y-2.5 sm:space-y-3">
 								<motion.div
-									initial={prefersReducedMotion ? {} : { opacity: 0, y: 8 }}
-									animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
-									transition={prefersReducedMotion ? {} : { duration: 0.45, delay: 0.15, ease: "easeOut" }}
+									initial={skipMotion ? {} : { opacity: 0, y: 8 }}
+									animate={skipMotion ? {} : { opacity: 1, y: 0 }}
+									transition={skipMotion ? {} : { duration: 0.45, delay: 0.15, ease: "easeOut" }}
 									className="relative"
 								>
 									<div className="relative w-full max-w-[240px] sm:max-w-[280px] md:max-w-[300px] mx-auto aspect-square">
@@ -173,7 +171,8 @@ export const HeroSection = memo(function HeroSection() {
 													fill
 													className="object-cover object-center"
 													priority
-													quality={95}
+													fetchPriority="high"
+													quality={80}
 													sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
 												/>
 											) : (
@@ -186,9 +185,9 @@ export const HeroSection = memo(function HeroSection() {
 								</motion.div>
 
 								<motion.div
-									initial={prefersReducedMotion ? {} : { opacity: 0, y: 10 }}
-									animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
-									transition={prefersReducedMotion ? {} : { duration: 0.4, delay: 0.25, ease: "easeOut" }}
+									initial={skipMotion ? {} : { opacity: 0, y: 10 }}
+									animate={skipMotion ? {} : { opacity: 1, y: 0 }}
+									transition={skipMotion ? {} : { duration: 0.4, delay: 0.25, ease: "easeOut" }}
 									className="space-y-2"
 								>
 									<div className="flex items-center justify-between p-1 rounded-xl bg-muted/60 border border-border" role="tablist" aria-label="View toggle">
@@ -215,10 +214,10 @@ export const HeroSection = memo(function HeroSection() {
 									<AnimatePresence mode="wait">
 										<motion.div
 											key={deferredView}
-											initial={prefersReducedMotion ? {} : { opacity: 0, y: 5 }}
-											animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
-											exit={prefersReducedMotion ? {} : { opacity: 0, y: -5 }}
-											transition={prefersReducedMotion ? {} : { duration: 0.2, ease: "easeInOut" }}
+											initial={skipMotion ? {} : { opacity: 0, y: 5 }}
+											animate={skipMotion ? {} : { opacity: 1, y: 0 }}
+											exit={skipMotion ? {} : { opacity: 0, y: -5 }}
+											transition={skipMotion ? {} : { duration: 0.2, ease: "easeInOut" }}
 											className="p-3 sm:p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-card shadow-sm"
 											role="tabpanel"
 											id={`${deferredView.toLowerCase()}-panel`}

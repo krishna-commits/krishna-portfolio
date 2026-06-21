@@ -171,6 +171,33 @@ export const siteConfig = {
 
   // WORK EXPERIENCE
   work_experience: [
+    {
+      organization: 'Vianet Communications Ltd',
+      role: 'Senior DevSecOps Engineer',
+      time: '2022 – Present',
+      description:
+        'Secure network and cloud solutions for enterprise clients; CI/CD automation, production incident response, and defense-in-depth across corporate infrastructure.',
+      imageUrl: '',
+      url: 'https://www.vianet.com.np',
+    },
+    {
+      organization: 'BeyondID',
+      role: 'DevOps Engineer',
+      time: '2021 – 2024',
+      description:
+        'Built and maintained Docker, Ansible, and GitLab CI/CD pipelines with DevSecOps practices for identity platform delivery.',
+      imageUrl: '',
+      url: 'https://www.beyondid.com',
+    },
+    {
+      organization: 'Park City Pvt. Ltd.',
+      role: 'System Administrator',
+      time: '2018 – 2020',
+      description:
+        'Owned on-prem infrastructure and system administration; mentored junior engineers and improved reliability for internal IT operations.',
+      imageUrl: '',
+      url: '',
+    },
   ],
 
   // LINKEDIN RECOMMENDATIONS
