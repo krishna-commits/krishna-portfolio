@@ -208,6 +208,9 @@ function EducationCard({ education }: { education: any[] }) {
 }
 
 function WorkExperienceCard({ workExperience }: { workExperience: any[] }) {
+	const showPublicList = siteConfig.work_experience_public_list === true
+	const hasEntries = workExperience.length > 0
+
 	return (
 		<motion.div
 			initial={{ opacity: 0, y: 20 }}
@@ -226,7 +229,7 @@ function WorkExperienceCard({ workExperience }: { workExperience: any[] }) {
 							Work Experience
 						</h3>
 					</div>
-					{workExperience && workExperience.length > 0 ? (
+					{showPublicList && hasEntries ? (
 						<div className="space-y-3 sm:space-y-4">
 							{workExperience.map((item: any, index: number) => (
 								<motion.div

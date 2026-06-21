@@ -26,7 +26,7 @@ function formatWorkUrl(url: string): string {
 }
 
 export default function ExperienceList() {
-  const items = siteConfig.work_experience
+  const items = siteConfig.work_experience_public_list === true ? siteConfig.work_experience : []
 
   return (
     <ul role="list">

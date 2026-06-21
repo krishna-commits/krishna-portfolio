@@ -169,7 +169,8 @@ export const siteConfig = {
   
   ],
 
-  // WORK EXPERIENCE
+  // WORK EXPERIENCE — stored for admin/SEO; public homepage shows "Available upon request" unless listed below.
+  work_experience_public_list: false,
   work_experience: [
     {
       organization: 'Vianet Communications Ltd',
