@@ -107,37 +107,96 @@ export async function listContent(type: ContentType): Promise<ContentListItem[]>
 	})
 }
 
-export async function getContentBySlug(
-	type: ContentType,
-	slug: string,
-): Promise<ResolvedContentPost | null> {
-	const dbDoc = await getMdxDocumentBySlug(type, slug)
-	if (dbDoc) {
-		const item = dbToListItem(dbDoc)
-		const bodyHtml = await markdownBodyToHtml(dbDoc.body)
-		return {
-			...item,
-			body: dbDoc.body,
-			bodyHtml,
-			renderKind: 'html',
-		}
-	}
-
+function findContentlayerDoc(type: ContentType, slug: string) {
 	const normalized = slug.replace(/^\//, '').replace(/\.mdx$/, '')
-	const clDoc = contentlayerCollection(type).find((doc) => {
+	return contentlayerCollection(type).find((doc) => {
 		const clSlug =
 			'slugAsParams' in doc && doc.slugAsParams
 				? String(doc.slugAsParams)
 				: slugFromFilepath(String(doc._raw.flattenedPath).split('/').slice(1).join('/'))
 		return clSlug === normalized
 	})
+}
 
-	if (!clDoc) return null
-
+function contentlayerPost(
+	type: ContentType,
+	clDoc: (typeof allResearchCores)[number],
+): ResolvedContentPost {
 	const item = contentlayerToListItem(type, clDoc as (typeof allResearchCores)[number])
 	return {
 		...item,
 		renderKind: 'contentlayer',
-		bodyCode: 'body' in clDoc && clDoc.body && 'code' in clDoc.body ? String(clDoc.body.code) : undefined,
+		bodyCode:
+			'body' in clDoc && clDoc.body && 'code' in clDoc.body
+				? String(clDoc.body.code)
+				: undefined,
 	}
+}
+
+async function dbPost(dbDoc: MdxDocumentRecord): Promise<ResolvedContentPost> {
+	const item = dbToListItem(dbDoc)
+	const bodyHtml = await markdownBodyToHtml(dbDoc.body)
+	return {
+		...item,
+		body: dbDoc.body,
+		bodyHtml,
+		renderKind: 'html',
+	}
+}
+
+function isAdminEdited(doc: MdxDocumentRecord): boolean {
+	return doc.frontmatter.adminEdited === true
+}
+
+/** Research/mantras: Contentlayer MDX at build time; DB when admin-edited or not in repo. */
+const CONTENTLAYER_FIRST_TYPES = new Set<ContentType>(['research', 'mantra'])
+
+export async function getContentBySlug(
+	type: ContentType,
+	slug: string,
+): Promise<ResolvedContentPost | null> {
+	let dbDoc: MdxDocumentRecord | null = null
+	try {
+		dbDoc = await getMdxDocumentBySlug(type, slug)
+	} catch (error) {
+		console.warn(`[Content] DB lookup failed for ${type}/${slug}:`, error)
+	}
+
+	const clDoc = findContentlayerDoc(type, slug)
+
+	if (CONTENTLAYER_FIRST_TYPES.has(type)) {
+		if (dbDoc && isAdminEdited(dbDoc)) {
+			try {
+				return await dbPost(dbDoc)
+			} catch (error) {
+				console.warn(`[Content] DB render failed for ${slug}, using Contentlayer:`, error)
+			}
+		}
+		if (clDoc) {
+			return contentlayerPost(type, clDoc as (typeof allResearchCores)[number])
+		}
+		if (dbDoc) {
+			try {
+				return await dbPost(dbDoc)
+			} catch (error) {
+				console.warn(`[Content] DB render failed for ${slug}:`, error)
+				return null
+			}
+		}
+		return null
+	}
+
+	if (dbDoc) {
+		try {
+			return await dbPost(dbDoc)
+		} catch (error) {
+			console.warn(`[Content] DB render failed for ${slug}, using Contentlayer:`, error)
+		}
+	}
+
+	if (clDoc) {
+		return contentlayerPost(type, clDoc as (typeof allResearchCores)[number])
+	}
+
+	return null
 }

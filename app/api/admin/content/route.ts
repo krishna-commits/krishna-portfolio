@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
     } catch (fsError) {
       console.warn('[Content API] Filesystem write failed (DB sync continues):', fsError);
     }
-    await upsertMdxDocument(type, filepath, frontmatter, bodyContent);
+    await upsertMdxDocument(type, filepath, { ...frontmatter, adminEdited: true }, bodyContent);
 
     return NextResponse.json(
       { message: 'Content created successfully', filepath },
@@ -126,7 +126,7 @@ export async function PUT(request: NextRequest) {
       } catch (fsError) {
         console.warn('[Content API] Filesystem write failed (DB sync continues):', fsError);
       }
-      await upsertMdxDocument(type, newFilepath, frontmatter, bodyContent);
+      await upsertMdxDocument(type, newFilepath, { ...frontmatter, adminEdited: true }, bodyContent);
       return NextResponse.json(
         { message: 'Content updated and moved successfully', filepath: newFilepath },
         { status: 200 }
@@ -138,7 +138,7 @@ export async function PUT(request: NextRequest) {
     } catch (fsError) {
       console.warn('[Content API] Filesystem write failed (DB sync continues):', fsError);
     }
-    await upsertMdxDocument(type, filepath, frontmatter, bodyContent);
+    await upsertMdxDocument(type, filepath, { ...frontmatter, adminEdited: true }, bodyContent);
 
     return NextResponse.json(
       { message: 'Content updated successfully', filepath },

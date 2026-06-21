@@ -6,7 +6,7 @@ import { MdxHtmlBody } from 'app/components/mdx-html'
 import { generateResearchArticleMetadata } from 'app/metadata'
 import { getContentBySlug } from 'lib/mdx-content-resolver'
 
-export const dynamic = 'force-dynamic'
+export const dynamicParams = true
 
 interface PostProps {
 	params: {
@@ -23,24 +23,7 @@ function publishedTimeIso(date: unknown): string | undefined {
 async function getPostFromParams(params: PostProps['params']) {
 	const slug = params?.slug?.join('/')
 	if (!slug) return null
-
-	const resolved = await getContentBySlug('research', slug)
-	if (resolved) return resolved
-
-	const clPost = allResearchCores.find((post) => post.slugAsParams === slug)
-	if (!clPost) return null
-
-	return {
-		slug,
-		title: clPost.title,
-		description: clPost.description,
-		date: clPost.date ? String(clPost.date) : undefined,
-		keywords: clPost.keywords,
-		renderKind: 'contentlayer' as const,
-		bodyCode: clPost.body.code,
-		source: 'contentlayer' as const,
-		filepath: `${slug}.mdx`,
-	}
+	return getContentBySlug('research', slug)
 }
 
 export async function generateMetadata({ params }: PostProps): Promise<Metadata> {
@@ -55,6 +38,12 @@ export async function generateMetadata({ params }: PostProps): Promise<Metadata>
 		publishedTime: publishedTimeIso(post.date),
 		keywords: Array.isArray(post.keywords) ? post.keywords.map(String) : undefined,
 	})
+}
+
+export async function generateStaticParams(): Promise<PostProps['params'][]> {
+	return allResearchCores.map((post) => ({
+		slug: post.slugAsParams.split('/'),
+	}))
 }
 
 export default async function PostPage({ params }: PostProps) {
