@@ -11,16 +11,42 @@ import { PAGE_CARD, PAGE_ICON_CHIP } from "lib/page-layout"
 import { Badge } from "app/theme/components/ui/badge"
 import useSWR from 'swr'
 import { homepageFetcher, homepageSwrOptions } from 'lib/hooks/use-homepage-api'
+import { mergeHomepageList } from 'lib/homepage-list-fallback'
+
+function AvailableUponRequestLink({ className }: { className?: string }) {
+	return (
+		<Link href="/contact#send-a-message" className={cn('group/link block', className)}>
+			<motion.div
+				whileHover={{ scale: 1.02 }}
+				whileTap={{ scale: 0.98 }}
+				className="cursor-pointer rounded-lg border border-dashed border-border bg-muted/30 p-4 text-center transition-colors hover:bg-muted/50 sm:p-6"
+			>
+				<p className="text-xs sm:text-sm font-medium text-muted-foreground transition-colors group-hover/link:text-amber-700 dark:group-hover/link:text-amber-400 flex items-center justify-center gap-2">
+					<span>Available upon request</span>
+					<ArrowRight className="h-3 w-3 transition-transform group-hover/link:translate-x-1" />
+				</p>
+			</motion.div>
+		</Link>
+	)
+}
+
+function formatWorkUrl(url: string): string {
+	try {
+		return new URL(url).hostname.replace(/^www\./, '')
+	} catch {
+		return url
+	}
+}
 
 export function EducationExperience() {
 	const { data: educationData } = useSWR('/api/homepage/education', homepageFetcher, homepageSwrOptions)
-	const education = educationData?.education || siteConfig.education || []
+	const education = mergeHomepageList(educationData?.education, siteConfig.education || [])
 	
 	const { data: workData } = useSWR('/api/homepage/work', homepageFetcher, homepageSwrOptions)
-	const workExperience = workData?.workExperience || siteConfig.work_experience || []
+	const workExperience = mergeHomepageList(workData?.workExperience, siteConfig.work_experience || [])
 	
 	const { data: volunteeringData } = useSWR('/api/homepage/volunteering', homepageFetcher, homepageSwrOptions)
-	const volunteering = volunteeringData?.volunteering || siteConfig.volunteering || []
+	const volunteering = mergeHomepageList(volunteeringData?.volunteering, siteConfig.volunteering || [])
 
 	return (
 		<section className="relative w-full" aria-label="Education and experience">
@@ -236,29 +262,16 @@ function WorkExperienceCard({ workExperience }: { workExperience: any[] }) {
 												rel="noopener noreferrer"
 												className="text-xs text-blue-600 dark:text-blue-400 hover:underline mt-1 inline-block truncate"
 											>
-												{item.url}
+												{formatWorkUrl(item.url)}
 											</Link>
 										)}
 									</div>
 								</motion.div>
 							))}
+							<AvailableUponRequestLink className="pt-1" />
 						</div>
 					) : (
-						<Link
-							href="/contact#send-a-message"
-							className="group/link block"
-						>
-							<motion.div
-								whileHover={{ scale: 1.02 }}
-								whileTap={{ scale: 0.98 }}
-								className="cursor-pointer rounded-lg border border-dashed border-border bg-muted/30 p-6 text-center transition-colors hover:bg-muted/50"
-							>
-								<p className="text-xs sm:text-sm font-medium text-muted-foreground group-hover/link:text-amber-700 dark:group-hover/link:text-amber-400 transition-colors flex items-center justify-center gap-2">
-									<span>Available upon request</span>
-									<ArrowRight className="h-3 w-3 transition-transform group-hover/link:translate-x-1" />
-								</p>
-							</motion.div>
-						</Link>
+						<AvailableUponRequestLink />
 					)}
 				</div>
 			</div>
