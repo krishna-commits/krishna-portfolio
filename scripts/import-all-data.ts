@@ -3,21 +3,17 @@
  * This script imports all existing data to the database
  */
 
-import * as dotenv from 'dotenv';
-import * as path from 'path';
-import * as fs from 'fs';
-import { prisma } from '../lib/prisma';
-import { siteConfig } from '../config/site';
+import { loadEnvLocal } from './load-env-local'
 
-// Load .env.local
-const envLocalPath = path.join(process.cwd(), '.env.local');
-if (fs.existsSync(envLocalPath)) {
-  dotenv.config({ path: envLocalPath, override: true });
-  console.log('✅ Loaded .env.local\n');
-}
+// Must run before dynamic import of lib/prisma (static imports are hoisted).
+loadEnvLocal()
+console.log('')
 
 async function importAllData() {
-  console.log('🚀 Starting data import from config/site.tsx to database...\n');
+  const { prisma } = await import('../lib/prisma')
+  const { siteConfig } = await import('../config/site')
+
+  console.log('🚀 Starting data import from config/site.tsx to database...\n')
 
   if (!prisma) {
     console.error('❌ Error: Database not configured. Please check your database connection.');
@@ -307,8 +303,10 @@ async function importAllData() {
     console.error('\n❌ Fatal error during import:', error);
     throw error;
   } finally {
-    await prisma.$disconnect();
-    console.log('\n🔌 Disconnected from database');
+    if (prisma) {
+      await prisma.$disconnect();
+      console.log('\n🔌 Disconnected from database');
+    }
   }
 }
 
