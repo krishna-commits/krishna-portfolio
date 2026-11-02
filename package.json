@@ -1,0 +1,41 @@
+{
+  "name": "krishna-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "next typegen && tsc --noEmit",
+    "screenshots": "bash scripts/screenshots.sh",
+    "sbom": "node scripts/sbom.mjs > sbom.json"
+  },
+  "dependencies": {
+    "@mdx-js/loader": "^3",
+    "@mdx-js/react": "^3",
+    "@next/mdx": "^16.4.3",
+    "@vercel/analytics": "^1",
+    "@vercel/speed-insights": "^1",
+    "next": "^16.4.3",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "rehype-pretty-code": "^0.14",
+    "remark-gfm": "^4",
+    "shiki": "^3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/mdx": "^2",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "eslint": "^9",
+    "eslint-config-next": "^16.4.3",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2"
+  }
+}

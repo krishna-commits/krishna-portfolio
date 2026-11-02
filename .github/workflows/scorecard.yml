@@ -1,0 +1,35 @@
+name: OpenSSF Scorecard
+
+# Public, independent assessment of this repository's security practices (branch protection, pinned
+# dependencies, token permissions, SAST, and more). Results appear at
+# https://scorecard.dev/viewer/?uri=github.com/krishna-commits/krishna-portfolio once the repo is public.
+
+on:
+  push:
+    branches: [master, main]
+  schedule:
+    - cron: "17 3 * * 1"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  analysis:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: ossf/scorecard-action@v2.4.0
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          publish_results: true
+      - uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif

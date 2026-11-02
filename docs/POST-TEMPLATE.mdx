@@ -1,0 +1,53 @@
+export const metadata = {
+  title: "Your title: specific beats clever (e.g. 'Upgrading 10 Kubernetes clusters from 1.33 to 1.35')",
+  description: "One or two sentences: the problem and what the reader will learn. Used for Google and social previews.",
+  date: "2026-12-01",
+  tags: ["Kubernetes", "SRE"],
+  // false = visible only in `npm run dev`. Flip to true when it's ready.
+  published: false,
+};
+
+Open with the problem in one or two sentences. What broke, what was slow, or what was risky, and why it mattered.
+
+## The situation
+
+Context: what the system looked like, the scale, and the constraints. Keep client details anonymous.
+
+## What we found
+
+The investigation. Include the real error messages; engineers search for them.
+
+```text
+paste the exact error output here
+```
+
+## The fix
+
+What you changed, and why this option over the alternatives.
+
+```yaml
+# code blocks get syntax highlighting: use yaml, bash, hcl, ts, json, python, go...
+apiVersion: v1
+kind: ConfigMap
+```
+
+<FlowDiagram
+  title="Optional diagram"
+  stages={[
+    { label: "Before", items: ["What it was"] },
+    { label: "Change", items: ["What you did"] },
+    { label: "After", items: ["What it is now"] },
+  ]}
+/>
+
+<Callout title="Gotcha">
+Use a callout for the one thing a reader must not miss.
+</Callout>
+
+## Results
+
+What changed: numbers if you have them, honest qualitative results if you don't.
+
+## Lessons
+
+One or two things you'd tell another engineer facing the same problem.

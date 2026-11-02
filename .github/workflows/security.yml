@@ -1,0 +1,105 @@
+name: Security
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+  schedule:
+    - cron: "23 4 * * 1" # weekly, Monday 04:23 UTC
+
+permissions:
+  contents: read
+
+jobs:
+  codeql:
+    name: CodeQL (SAST)
+    runs-on: ubuntu-latest
+    # Job-level permissions replace the workflow default, so contents: read is restated explicitly.
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Harden runner (audit CI network egress)
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+          queries: security-extended
+      - uses: github/codeql-action/analyze@v3
+
+  workflows:
+    name: Workflow audit (zizmor)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden runner (audit CI network egress)
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Audit GitHub Actions workflows for injection, excessive permissions, and unpinned actions
+        # The token enables zizmor's online audits (impostor commits, actions with known advisories).
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: pipx run zizmor --format=github .github/workflows
+
+  dependencies:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden runner (audit CI network egress)
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Fail on high or critical vulnerabilities in production dependencies
+        run: npm audit --omit=dev --audit-level=high
+
+  secrets:
+    name: Secret scanning
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden runner (audit CI network egress)
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  dependency-review:
+    name: Dependency review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Harden runner (audit CI network egress)
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+          comment-summary-in-pr: on-failure

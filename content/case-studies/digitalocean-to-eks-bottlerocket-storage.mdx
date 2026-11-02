@@ -1,0 +1,102 @@
+export const metadata = {
+  title: "DigitalOcean → EKS: fixing shared storage when NFS breaks on Bottlerocket",
+  summary:
+    "Migrating a Kubernetes environment from DigitalOcean to Amazon EKS on Bottlerocket broke every workload that depended on a shared ReadWriteMany volume. The fix kept the applications unchanged: an OpenEBS-provisioned NFS server backed by EBS on the server side, and the CSI NFS driver on the client side.",
+  context: "Kubernetes migration · development environment · client details withheld",
+  role: "Senior DevSecOps Engineer",
+  period: "2026",
+  date: "2026-06-17",
+  stack: ["Amazon EKS", "Bottlerocket", "DigitalOcean Kubernetes", "OpenEBS", "CSI NFS driver", "Amazon EBS", "Helm"],
+  outcomes: [
+    "Shared ReadWriteMany storage restored on Bottlerocket nodes",
+    "Zero application changes: same PVC name and mount path as before the migration",
+    "A documented operating procedure for the storage layer's two failure modes",
+    "Amazon EFS kept as a deliberate next step instead of being forced mid-migration",
+  ],
+  published: true,
+};
+
+<Callout title="Source">
+This case study expands on my article <a href="https://medium.com/@neupane.krishna33/why-nfs-breaks-on-eks-bottlerocket-and-what-we-did-instead-821458d30abe">Why NFS Breaks on EKS Bottlerocket (and What We Did Instead)</a>.
+</Callout>
+
+## The situation
+
+A development environment was moving from DigitalOcean Kubernetes to Amazon EKS, running on Bottlerocket worker nodes. The manifests were nearly identical between the two clusters, yet every workload that relied on a shared **ReadWriteMany (RWX)** volume failed on EKS, stuck in `Pending` or `CrashLoopBackOff`.
+
+On DigitalOcean, those workloads used an NFS-backed StorageClass and a shared claim, `nfs-pvc`, mounted at `/mnt/migration`. It had worked without issue.
+
+## Finding the root cause
+
+The pod events were consistent:
+
+```text
+FailedMount ... mount failed: exit status 32
+mount program didn't pass remote address
+```
+
+The NFS server and its exports were healthy, so the problem had to be on the **client side**, on the worker nodes themselves.
+
+The cause was the node OS. **Bottlerocket is deliberately minimal**: it ships without traditional NFS client tooling such as `mount.nfs`, `nfs-utils`, and `rpcbind`. The in-tree Kubernetes NFS volume plugin (`kubernetes.io/nfs`) works by having the kubelet call `mount.nfs` on the host. On Bottlerocket that binary doesn't exist, so every mount fails, regardless of how healthy the server is.
+
+That's a security feature working as intended. A smaller host OS has a smaller attack surface. The fix had to respect that, not fight it.
+
+## Options considered
+
+| Option | Result | Decision |
+|---|---|---|
+| Reuse the existing NFS StorageClass | Server side fine; client mounts still failed on Bottlerocket | Rejected |
+| `emptyDir` volumes | Pods started, but data wasn't shared, uploads vanished on restart, replicas saw different files | Temporary workaround only |
+| Amazon EFS | Native RWX, multi-AZ, CSI-compatible with Bottlerocket | Deferred: it would have required application changes mid-migration |
+| OpenEBS NFS provisioner + CSI NFS driver | RWX on Bottlerocket with no application changes | **Chosen** |
+
+## The solution
+
+<FlowDiagram
+  title="Shared storage on Bottlerocket"
+  caption="The client side moves to a CSI driver; the server side is provisioned dynamically on EBS."
+  stages={[
+    { label: "App pods", items: ["claimName: nfs-pvc", "/mnt/migration"] },
+    { label: "CSI NFS driver", items: ["nfs.csi.k8s.io", "kube-system"] },
+    { label: "OpenEBS NFS", items: ["NFS server pod", "Service + export"] },
+    { label: "Amazon EBS", items: ["Backing volume"] },
+  ]}
+/>
+
+**Server side: OpenEBS Dynamic NFS Provisioner.** Installed with Helm into the `openebs` namespace. When a claim requests `storageClassName: nfs-rwx-storage`, it creates an EBS volume, an NFS server pod in front of it, a Kubernetes Service, and an export endpoint.
+
+**Client side: the CSI NFS driver.** Installed with Helm into `kube-system`. Switching the volume plugin from the in-tree `kubernetes.io/nfs` to `nfs.csi.k8s.io` moves the mount logic out of the host OS and into a containerised driver, which is exactly what Bottlerocket expects.
+
+**No application changes.** Workloads kept `claimName: nfs-pvc` and the same `/mnt/migration` mount path. From the applications' point of view, nothing moved.
+
+**A dedicated bootstrap claim.** A separate PVC, `nfs-backend-bootstrap`, keeps the OpenEBS NFS server alive and owns the underlying export. Application workloads never mount it directly, which separates the storage backend's lifecycle from the applications'.
+
+## What broke along the way
+
+Two operational traps are worth writing down, because they will happen again to anyone running this pattern.
+
+**StorageClass immutability.** The OpenEBS server's DNS name embeds the bootstrap PVC's UID, for example `nfs-pvc-abc123.openebs.svc.cluster.local`. Recreating the bootstrap claim changes that name and silently invalidates the StorageClass that points at it. The recovery has to happen in order: delete and recreate the StorageClass, then the claim.
+
+**PVC termination deadlocks.** Deleting a claim while pods still mount it leaves it stuck in `Terminating`, which blocks new pods from starting. The fix is to scale the consuming deployments to zero, wait for the claim to clean up, then redeploy.
+
+## Validation
+
+A short checklist confirms the storage path end to end:
+
+```bash
+kubectl get pvc                     # the claim is Bound
+kubectl get pods -n openebs         # the NFS provisioner and server are Running
+kubectl get pods -n kube-system     # the CSI NFS driver pods are Running
+kubectl exec <app-pod> -- df -h     # /mnt/migration is mounted
+```
+
+## Results
+
+- Workloads that needed shared RWX storage run on Bottlerocket nodes again.
+- The migration needed **no application changes**: same claim name, same mount path.
+- The two failure modes (StorageClass invalidation and PVC termination deadlock) are documented with recovery steps.
+- **Amazon EFS** remains the cleaner long-term option, kept as a deliberate follow-up rather than a mid-migration rewrite.
+
+## Lessons
+
+When a minimal, security-focused OS like Bottlerocket breaks something, the answer is rarely to add the missing tools back onto the host. Move the capability into the cluster, where it can be versioned, deployed, and observed like everything else. And during a migration, minimise the number of things that change at once: keeping the application contract identical made the storage swap invisible to the teams using it.

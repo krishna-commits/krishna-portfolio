@@ -1,0 +1,9 @@
+# Every change needs review from the owner. Enforced by the branch ruleset ("Require review from Code Owners").
+*                       @krishna-commits
+
+# Security-sensitive paths, called out explicitly.
+/.github/               @krishna-commits
+/lib/security-headers.mjs @krishna-commits
+/lib/sbom.mjs           @krishna-commits
+/app/api/               @krishna-commits
+/vercel.json            @krishna-commits

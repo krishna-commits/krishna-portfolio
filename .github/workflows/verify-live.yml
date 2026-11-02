@@ -1,0 +1,54 @@
+name: Verify live site
+
+# Continuously checks what is actually deployed, not just what is in the repo:
+#  1. the SBOM served by the live site has a valid signed provenance attestation from this repository;
+#  2. none of the deployed dependencies has a known HIGH or CRITICAL vulnerability with a fix available.
+# Runs daily, so a CVE published tomorrow is flagged even if no code changed.
+
+on:
+  schedule:
+    - cron: "41 5 * * *" # daily
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  attestations: read
+
+jobs:
+  provenance:
+    name: Live SBOM provenance
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden runner (audit CI network egress)
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+      - name: Download the live SBOM
+        run: curl -fsSL https://krishnaneupane.com/sbom.json -o sbom.json && shasum -a 256 sbom.json
+      - name: Verify its provenance attestation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh attestation verify sbom.json -R "$GITHUB_REPOSITORY"
+
+  vulnerabilities:
+    name: Live SBOM vulnerability scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden runner (audit CI network egress)
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+      - name: Download the live SBOM, keep production dependencies only
+        # Dev tooling (scope "excluded") runs at build time and never reaches visitors; scan what's shipped.
+        run: |
+          curl -fsSL https://krishnaneupane.com/sbom.json -o sbom.json
+          jq '.components |= map(select(.scope == "required"))' sbom.json > sbom.prod.json
+          jq '.components | length' sbom.prod.json
+      - name: Scan deployed dependencies (Grype)
+        uses: anchore/scan-action@v6
+        with:
+          sbom: sbom.prod.json
+          fail-build: true
+          severity-cutoff: high
+          only-fixed: true
+          output-format: table

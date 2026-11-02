@@ -1,0 +1,6 @@
+# zizmor configuration. Actions are pinned to version tags (e.g. @v5), not commit SHAs; see ADR-008.
+rules:
+  unpinned-uses:
+    config:
+      policies:
+        "*": ref-pin

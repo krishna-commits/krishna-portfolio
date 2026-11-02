@@ -1,0 +1,142 @@
+export const metadata = {
+  title: "A security control at every stage: designing a secure delivery pipeline",
+  description:
+    "A practical blueprint for a DevSecOps delivery pipeline: what control belongs at commit, build, scan, provision, deploy, and observe, with working examples using SonarQube, Terraform, ArgoCD, and Vault.",
+  date: "2026-11-02",
+  tags: ["DevSecOps", "CI/CD", "GitOps", "Kubernetes"],
+  published: true,
+};
+
+Most pipelines have security *somewhere*: a scanner bolted onto the build, a manual review before release. The problem is that "somewhere" leaves gaps, and attackers and outages both find gaps.
+
+The model I use instead is simple: **every stage between a commit and production carries at least one control, and every control fails closed.** If a stage can't prove it's safe, the change doesn't move forward.
+
+<FlowDiagram
+  title="Secure delivery pipeline"
+  caption="Each stage owns a control. Security and resilience run across all of them."
+  stages={[
+    { label: "Commit", items: ["Branch protection", "Secret scanning"] },
+    { label: "Build", items: ["Pinned base images", "Reproducible builds"] },
+    { label: "Scan", items: ["SonarQube gate", "OWASP ZAP"] },
+    { label: "Provision", items: ["Terraform plan", "Reviewed apply"] },
+    { label: "Deploy", items: ["ArgoCD sync", "Git as source of truth"] },
+    { label: "Observe", items: ["Prometheus", "Loki alerts"] },
+  ]}
+  planes={[{ label: "Security plane", items: ["Vault secrets", "Least-privilege IAM", "WAF"] }]}
+/>
+
+## 1. Commit: stop problems before they exist
+
+The cheapest vulnerability to fix is the one that never merges.
+
+- **Protect the default branch.** Require pull requests, at least one review, and passing checks. No direct pushes, including from admins.
+- **Scan for secrets on every push.** A leaked credential in Git history is leaked forever, so rotating it is the only real fix. Catching it before merge saves the rotation.
+
+## 2. Build: make artifacts trustworthy
+
+An artifact is only as trustworthy as its inputs.
+
+- **Pin base images by digest**, not by mutable tag. `node:22` can change under you; `node@sha256:…` cannot.
+- **Build once, promote everywhere.** The image that passed tests in staging must be the exact image that runs in production. Rebuilding per environment breaks that guarantee.
+
+## 3. Scan: quality gates that actually gate
+
+A scanner that only produces a report is a dashboard, not a control. The gate has to fail the pipeline.
+
+```yaml
+# .github/workflows/ci.yml (excerpt)
+- name: SonarQube scan
+  uses: SonarSource/sonarqube-scan-action@v5
+  env:
+    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+- name: Enforce quality gate
+  uses: SonarSource/sonarqube-quality-gate-action@v1
+  timeout-minutes: 5
+  env:
+    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+```
+
+Static analysis (SAST) catches issues in code. Add dynamic testing (DAST) such as OWASP ZAP against a deployed preview environment to catch what only shows up at runtime: misconfigured headers, exposed endpoints, injection paths.
+
+<Callout title="Tune before you enforce">
+A gate that fails on hundreds of legacy findings gets disabled within a week. Gate on **new code** first, then pay down existing findings deliberately.
+</Callout>
+
+## 4. Provision: infrastructure changes are code changes
+
+With Terraform and Terragrunt, infrastructure follows the same review path as application code.
+
+- **Run `terraform plan` in CI on every pull request** and post the plan for review. Reviewers approve the *plan*, not the intent.
+- **Apply only from the pipeline**, using short-lived credentials (for example, OIDC federation from CI to your cloud) instead of long-lived keys on laptops.
+- **Keep state remote, encrypted, and locked.**
+
+```hcl
+terraform {
+  backend "s3" {
+    bucket       = "org-terraform-state"
+    key          = "platform/prod/terraform.tfstate"
+    region       = "us-east-1"
+    encrypt      = true
+    use_lockfile = true
+  }
+}
+```
+
+## 5. Deploy: Git is the only way in
+
+GitOps with ArgoCD flips the deployment model. Instead of CI pushing into the cluster, which means CI holds cluster credentials, ArgoCD *pulls* the desired state from Git and reconciles continuously.
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: payments-api
+  namespace: argocd
+spec:
+  project: production
+  source:
+    repoURL: https://github.com/org/platform-manifests
+    path: apps/payments-api/overlays/prod
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: payments
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+```
+
+Two properties make this a security control rather than just a convenience:
+
+1. **Every production change has a commit**: author, reviewer, timestamp, diff. The audit trail is free.
+2. **`selfHeal` reverts drift.** A manual `kubectl edit` in production is undone automatically, so the reviewed state is the running state.
+
+Secrets don't belong in that Git repository. Keep them in HashiCorp Vault and inject them at runtime, so manifests reference secrets without ever containing them.
+
+## 6. Observe: detection is the last control
+
+Prevention eventually fails, so the final stage is noticing quickly. Metrics in Prometheus and logs in Loki let you alert on signals that matter for security, not just uptime:
+
+- spikes in authentication failures or `403` responses,
+- unexpected egress from workloads that shouldn't talk to the internet,
+- deployments that didn't come through the GitOps path.
+
+```yaml
+groups:
+  - name: security
+    rules:
+      - alert: AuthFailureSpike
+        expr: sum(rate(http_requests_total{status="401"}[5m])) > 5
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Sustained spike in authentication failures
+```
+
+## Putting it together
+
+None of these controls is exotic. What makes the pipeline secure is that they're **chained**: a change can't skip a stage, and each stage fails closed. Start with the gaps that would hurt most, usually secrets and the deploy path, and add a control per stage until there's nowhere left for a bad change to slip through.

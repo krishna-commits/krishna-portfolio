@@ -1,0 +1,458 @@
+@import "tailwindcss";
+
+/*
+ * Visual identity: "editorial ink" with a planetary palette. Near-black neutral paper, warm off-white ink,
+ * a serif display face, and two accents taken from the gas giants:
+ *   --accent    Jupiter ochre (its banded clouds): links, markers, highlights
+ *   --accent-2  Saturn gold (its rings): the pipeline graph and active states
+ * Green (--ok) is reserved for status only, because it universally means "up".
+ * Primary buttons are ink-on-paper inverted (--fg background, --bg text). No gradients, no glows.
+ */
+:root {
+  color-scheme: dark;
+  --bg: #0e0f0d;
+  --fg: #ece9e1;
+  --muted: #9a978d;
+  --border: #272824;
+  --card: #141512;
+  --accent: #d4914f;
+  --accent-strong: #b9763a;
+  --accent-2: #e2c27e;
+  --accent-ink: #e3a46a;
+  --accent-soft: rgb(212 145 79 / 0.09);
+  --grid: rgb(236 233 225 / 0.035);
+  --ok: #7cc69a;
+  --bad: #e5806b;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f5f3ec;
+  --fg: #171714;
+  --muted: #66645b;
+  --border: #e0dccf;
+  --card: #fbfaf5;
+  --accent: #a3561f;
+  --accent-strong: #84441a;
+  --accent-2: #94722a;
+  --accent-ink: #9a4f1b;
+  --accent-soft: rgb(163 86 31 / 0.07);
+  --grid: rgb(23 23 20 / 0.04);
+  --ok: #1f7a4a;
+  --bad: #b8432c;
+}
+
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+  --font-serif: var(--font-serif-display), Georgia, serif;
+}
+
+/* Tailwind 4 defaults borders to currentColor; every divider in this design uses the border token. */
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--border);
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-feature-settings: "ss01", "cv11";
+}
+
+::selection {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+  }
+  .eyebrow {
+    @apply font-mono text-xs tracking-[0.14em] uppercase;
+  }
+  .muted {
+    color: var(--muted);
+  }
+  .accent-ink {
+    color: var(--accent-ink);
+  }
+  .lede {
+    @apply text-lg leading-relaxed sm:text-xl;
+    color: var(--muted);
+  }
+  /* Serif display for names and headings; Inter carries everything else. */
+  .display {
+    font-family: var(--font-serif-display), Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -0.015em;
+  }
+  .h-page {
+    @apply text-5xl text-balance sm:text-6xl;
+    font-family: var(--font-serif-display), Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -0.015em;
+    line-height: 1.02;
+  }
+  .h-section {
+    @apply text-3xl sm:text-[2.6rem];
+    font-family: var(--font-serif-display), Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.08;
+  }
+  .rule {
+    border-color: var(--border);
+  }
+  .card {
+    @apply rounded-2xl border p-6 transition-[border-color,transform] duration-200;
+    border-color: var(--border);
+    background: var(--card);
+  }
+  a.card:hover {
+    border-color: var(--fg);
+  }
+  .tag {
+    @apply inline-flex items-center rounded-full border px-2.5 py-0.5 font-mono text-[11px] tracking-wide;
+    border-color: var(--border);
+    color: var(--muted);
+  }
+  .btn-primary,
+  .btn-outline {
+    @apply inline-flex cursor-pointer items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-[background,border-color,transform] duration-200 active:scale-[0.98];
+  }
+  .btn-primary {
+    color: var(--bg);
+    background: var(--fg);
+  }
+  .btn-primary:hover {
+    background: color-mix(in srgb, var(--fg) 86%, var(--bg));
+  }
+  .btn-outline {
+    @apply border;
+    border-color: var(--border);
+  }
+  .btn-outline:hover {
+    border-color: var(--fg);
+  }
+  .link-hover {
+    @apply underline-offset-4 hover:underline;
+  }
+  .prose-body p + p {
+    @apply mt-4;
+  }
+  .input {
+    /* 16px on phones: iOS Safari zooms the page when focusing an input smaller than that. */
+    @apply w-full rounded-xl border bg-transparent px-3.5 py-2.5 text-base outline-none sm:text-sm;
+    border-color: var(--border);
+  }
+  .input:focus {
+    border-color: var(--fg);
+  }
+  .grid-bg {
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .signal {
+    @apply inline-block h-2 w-2 rounded-full;
+    background: var(--accent);
+  }
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Pipeline diagram */
+  .pipe-node {
+    @apply relative z-10 flex flex-col items-start gap-1 rounded-xl border px-4 py-3;
+    border-color: var(--border);
+    background: var(--card);
+  }
+  .pipe-dot {
+    @apply h-2 w-2 rounded-full;
+    background: var(--border);
+  }
+  .pipe-node[aria-selected="true"] {
+    border-color: var(--fg);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+  }
+  .pipe-node[aria-selected="true"] .pipe-dot {
+    background: var(--accent);
+  }
+
+  /* Confidential employer: a blurred stand-in drawn by CSS, so no placeholder text exists in the DOM. */
+  .blurred-name {
+    @apply inline-block select-none;
+    filter: blur(5px);
+  }
+  .blurred-name::before {
+    content: "Company Name Ltd";
+  }
+}
+
+/* Resume printing: only the document. */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  :root {
+    --bg: #fff;
+    --fg: #000;
+    --muted: #444;
+    --border: #ccc;
+    --card: #fff;
+    --accent-ink: #000;
+  }
+  body {
+    font-size: 11pt;
+  }
+  main {
+    padding: 0 !important;
+  }
+  a {
+    text-decoration: none !important;
+  }
+  .print-tight {
+    break-inside: avoid;
+  }
+}
+
+/* Long-form article typography (MDX). */
+.prose-article {
+  font-size: 17px;
+  line-height: 1.8;
+}
+.prose-article > * + * {
+  margin-top: 1.25em;
+}
+.prose-article h2 {
+  margin-top: 2.4em;
+  font-size: 1.6rem;
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  scroll-margin-top: 6rem;
+}
+.prose-article h3 {
+  margin-top: 1.8em;
+  font-size: 1.2rem;
+  font-weight: 600;
+  scroll-margin-top: 6rem;
+}
+.prose-article a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-color: var(--accent);
+}
+.prose-article strong {
+  font-weight: 600;
+}
+.prose-article ul,
+.prose-article ol {
+  padding-left: 1.4em;
+}
+.prose-article ul { list-style: disc; }
+.prose-article ol { list-style: decimal; }
+.prose-article li + li { margin-top: 0.4em; }
+.prose-article li::marker { color: var(--muted); }
+.prose-article :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  padding: 0.15em 0.4em;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--card);
+}
+.prose-article pre {
+  overflow-x: auto;
+  padding: 1.1rem 1.25rem;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.7;
+}
+/* Shiki (rehype-pretty-code) token colors: dark by default (dark-first), light when the light theme is chosen. */
+.prose-article [data-rehype-pretty-code-figure] code span {
+  color: var(--shiki-dark);
+}
+:root[data-theme="light"] .prose-article [data-rehype-pretty-code-figure] code span {
+  color: var(--shiki-light);
+}
+.prose-article [data-rehype-pretty-code-figure] {
+  margin-top: 1.5em;
+}
+.prose-article blockquote {
+  border-left: 2px solid var(--accent);
+  padding-left: 1.1em;
+  color: var(--muted);
+}
+.prose-article table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+.prose-article th,
+.prose-article td {
+  border-bottom: 1px solid var(--border);
+  padding: 0.6em 0.75em;
+  text-align: left;
+}
+.prose-article hr {
+  border-color: var(--border);
+}
+
+/* Cursor-follow highlight on cards (pointer devices only; --x/--y set by <Enhancements />). */
+@media (hover: hover) {
+  .spotlight {
+    position: relative;
+    isolation: isolate;
+  }
+  .spotlight::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(420px circle at var(--x, 50%) var(--y, 50%), color-mix(in srgb, var(--accent) 12%, transparent), transparent 45%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .spotlight:hover::before {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .g-draw {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: draw 1.1s cubic-bezier(0.6, 0, 0.2, 1) forwards;
+    animation-delay: var(--d, 0s);
+  }
+  .g-pop {
+    opacity: 0;
+    animation: pop 0.5s ease-out forwards;
+    animation-delay: var(--d, 0s);
+  }
+  .caret {
+    animation: caret 1.05s steps(1) infinite;
+  }
+  .g-packet {
+    offset-rotate: 0deg;
+    animation: travel 5.5s cubic-bezier(0.45, 0, 0.25, 1) 2.6s infinite;
+  }
+
+  /* Scroll reveal: only hides content once JS has confirmed it can reveal it (.js on <html>). */
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
+      transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .js [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* A signal travels the pipeline; each stage lights as it passes. */
+  .pipe-pulse {
+    animation: pipe-travel 7s linear infinite;
+  }
+  .pipe-node {
+    animation: pipe-pass 7s ease-out infinite;
+    animation-delay: calc((var(--i) + 0.5) * 7s / 6);
+  }
+  .pipe-node .pipe-dot {
+    animation: pipe-dot 7s ease-out infinite;
+    animation-delay: calc((var(--i) + 0.5) * 7s / 6);
+  }
+  .cursor {
+    animation: blink 1.1s steps(1) infinite;
+  }
+  /* The selected stage stops pulsing and holds focus styling. */
+  .pipe-node[aria-selected="true"],
+  .pipe-node[aria-selected="true"] .pipe-dot {
+    animation: none;
+  }
+  .rise {
+    animation: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .rise-1 { animation-delay: 60ms; }
+  .rise-2 { animation-delay: 140ms; }
+  .rise-3 { animation-delay: 220ms; }
+  .rise-4 { animation-delay: 300ms; }
+  .signal-pulse {
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes pipe-travel {
+  from { left: 0%; }
+  to { left: 100%; }
+}
+
+@keyframes pipe-pass {
+  0% { border-color: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent); }
+  14% { border-color: var(--accent); box-shadow: 0 0 0 0 transparent; }
+  20%, 100% { border-color: var(--border); box-shadow: none; }
+}
+
+@keyframes pipe-dot {
+  0%, 14% { background: var(--accent); }
+  20%, 100% { background: var(--border); }
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgb(34 211 238 / 0.5); }
+  50% { box-shadow: 0 0 0 6px rgb(34 211 238 / 0); }
+}
+
+/* Hero graph: paths draw in, nodes and labels appear in sequence. */
+@keyframes draw {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes pop {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes caret {
+  50% { opacity: 0; }
+}
+@keyframes travel {
+  from { offset-distance: 0%; }
+  to { offset-distance: 100%; }
+}
