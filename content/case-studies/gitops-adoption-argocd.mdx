@@ -1,0 +1,85 @@
+export const metadata = {
+  title: "Rolling out GitOps with ArgoCD across multi-cloud Kubernetes platforms",
+  summary:
+    "Leading the move from pipeline-driven deployments to GitOps with ArgoCD for enterprise customer platforms on AWS, GCP, and DigitalOcean, so every production change is declared in Git, reviewed, and continuously reconciled.",
+  context: "Enterprise customer platforms · client details withheld",
+  role: "Senior DevSecOps Engineer, Parkcity Technologies",
+  period: "2024 – present",
+  date: "2025-06-01",
+  stack: ["ArgoCD", "Kubernetes", "Helm", "Terraform", "Terragrunt", "HashiCorp Vault", "Prometheus", "Grafana"],
+  outcomes: [
+    "Improved deployment reliability: every release is a reviewed Git change that ArgoCD applies and keeps in sync",
+    "Stronger change management: a complete audit trail of who changed what in production, and when",
+    "Better platform governance: environments defined declaratively and reconciled, so drift is detected and reverted",
+    "Fewer credentials in CI: pipelines build and publish artifacts; they no longer hold cluster access",
+  ],
+  published: true,
+};
+
+## The situation
+
+Enterprise customers were running production workloads on Kubernetes across several clouds: AWS, Google Cloud, and DigitalOcean. Deployments were driven by CI pipelines pushing changes into clusters. That model works, but at enterprise scale it has three recurring costs:
+
+- **CI holds production credentials.** Every pipeline that can deploy is a pipeline that can be abused to reach the cluster.
+- **The running state drifts from the declared state.** Manual hotfixes and one-off changes accumulate, and nobody can say with confidence what is actually running.
+- **Change history is scattered.** Answering "what changed in production yesterday?" means stitching together pipeline logs, tickets, and chat.
+
+The goal was to lead GitOps adoption with ArgoCD so that Git becomes the single source of truth for what runs in every environment.
+
+## Constraints
+
+- **Multiple clouds and customers.** The approach had to work the same way on EKS, GKE, and DigitalOcean Kubernetes, with customer-specific requirements on top.
+- **Teams keep shipping.** Adoption had to happen alongside normal delivery, not as a freeze.
+- **Secrets stay out of Git.** Declarative doesn't mean committing credentials.
+- **Compliance and governance.** Changes needed review, traceability, and a clear audit trail.
+
+## The approach
+
+<FlowDiagram
+  title="Target delivery architecture"
+  caption="CI builds and publishes; ArgoCD pulls the desired state from Git and reconciles each cluster."
+  stages={[
+    { label: "App repo", items: ["Code + Dockerfile", "PR review"] },
+    { label: "CI", items: ["Build & scan", "Publish image"] },
+    { label: "Env repo", items: ["Helm values", "Per-env overlays"] },
+    { label: "ArgoCD", items: ["Auto-sync", "Self-heal"] },
+    { label: "Clusters", items: ["EKS · GKE", "DigitalOcean"] },
+  ]}
+  planes={[
+    { label: "Security plane", items: ["Vault for secrets", "Namespace RBAC", "No cluster credentials in CI"] },
+    { label: "Infrastructure", items: ["Terraform + Terragrunt", "Reusable modules"] },
+  ]}
+/>
+
+**Separate what's built from what's deployed.** Application repositories own code and container builds. Environment configuration (Helm values and per-environment overlays) lives in its own repository. Promoting a release to an environment is an explicit, reviewable commit rather than a side effect of a pipeline run.
+
+**Pull, don't push.** CI's job ends when a scanned artifact is published. ArgoCD, running inside each cluster, pulls the desired state from Git and applies it. Pipelines no longer need cluster credentials at all.
+
+**Reconcile continuously.** Automated sync with self-heal means the cluster converges to what Git declares. A manual change in production shows up as drift and is reverted, so the reviewed state is the running state.
+
+**Keep the platform declarative too.** The clusters themselves, along with networking and supporting cloud resources, are managed with Terraform and Terragrunt using reusable modules, following the same review-then-apply discipline.
+
+**Secrets stay in Vault.** Manifests reference secrets; values are provided at runtime from HashiCorp Vault and never committed.
+
+## Key decisions
+
+| Decision | Trade-off | Why |
+|---|---|---|
+| Pull-based GitOps instead of CI push | A new tool and workflow for teams to learn | Removes production credentials from CI and gives one consistent model across clouds |
+| Separate app and environment repositories | More repositories to manage | Promotions become explicit commits with reviewers and history |
+| Self-heal enabled in production | Manual hotfixes are reverted unless they go through Git | Guarantees the reviewed state is what's running; drift becomes visible |
+| Secrets referenced, never stored, in Git | Extra integration with Vault | Declarative config without leaking credentials |
+| Infrastructure in Terraform/Terragrunt modules | Upfront investment in reusable modules | Consistent environments and governance across customers and clouds |
+
+## Results
+
+As captured on my resume, the rollout improved **deployment reliability, change management, and platform governance**:
+
+- Production changes are **declared, reviewed, and auditable**: the Git history is the change log.
+- **Drift is detected and corrected automatically** instead of being discovered during incidents.
+- **CI pipelines no longer hold cluster credentials**, which shrinks the attack surface of the delivery path.
+- Teams get **one consistent delivery model** regardless of which cloud a customer runs on.
+
+## Lessons
+
+GitOps is as much a workflow change as a tooling change. The technical setup of ArgoCD is the easy part; the real work is agreeing on repository structure, promotion flow, and how emergency fixes happen when self-heal is on. Settling those conventions early, and documenting the emergency path, is what makes adoption stick.

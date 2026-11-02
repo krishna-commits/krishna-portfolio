@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Lint, type-check, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: next-build
+          path: .next
+          include-hidden-files: true
+          retention-days: 1
+
+  quality:
+    name: Lighthouse, links, headers
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: next-build
+          path: .next
+
+      - name: Start production server
+        run: |
+          npm start -- -p 3000 &
+          npx --yes wait-on http://localhost:3000 --timeout 60000
+
+      - name: Verify security headers
+        run: |
+          headers=$(curl -sI http://localhost:3000/)
+          for h in content-security-policy strict-transport-security x-content-type-options x-frame-options referrer-policy permissions-policy; do
+            echo "$headers" | grep -qi "^$h:" || { echo "::error::Missing header: $h"; exit 1; }
+          done
+          echo "All security headers present"
+
+      - name: Verify SEO endpoints
+        run: |
+          for path in /robots.txt /sitemap.xml /llms.txt /feed.xml /.well-known/security.txt /opengraph-image /hire /colophon; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:3000$path")
+            [ "$code" = "200" ] || { echo "::error::$path returned $code"; exit 1; }
+          done
+
+      - name: Lighthouse CI
+        run: npx --yes @lhci/cli@0.15.x autorun
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
+      - name: Check internal links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          # Internal links only; external sites are checked separately so third-party outages don't fail CI.
+          args: --no-progress --include '^http://localhost:3000' http://localhost:3000/ http://localhost:3000/about http://localhost:3000/projects http://localhost:3000/blog http://localhost:3000/research-core
+          fail: true
