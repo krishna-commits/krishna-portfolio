@@ -45,7 +45,7 @@ jobs:
           jq '.components |= map(select(.scope == "required"))' sbom.json > sbom.prod.json
           jq '.components | length' sbom.prod.json
       - name: Scan deployed dependencies (Grype)
-        uses: anchore/scan-action@v6
+        uses: anchore/scan-action@v7
         with:
           sbom: sbom.prod.json
           fail-build: true
