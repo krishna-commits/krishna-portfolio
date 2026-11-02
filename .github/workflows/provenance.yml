@@ -1,0 +1,37 @@
+name: Provenance
+
+# Signs a build provenance attestation (SLSA Build L2 via Sigstore) for the site's SBOM on every push to master.
+# The site serves the identical file at /sbom.json, so anyone can verify it:
+#   curl -sO https://krishnaneupane.com/sbom.json
+#   gh attestation verify sbom.json -R krishna-commits/krishna-portfolio
+# Note: artifact attestations require the repository to be public (or GitHub Enterprise Cloud).
+
+on:
+  push:
+    branches: [master, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+jobs:
+  attest:
+    name: Attest SBOM
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - name: Generate SBOM (CycloneDX 1.5)
+        run: node scripts/sbom.mjs > sbom.json
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: sbom.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom.json

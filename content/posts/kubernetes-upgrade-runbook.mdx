@@ -1,0 +1,113 @@
+export const metadata = {
+  title: "Kubernetes upgrades without the drama: a production runbook",
+  description:
+    "A step-by-step runbook for upgrading production Kubernetes clusters on EKS, GKE, or AKS: deprecated API checks, version skew, disruption budgets, node rotation, add-ons, and verification.",
+  date: "2026-10-20",
+  tags: ["Kubernetes", "SRE", "Platform Engineering"],
+  published: false,
+};
+
+Kubernetes ships a minor release roughly every four months, and each is supported for about a year upstream. Managed providers extend that, but not forever. Upgrades aren't optional; the only choice is whether they're routine or an emergency.
+
+This is the runbook I follow to keep them routine.
+
+<FlowDiagram
+  title="Upgrade flow"
+  stages={[
+    { label: "Prepare", items: ["Release notes", "Deprecated APIs"] },
+    { label: "Protect", items: ["PDBs", "Backups"] },
+    { label: "Control plane", items: ["One minor version"] },
+    { label: "Add-ons", items: ["CNI · CoreDNS", "kube-proxy"] },
+    { label: "Nodes", items: ["Surge & drain", "Pool by pool"] },
+    { label: "Verify", items: ["SLOs", "Smoke tests"] },
+  ]}
+/>
+
+## Before you start: know the rules
+
+- **One minor version at a time.** Control planes upgrade `1.N` → `1.N+1`. To go two versions, you do two upgrades.
+- **Control planes don't roll back.** On managed services, once the control plane is upgraded there is no downgrade. Your rollback plan is a tested restore or a replacement cluster, not an "undo" button.
+- **Version skew is bounded.** Since Kubernetes 1.28, kubelets may be up to three minor versions older than the API server. That gives you room to upgrade nodes after the control plane, but not to skip upgrading them.
+
+## 1. Prepare: find what will break
+
+Read the release notes for the target version, focusing on **removed APIs**. A manifest using an API version that no longer exists will fail to apply after the upgrade, often in the middle of an unrelated deploy.
+
+Scan both live resources and the manifests in Git (Helm charts included) for deprecated APIs:
+
+```bash
+# Live cluster: which deprecated APIs are actually being requested?
+kubectl get --raw /metrics | grep apiserver_requested_deprecated_apis
+
+# Manifests and Helm releases
+pluto detect-files -d ./manifests
+pluto detect-helm --target-versions k8s=v1.33.0
+```
+
+Fix every finding **before** upgrading, and ship the fixes through your normal pipeline.
+
+## 2. Protect: make disruption safe
+
+Node upgrades drain and replace nodes, so every workload gets evicted at least once.
+
+- **PodDisruptionBudgets** on every service that matters, so a drain can't take down all replicas at once.
+- **At least two replicas, spread across zones**, for anything with a PDB. A PDB on a single replica blocks the drain entirely.
+- **A fresh backup** of cluster state and persistent volumes, plus confirmation that you've tested restoring it recently.
+
+```yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: api
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: api
+```
+
+<Callout title="Do it in staging first">
+Run the full runbook against a staging cluster on the same version and add-on set as production. Most surprises show up there for free.
+</Callout>
+
+## 3. Upgrade the control plane
+
+On managed Kubernetes this is one command or a Terraform version bump, and it's the least risky step: the provider handles the rolling replacement of API servers. Keep an eye on API availability from your own monitoring, not just the provider console.
+
+```hcl
+resource "aws_eks_cluster" "main" {
+  name    = "prod"
+  version = "1.33" # bump one minor version, then plan and review
+  # ...
+}
+```
+
+## 4. Upgrade add-ons
+
+Cluster add-ons are versioned against the control plane. Upgrade the CNI, CoreDNS, and kube-proxy to the versions your provider recommends for the new release **before** rotating nodes, then the rest: ingress controllers, cert-manager, the metrics stack, and the ArgoCD controller itself.
+
+## 5. Rotate nodes, one pool at a time
+
+Create new nodes on the target version and drain the old ones, rather than upgrading nodes in place.
+
+- **Use surge capacity** so new nodes are ready before old ones drain.
+- **Go one node pool at a time**, starting with the least critical.
+- **Watch for stuck drains.** They almost always mean a PDB can't be satisfied, typically a single-replica workload.
+
+```bash
+kubectl drain ip-10-0-1-23.ec2.internal \
+  --ignore-daemonsets --delete-emptydir-data --timeout=10m
+```
+
+## 6. Verify against what users feel
+
+"All nodes Ready" is not the success criterion. Check:
+
+- error rate and latency SLOs for the main services,
+- that ArgoCD reports every application **Synced** and **Healthy**,
+- smoke tests on critical user journeys,
+- that no workloads are stuck `Pending` (often a missing node label or taint after rotation).
+
+## Make it boring
+
+The goal is for upgrades to become a calendar item, not an incident. Schedule them shortly after each new version is available on your provider, keep the runbook in version control, and record anything that surprised you so the next upgrade is smoother.

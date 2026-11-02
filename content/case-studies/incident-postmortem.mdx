@@ -1,0 +1,65 @@
+export const metadata = {
+  title: "TODO: Incident title, e.g. 'When a certificate expiry took down production ingress'",
+  summary:
+    "TODO: One or two sentences: what broke, the user impact, how it was resolved, and what changed so it can't recur.",
+  context: "Incident review · blameless · client details withheld",
+  role: "TODO: e.g. Incident lead, Senior DevSecOps Engineer",
+  period: "TODO: e.g. 2024",
+  date: "2024-01-01",
+  stack: ["TODO", "e.g. Kubernetes", "Prometheus", "cert-manager"],
+  outcomes: [
+    "TODO: Time to detect, e.g. 'Detected in 4 minutes by an existing alert'",
+    "TODO: Time to recover",
+    "TODO: The permanent fix, e.g. 'Automated renewal + alert 21 days before expiry on every cert'",
+  ],
+  // A real incident, told blamelessly. Fill every TODO with facts you can discuss in an interview, then publish.
+  published: false,
+};
+
+<Callout title="Draft template">
+Blameless postmortems are among the strongest signals for senior roles: they show how you think under pressure and how you prevent repeats. Use a real incident, anonymize the client, and only include numbers you can back up.
+</Callout>
+
+## Summary
+
+TODO: Three sentences. What happened, who was affected and for how long, and the root cause in plain language.
+
+## Impact
+
+- **Duration:** TODO (start → mitigated → resolved)
+- **User impact:** TODO (e.g. "API returned 5xx for ~15% of requests")
+- **Scope:** TODO (services, regions, customers affected)
+
+## Timeline
+
+| Time (UTC) | Event |
+|---|---|
+| TODO | First alert fires / first report |
+| TODO | Incident declared, roles assigned |
+| TODO | Hypothesis tested |
+| TODO | Mitigation applied |
+| TODO | Recovery confirmed |
+
+## Detection
+
+TODO: How did you find out: an alert, a dashboard, or a customer? Was detection fast enough? If not, what did you change?
+
+## Root cause
+
+TODO: The technical cause, and the contributing factors that let it happen (missing alert, manual step, unclear ownership). Focus on systems, not people.
+
+## Resolution
+
+TODO: What you did to mitigate, then to fully resolve. Include the commands or changes at a high level.
+
+## What we changed
+
+| Action | Type | Status |
+|---|---|---|
+| TODO | Prevent (e.g. automation) | Done |
+| TODO | Detect (e.g. new alert) | Done |
+| TODO | Respond (e.g. runbook) | Done |
+
+## What I learned
+
+TODO: One honest lesson about systems, process, or communication.
